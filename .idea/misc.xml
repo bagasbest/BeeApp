@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="DesignSurface">
+    <option name="filePathToZoomLevelMap">
+      <map>
+        <entry key="..\:/TUBES_GALERI/BeeApp/app/src/main/res/drawable/bg_bottom_navigation.xml" value="0.2526041666666667" />
+        <entry key="..\:/TUBES_GALERI/BeeApp/app/src/main/res/drawable/bg_rounded.xml" value="0.2526041666666667" />
+        <entry key="..\:/TUBES_GALERI/BeeApp/app/src/main/res/layout/activity_bee_wash.xml" value="0.264" />
+        <entry key="..\:/TUBES_GALERI/BeeApp/app/src/main/res/layout/activity_bee_wash_edit.xml" value="0.264" />
+        <entry key="..\:/TUBES_GALERI/BeeApp/app/src/main/res/layout/activity_home.xml" value="0.23645833333333333" />
+        <entry key="..\:/TUBES_GALERI/BeeApp/app/src/main/res/layout/activity_homepage.xml" value="0.16802536231884058" />
+        <entry key="..\:/TUBES_GALERI/BeeApp/app/src/main/res/layout/activity_main.xml" value="0.264" />
+        <entry key="..\:/TUBES_GALERI/BeeApp/app/src/main/res/layout/activity_order_detail.xml" value="0.264" />
+        <entry key="..\:/TUBES_GALERI/BeeApp/app/src/main/res/layout/activity_register.xml" value="0.264" />
+        <entry key="..\:/TUBES_GALERI/BeeApp/app/src/main/res/layout/fragment_home.xml" value="0.264" />
+        <entry key="..\:/TUBES_GALERI/BeeApp/app/src/main/res/layout/fragment_order.xml" value="0.23645833333333333" />
+        <entry key="..\:/TUBES_GALERI/BeeApp/app/src/main/res/layout/fragment_order_finish.xml" value="0.23645833333333333" />
+        <entry key="..\:/TUBES_GALERI/BeeApp/app/src/main/res/layout/fragment_order_process.xml" value="0.23645833333333333" />
+        <entry key="..\:/TUBES_GALERI/BeeApp/app/src/main/res/layout/fragment_profile.xml" value="0.23645833333333333" />
+        <entry key="..\:/TUBES_GALERI/BeeApp/app/src/main/res/layout/item_order.xml" value="0.264" />
+        <entry key="..\:/TUBES_GALERI/BeeApp/app/src/main/res/menu/bottom_nav_menu.xml" value="0.21203703703703702" />
+      </map>
+    </option>
+  </component>
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_11" default="true" project-jdk-name="1.8" project-jdk-type="JavaSDK">
+    <output url="file://$PROJECT_DIR$/build/classes" />
+  </component>
+  <component name="ProjectType">
+    <option name="id" value="Android" />
+  </component>
+</project>

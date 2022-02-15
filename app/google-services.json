@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "881815860905",
+    "project_id": "beeapp-eb382",
+    "storage_bucket": "beeapp-eb382.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:881815860905:android:6a1394157d945736b35bb8",
+        "android_client_info": {
+          "package_name": "com.project.beeapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "881815860905-t41odg25odlekus4om2fimrrieec1s7u.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAHj9UoaSeYcV9IAMUXlOIzFhAwrgMlIAc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "881815860905-t41odg25odlekus4om2fimrrieec1s7u.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

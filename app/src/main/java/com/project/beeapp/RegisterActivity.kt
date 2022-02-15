@@ -1,0 +1,322 @@
+package com.project.beeapp
+
+import androidx.appcompat.app.AppCompatActivity
+import android.os.Bundle
+import android.util.Log
+import android.view.View
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
+import android.widget.RadioButton
+import android.widget.Toast
+import com.google.firebase.auth.FirebaseAuth
+import com.project.beeapp.api.RetrofitClient
+import com.project.beeapp.api.model.ResponseKecamatan
+import com.project.beeapp.api.model.ResponseKelurahan
+import com.project.beeapp.api.model.ResponseKota
+import com.project.beeapp.api.model.ResponseProvinsi
+import com.project.beeapp.databinding.ActivityRegisterBinding
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+import androidx.appcompat.app.AlertDialog
+import com.google.firebase.firestore.FirebaseFirestore
+
+
+class RegisterActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
+
+    private var binding: ActivityRegisterBinding? = null
+    private var listIdProv   = ArrayList<Int>()
+    private var listNameProv = ArrayList<String>()
+    private var listIdKota   = ArrayList<Int>()
+    private var listNameKota = ArrayList<String>()
+    private var listIdKec    = ArrayList<Int>()
+    private var listNameKec  = ArrayList<String>()
+    private var listIdKel    = ArrayList<Int>()
+    private var listNameKel  = ArrayList<String>()
+
+    private var role : String? = null
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        binding = ActivityRegisterBinding.inflate(layoutInflater)
+        setContentView(binding?.root)
+
+        showProvinsi()
+
+
+        binding?.registerBtn?.setOnClickListener {
+            formValidation()
+        }
+
+    }
+
+    private fun formValidation() {
+        val username = binding?.username?.text.toString().trim()
+        val email= binding?.email?.text.toString().trim()
+        val phone = binding?.phone?.text.toString().trim()
+        val password = binding?.password?.text.toString().trim()
+        val fullname = binding?.fullName?.text.toString().trim()
+        val npwp = binding?.npwp?.text.toString().trim()
+
+        when {
+            username.isEmpty() -> {
+                Toast.makeText(this, "Username tidak boleh kosong", Toast.LENGTH_SHORT).show()
+                return
+            }
+            email.isEmpty() -> {
+                Toast.makeText(this, "Email tidak boleh kosong", Toast.LENGTH_SHORT).show()
+                return
+            }
+            phone.isEmpty() -> {
+                Toast.makeText(this, "No.Telepon tidak boleh kosong", Toast.LENGTH_SHORT).show()
+                return
+            }
+            password.isEmpty() -> {
+                Toast.makeText(this, "Kata sandi tidak boleh kosong", Toast.LENGTH_SHORT).show()
+                return
+            }
+            role == null -> {
+                Toast.makeText(this, "Anda ingin mendaftar sebagai kustomer atau sebagai mitra/driver ?, silahkan pilih", Toast.LENGTH_SHORT).show()
+                return
+            }
+        }
+
+        binding?.progressBar?.visibility = View.VISIBLE
+        FirebaseAuth
+            .getInstance()
+            .createUserWithEmailAndPassword(email, password)
+            .addOnCompleteListener {
+                if(it.isSuccessful) {
+
+                    val userId = FirebaseAuth.getInstance().currentUser!!.uid
+                    val data = mapOf(
+                        "uid" to userId,
+                        "username" to username,
+                        "email" to email,
+                        "password" to password,
+                        "phone" to phone,
+                        "role" to role,
+                        "locProvinsi" to binding?.provinsi?.selectedItem.toString(),
+                        "locKabupaten" to binding?.kota?.selectedItem.toString(),
+                        "locKecamatan" to binding?.kecamatan?.selectedItem.toString(),
+                        "locKelurahan" to binding?.kelurahan?.selectedItem.toString(),
+                        "fullname" to ""+fullname,
+                        "npwp" to ""+npwp,
+
+                    )
+
+                    FirebaseFirestore
+                        .getInstance()
+                        .collection("users")
+                        .document(userId)
+                        .set(data)
+                        .addOnCompleteListener { task->
+                            if(task.isSuccessful) {
+                                binding?.progressBar?.visibility = View.GONE
+                                showSuccessDialog()
+                            } else {
+                                binding?.progressBar?.visibility = View.GONE
+                                showFailureDialog()
+                            }
+                        }
+                } else {
+                    binding?.progressBar?.visibility = View.GONE
+                    showFailureDialog()
+                }
+            }
+    }
+
+    fun onRadioButtonClicked(view: View) {
+        if(view is RadioButton) {
+            val checked = view.isChecked
+
+            when(view.id) {
+                R.id.user ->
+                    if(checked) {
+                        role = "user"
+                        binding?.privateInformation?.visibility = View.GONE
+                    }
+                R.id.driver ->
+                    if(checked) {
+                        role = "driver"
+                        binding?.privateInformation?.visibility = View.VISIBLE
+                    }
+            }
+        }
+    }
+
+    private fun showProvinsi() {
+        RetrofitClient.instance.getProvinsi().enqueue(object: Callback<ResponseProvinsi> {
+            override fun onResponse(
+                call: Call<ResponseProvinsi>,
+                response: Response<ResponseProvinsi>
+            ) {
+
+
+                val listResponse = response.body()?.provinsi
+                listResponse?.forEach {
+                    listIdProv.add(it.id)
+                    listNameProv.add(it.nama)
+                }
+
+                binding?.provinsi?.onItemSelectedListener = this@RegisterActivity
+                val adapter = ArrayAdapter(this@RegisterActivity, android.R.layout.simple_spinner_dropdown_item, listNameProv)
+
+                binding?.provinsi?.adapter = adapter
+            }
+
+            override fun onFailure(call: Call<ResponseProvinsi>, t: Throwable) {
+                Toast.makeText(this@RegisterActivity, "${t.message}", Toast.LENGTH_LONG).show()
+            }
+
+        })
+    }
+
+
+    private fun showKota(idProv: Int) {
+        RetrofitClient.instance.getKota(idProv).enqueue(object : Callback<ResponseKota>{
+            override fun onResponse(call: Call<ResponseKota>, response: Response<ResponseKota>) {
+
+                val listResponse = response.body()?.kotaKabupaten
+
+                listIdKota.clear()
+                listNameKota.clear()
+                listResponse?.forEach {
+                    listIdKota.add(it.id)
+                    listNameKota.add(it.nama)
+                }
+
+                binding?.kota?.onItemSelectedListener = this@RegisterActivity
+                val adapter = ArrayAdapter(this@RegisterActivity, android.R.layout.simple_spinner_dropdown_item, listNameKota)
+                binding?.kota?.adapter = adapter
+
+            }
+
+            override fun onFailure(call: Call<ResponseKota>, t: Throwable) {
+            }
+
+        })
+    }
+
+
+
+    private fun showKecamatan(idKota: Int) {
+        RetrofitClient.instance.getKecamatan(idKota).enqueue(object : Callback<ResponseKecamatan>{
+            override fun onResponse(
+                call: Call<ResponseKecamatan>,
+                response: Response<ResponseKecamatan>
+            ) {
+                val listResponse = response.body()?.kecamatan
+
+                listIdKec.clear()
+                listNameKec.clear()
+                listResponse?.forEach {
+                    listIdKec.add(it.id)
+                    listNameKec.add(it.nama)
+                }
+
+                binding?.kecamatan?.onItemSelectedListener = this@RegisterActivity
+                val adapter = ArrayAdapter(
+                    this@RegisterActivity,
+                    android.R.layout.simple_spinner_dropdown_item,
+                    listNameKec,
+                )
+
+                binding?.kecamatan?.adapter = adapter
+
+            }
+
+            override fun onFailure(call: Call<ResponseKecamatan>, t: Throwable) {
+            }
+
+        })
+    }
+
+
+
+    private fun showKelurahan(idKecamatan: Int) {
+        RetrofitClient.instance.getKelurahan(idKecamatan).enqueue(object : Callback<ResponseKelurahan> {
+            override fun onResponse(
+                call: Call<ResponseKelurahan>,
+                response: Response<ResponseKelurahan>
+            ) {
+               val listResponse = response.body()?.kelurahan
+
+                listIdKel.clear()
+                listNameKel.clear()
+                listResponse?.forEach {
+                    listIdKel.add(it.id)
+                    listNameKel.add(it.nama)
+                }
+
+                binding?.kelurahan?.onItemSelectedListener = this@RegisterActivity
+                val adapter = ArrayAdapter(
+                    this@RegisterActivity,
+                    android.R.layout.simple_spinner_dropdown_item,
+                    listNameKel,
+                )
+
+                binding?.kelurahan?.adapter = adapter
+
+            }
+
+            override fun onFailure(call: Call<ResponseKelurahan>, t: Throwable) {
+
+            }
+
+        })
+    }
+
+
+    override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
+        p0?.getItemAtPosition(p2)
+        when (p0?.selectedItem) {
+            binding?.provinsi?.selectedItem -> {
+                showKota(listIdProv[p2])
+            }
+            binding?.kota?.selectedItem -> {
+                showKecamatan(listIdKota[p2])
+            }
+            binding?.kecamatan?.selectedItem -> {
+                showKelurahan(listIdKec[p2])
+            }
+        }
+    }
+
+    override fun onNothingSelected(p0: AdapterView<*>?) {
+    }
+
+
+    /// munculkan dialog ketika gagal registrasi
+    private fun showFailureDialog() {
+        AlertDialog.Builder(this)
+            .setTitle("Gagal melakukan registrasi")
+            .setMessage("Silahkan mendaftar kembali dengan informasi yang benar")
+            .setIcon(R.drawable.ic_baseline_clear_24)
+            .setPositiveButton("OKE") { dialogInterface, _ ->
+                dialogInterface.dismiss()
+            }
+            .show()
+    }
+
+    /// munculkan dialog ketika sukses registrasi
+    private fun showSuccessDialog() {
+        AlertDialog.Builder(this)
+            .setTitle("Berhasil melakukan registrasi")
+            .setMessage("Silahkan login")
+            .setIcon(R.drawable.ic_baseline_check_circle_outline_24)
+            .setPositiveButton("OKE") { dialogInterface, _ ->
+                dialogInterface.dismiss()
+                onBackPressed()
+            }
+            .show()
+    }
+
+    /// HAPUSKAN ACTIVITY KETIKA SUDAH TIDAK DIGUNAKAN, AGAR MENGURANGI RISIKO MEMORY LEAKS
+    override fun onDestroy() {
+        super.onDestroy()
+        binding = null
+    }
+
+
+}

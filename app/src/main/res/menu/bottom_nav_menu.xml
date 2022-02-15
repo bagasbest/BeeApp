@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/navigation_home"
+        android:icon="@drawable/ic_home_black_24dp"
+        app:cnb_iconColor="@color/white"
+        app:cnb_textColor="@color/white"
+        android:title="@string/title_home" />
+
+    <item
+        android:id="@+id/navigation_order"
+        app:cnb_iconColor="@color/white"
+        app:cnb_textColor="@color/white"
+        android:icon="@drawable/ic_baseline_receipt_24"
+        android:title="@string/title_order" />
+
+    <item
+        android:id="@+id/navigation_profile"
+        app:cnb_iconColor="@color/white"
+        app:cnb_textColor="@color/white"
+        android:icon="@drawable/ic_baseline_account_circle_24"
+        android:title="@string/title_profile" />
+
+</menu>
