@@ -12,6 +12,18 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.BeeApp">
         <activity
+            android:name=".ui.homepage.ui.home.akumulasi_pendapatan_mitra.AccumulatePartnerOrderActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.homepage.ui.home.AdminActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.homepage.ui.home.verify_driver.VerifyDriverDetailActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.homepage.ui.home.verify_driver.VerifyDriverActivity"
+            android:exported="false" />
+        <activity
             android:name=".ui.homepage.ui.home.BeeWashEditActivity"
             android:exported="false" />
         <activity

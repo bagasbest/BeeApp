@@ -103,14 +103,13 @@ class OrderViewModel : ViewModel() {
     }
 
 
-    fun setListOrderProcessByDriver(driverLocKecamatan: String?, driverLocKelurahan: String?) {
+    fun setListOrderProcessByDriver(driverLocKecamatan: String?) {
         listItems.clear()
 
 
         try {
             FirebaseFirestore.getInstance().collection("order")
                 .whereEqualTo("kecamatan", driverLocKecamatan)
-                .whereEqualTo("kelurahan", driverLocKelurahan)
                 .whereEqualTo("status", "Menunggu")
                 .get()
                 .addOnSuccessListener { documents ->

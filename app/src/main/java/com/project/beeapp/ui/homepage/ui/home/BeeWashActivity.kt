@@ -73,12 +73,14 @@ class BeeWashActivity : AppCompatActivity() {
 
         binding?.view13?.setOnClickListener {
             option = "bike"
-            Toast.makeText(this, "BeeWash Bike", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "Memilih mencuci motor", Toast.LENGTH_SHORT).show()
+            binding?.qty?.setText("")
         }
 
         binding?.view14?.setOnClickListener {
             option = "car"
-            Toast.makeText(this, "BeeWash Car", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "Memilih mencuci mobil", Toast.LENGTH_SHORT).show()
+            binding?.qty?.setText("")
         }
 
         binding?.orderBtn?.setOnClickListener {
@@ -86,7 +88,10 @@ class BeeWashActivity : AppCompatActivity() {
         }
 
         binding?.edit?.setOnClickListener {
-            startActivity(Intent(this, BeeWashEditActivity::class.java))
+            val intent = Intent (this, BeeWashEditActivity::class.java)
+            intent.putExtra(BeeWashEditActivity.EXTRA_CAR, priceCar.toString())
+            intent.putExtra(BeeWashEditActivity.EXTRA_BIKE, priceBike.toString())
+            startActivity(intent)
         }
 
 
@@ -96,7 +101,7 @@ class BeeWashActivity : AppCompatActivity() {
         FirebaseFirestore
             .getInstance()
             .collection("pricing")
-            .document("pricing")
+            .document("beeWash")
             .get()
             .addOnSuccessListener {
                 if(it.exists()) {
@@ -123,13 +128,21 @@ class BeeWashActivity : AppCompatActivity() {
     private fun formValidation() {
         val address = binding?.address?.text.toString().trim()
         val qty = binding?.qty?.text.toString().trim()
-        if (address.isEmpty()) {
-            Toast.makeText(this, "Alamat lengkap tidak boleh kosong", Toast.LENGTH_SHORT).show()
-            return
-        } else if (qty.isEmpty()) {
-            Toast.makeText(this, "Kuantitas kendaraan tidak boleh kosong", Toast.LENGTH_SHORT)
-                .show()
-            return
+        when {
+            address.isEmpty() -> {
+                Toast.makeText(this, "Alamat lengkap tidak boleh kosong", Toast.LENGTH_SHORT).show()
+                return
+            }
+            qty.isEmpty() -> {
+                Toast.makeText(this, "Kuantitas kendaraan tidak boleh kosong", Toast.LENGTH_SHORT)
+                    .show()
+                return
+            }
+            option == null -> {
+                Toast.makeText(this, "Silahkan pilih ingin mencuci mobil atau motor", Toast.LENGTH_SHORT)
+                    .show()
+                return
+            }
         }
 
 

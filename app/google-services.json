@@ -1,33 +1,33 @@
 {
   "project_info": {
-    "project_number": "881815860905",
-    "project_id": "beeapp-eb382",
-    "storage_bucket": "beeapp-eb382.appspot.com"
+    "project_number": "991921169196",
+    "project_id": "bee-flo",
+    "storage_bucket": "bee-flo.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:881815860905:android:6a1394157d945736b35bb8",
+        "mobilesdk_app_id": "1:991921169196:android:6f998e885095253b960289",
         "android_client_info": {
           "package_name": "com.project.beeapp"
         }
       },
       "oauth_client": [
         {
-          "client_id": "881815860905-t41odg25odlekus4om2fimrrieec1s7u.apps.googleusercontent.com",
+          "client_id": "991921169196-t7vniqvpmhbttposl94rhlih1nhg04fe.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyAHj9UoaSeYcV9IAMUXlOIzFhAwrgMlIAc"
+          "current_key": "AIzaSyBbycMgiDAii1cVs_nqlRYYmG311ymbUyY"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "881815860905-t41odg25odlekus4om2fimrrieec1s7u.apps.googleusercontent.com",
+              "client_id": "991921169196-t7vniqvpmhbttposl94rhlih1nhg04fe.apps.googleusercontent.com",
               "client_type": 3
             }
           ]

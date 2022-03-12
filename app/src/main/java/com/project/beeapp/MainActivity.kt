@@ -65,27 +65,62 @@ class MainActivity : AppCompatActivity() {
                 /// jika terdaftar maka ambil email di database, kemudian lakukan autentikasi menggunakan email & password dari user
                 for (snapshot in task.result) {
                     val email = "" + snapshot["email"]
+                    val status = "" + snapshot["status"]
+                    val role = "" + snapshot["role"]
+                    val auth = FirebaseAuth.getInstance()
 
-                    /// fungsi untuk mengecek, apakah email yang di inputkan ketika login sudah terdaftar di database atau belum
-                    FirebaseAuth
-                        .getInstance()
-                        .signInWithEmailAndPassword(email, password)
-                        .addOnCompleteListener { task2 ->
-                            if (task2.isSuccessful) {
-                                /// jika terdapat di database dan email serta password sama, maka masuk ke homepage
+                    if(role != "driver"){
+                        authUser(email, password)
+                    } else {
+                        when (status) {
+                            "Aktif" -> {
+                                authUser(email, password)
+                            }
+                            "Menunggu" -> {
                                 binding?.progressBar?.visibility = View.GONE
-                                startActivity(Intent(this, HomeActivity::class.java))
-                            } else {
-                                /// jika tidak terdapat di database dan email serta password, maka tidak bisa login
+                                auth.signOut()
+                                showDriverStatusDialog("Akun Belum Diverifikasi", "Terima kasih telah bergabung menjadi mitra BeeFlo, Admin BeeFlo sedang memverifikasi pendaftaran akun anda, silahkan menunggu\n\nTerima Kasih")
+                            }
+                            "Blokir" -> {
                                 binding?.progressBar?.visibility = View.GONE
-                                showFailureDialog()
+                                auth.signOut()
+                                showDriverStatusDialog("Akun Dibekukan", "Mohon maaf, akun anda di bekukan beberapa saat karena terindikasi melakukan tindak kecurangan\n\nSilahkan hubungi contact person BeeFlo untuk menindaklanjuti permasalahan ini\n\nTerima kasih")
+                            }
+                            "PHK" -> {
+                                binding?.progressBar?.visibility = View.GONE
+                                auth.signOut()
+                                showDriverStatusDialog("Akun Dibekukan Selamanya", "Maaf, akun anda dibekukan selamanya karena terbukri melakukan beberapa kecurangan\n\nTerima Kasih.")
+                            }
+                            "Ditolak" -> {
+                                binding?.progressBar?.visibility = View.GONE
+                                auth.signOut()
+                                showDriverStatusDialog("Pendaftaran Anda Ditolak", "Maaf, informasi yang anda masukkan ketika pendaftaran tidak sesuai dengan kriteria driver BeeFlo\n\nDengan berat hati kami meolak pendaftaran anda.")
                             }
                         }
+                    }
+
                 }
             })
 
     }
 
+    private fun authUser(email: String, password: String) {
+        /// fungsi untuk mengecek, apakah email yang di inputkan ketika login sudah terdaftar di database atau belum
+        FirebaseAuth
+            .getInstance()
+            .signInWithEmailAndPassword(email, password)
+            .addOnCompleteListener { task2 ->
+                if (task2.isSuccessful) {
+                    /// jika terdapat di database dan email serta password sama, maka masuk ke homepage
+                    binding?.progressBar?.visibility = View.GONE
+                    startActivity(Intent(this, HomeActivity::class.java))
+                } else {
+                    /// jika tidak terdapat di database dan email serta password, maka tidak bisa login
+                    binding?.progressBar?.visibility = View.GONE
+                    showFailureDialog()
+                }
+            }
+    }
 
 
     private fun autoLogin() {
@@ -101,6 +136,15 @@ class MainActivity : AppCompatActivity() {
             .setTitle("Gagal melakukan login")
             .setMessage("Silahkan login kembali dengan informasi yang benar")
             .setIcon(R.drawable.ic_baseline_clear_24)
+            .setPositiveButton("OKE") { dialogInterface, _ -> dialogInterface.dismiss() }
+            .show()
+    }
+
+    private fun showDriverStatusDialog(title: String, message: String) {
+        AlertDialog.Builder(this)
+            .setTitle(title)
+            .setMessage(message)
+            .setIcon(R.drawable.ic_baseline_warning_24)
             .setPositiveButton("OKE") { dialogInterface, _ -> dialogInterface.dismiss() }
             .show()
     }

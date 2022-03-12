@@ -16,6 +16,9 @@ class BeeWashEditActivity : AppCompatActivity() {
         binding = ActivityBeeWashEditBinding.inflate(layoutInflater)
         setContentView(binding?.root)
 
+        binding?.priceBike?.setText(intent.getStringExtra(EXTRA_BIKE))
+        binding?.priceCar?.setText(intent.getStringExtra(EXTRA_BIKE))
+
         binding?.backButton?.setOnClickListener {
             onBackPressed()
         }
@@ -45,8 +48,8 @@ class BeeWashEditActivity : AppCompatActivity() {
         FirebaseFirestore
             .getInstance()
             .collection("pricing")
-            .document("pricing")
-            .update(data)
+            .document("beeWash")
+            .set(data)
             .addOnCompleteListener {
                 if(it.isSuccessful) {
                     Toast.makeText(this, "Berhasil menyimpan harga", Toast.LENGTH_SHORT).show()
@@ -61,5 +64,10 @@ class BeeWashEditActivity : AppCompatActivity() {
     override fun onDestroy() {
         super.onDestroy()
         binding = null
+    }
+
+    companion object {
+        const val EXTRA_CAR = "car"
+        const val EXTRA_BIKE = "bike"
     }
 }

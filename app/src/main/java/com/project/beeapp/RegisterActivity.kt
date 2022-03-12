@@ -1,5 +1,8 @@
 package com.project.beeapp
 
+import android.app.ProgressDialog
+import android.content.Intent
+import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
@@ -19,7 +22,10 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import androidx.appcompat.app.AlertDialog
+import com.bumptech.glide.Glide
+import com.github.dhaval2404.imagepicker.ImagePicker
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.storage.FirebaseStorage
 
 
 class RegisterActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
@@ -34,7 +40,10 @@ class RegisterActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener
     private var listIdKel    = ArrayList<Int>()
     private var listNameKel  = ArrayList<String>()
 
+    private var dp: String? = null
+    private val REQUEST_FROM_GALLERY = 1001
     private var role : String? = null
+    private lateinit var status: String
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -47,6 +56,15 @@ class RegisterActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener
         binding?.registerBtn?.setOnClickListener {
             formValidation()
         }
+
+        // KLIK TAMBAH GAMBAR
+        binding?.imageHint?.setOnClickListener {
+            ImagePicker.with(this)
+                .galleryOnly()
+                .compress(1024)
+                .start(REQUEST_FROM_GALLERY);
+        }
+
 
     }
 
@@ -79,6 +97,10 @@ class RegisterActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener
                 Toast.makeText(this, "Anda ingin mendaftar sebagai kustomer atau sebagai mitra/driver ?, silahkan pilih", Toast.LENGTH_SHORT).show()
                 return
             }
+            role == "mitra" && dp == null -> {
+                Toast.makeText(this, "Silahkan unggah foto formal anda", Toast.LENGTH_SHORT).show()
+                return
+            }
         }
 
         binding?.progressBar?.visibility = View.VISIBLE
@@ -89,6 +111,13 @@ class RegisterActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener
                 if(it.isSuccessful) {
 
                     val userId = FirebaseAuth.getInstance().currentUser!!.uid
+
+                    status = if(role == "driver") {
+                        "Menunggu"
+                    } else {
+                        "user"
+                    }
+
                     val data = mapOf(
                         "uid" to userId,
                         "username" to username,
@@ -102,7 +131,8 @@ class RegisterActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener
                         "locKelurahan" to binding?.kelurahan?.selectedItem.toString(),
                         "fullname" to ""+fullname,
                         "npwp" to ""+npwp,
-
+                        "image" to ""+dp,
+                        "status" to status,
                     )
 
                     FirebaseFirestore
@@ -303,13 +333,64 @@ class RegisterActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener
     private fun showSuccessDialog() {
         AlertDialog.Builder(this)
             .setTitle("Berhasil melakukan registrasi")
-            .setMessage("Silahkan login")
+            .setMessage("Admin akan memverifikasi pendaftaran anda, silahkan menunggu beberapa hari kedepan")
             .setIcon(R.drawable.ic_baseline_check_circle_outline_24)
             .setPositiveButton("OKE") { dialogInterface, _ ->
                 dialogInterface.dismiss()
                 onBackPressed()
             }
             .show()
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (resultCode == RESULT_OK) {
+            if (requestCode == REQUEST_FROM_GALLERY) {
+                uploadArticleDp(data?.data)
+            }
+        }
+    }
+
+
+    /// fungsi untuk mengupload foto kedalam cloud storage
+    private fun uploadArticleDp(data: Uri?) {
+        val mStorageRef = FirebaseStorage.getInstance().reference
+        val mProgressDialog = ProgressDialog(this)
+        mProgressDialog.setMessage("Mohon tunggu hingga proses selesai...")
+        mProgressDialog.setCanceledOnTouchOutside(false)
+        mProgressDialog.show()
+        val imageFileName = "driver/image_" + System.currentTimeMillis() + ".png"
+        mStorageRef.child(imageFileName).putFile(data!!)
+            .addOnSuccessListener {
+                mStorageRef.child(imageFileName).downloadUrl
+                    .addOnSuccessListener { uri: Uri ->
+                        mProgressDialog.dismiss()
+                        dp = uri.toString()
+                        Glide
+                            .with(this)
+                            .load(dp)
+                            .into(binding!!.image)
+                    }
+                    .addOnFailureListener { e: Exception ->
+                        mProgressDialog.dismiss()
+                        Toast.makeText(
+                            this,
+                            "Gagal mengunggah gambar",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                        Log.d("imageDp: ", e.toString())
+                    }
+            }
+            .addOnFailureListener { e: Exception ->
+                mProgressDialog.dismiss()
+                Toast.makeText(
+                    this,
+                    "Gagal mengunggah gambar",
+                    Toast.LENGTH_SHORT
+                )
+                    .show()
+                Log.d("imageDp: ", e.toString())
+            }
     }
 
     /// HAPUSKAN ACTIVITY KETIKA SUDAH TIDAK DIGUNAKAN, AGAR MENGURANGI RISIKO MEMORY LEAKS

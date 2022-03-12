@@ -76,7 +76,7 @@ class OrderPickFragment : Fragment() {
         if(role == "user" || role == "admin") {
             viewModel.setListOrderProcessByPick(myUID)
         } else {
-            viewModel.setListOrderProcessByDriver(driverLocKecamatan, driverLocKelurahan)
+            viewModel.setListOrderProcessByDriver(driverLocKecamatan)
         }
         viewModel.getOrderList().observe(this) { orderFinish ->
             if (orderFinish.size > 0) {

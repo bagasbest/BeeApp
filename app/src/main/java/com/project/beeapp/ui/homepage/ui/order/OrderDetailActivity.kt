@@ -20,6 +20,8 @@ import com.project.beeapp.R
 import com.project.beeapp.databinding.ActivityOrderDetailBinding
 import java.text.DecimalFormat
 import java.text.NumberFormat
+import java.text.SimpleDateFormat
+import java.util.*
 
 class OrderDetailActivity : AppCompatActivity() {
 
@@ -50,6 +52,7 @@ class OrderDetailActivity : AppCompatActivity() {
         binding?.kelurahan?.text = model?.kelurahan
         binding?.orderType?.text = "x${model?.qty}      ${model?.orderType} ${model?.option}"
         binding?.status?.text = model?.status
+        binding?.address?.text = model?.address
         binding?.priceTotal?.text = "Rp.${nominalCurrency.format(model?.priceTotal)}"
 
         if(model?.paymentProof != "") {
@@ -78,22 +81,16 @@ class OrderDetailActivity : AppCompatActivity() {
 
         if(model?.status != "Menunggu") {
             binding?.noData?.visibility = View.GONE
-            binding?.constraintLayout?.visibility = View.VISIBLE
             binding?.payment?.visibility = View.VISIBLE
-
-            Glide.with(this)
-                .load(model?.driverImage)
-                .into(binding!!.image)
-
-            binding?.driverName?.text = model?.driverName
-        } else {
-            binding?.rekening?.visibility = View.VISIBLE
         }
 
 
-        if(model?.status == "Belum Bayar") {
+        if(model?.status == "Belum Bayar" || model?.status == "Order Diterima") {
             binding?.imageHint?.visibility = View.VISIBLE
         }
+
+
+
 
         binding?.backButton?.setOnClickListener {
             onBackPressed()
@@ -109,7 +106,7 @@ class OrderDetailActivity : AppCompatActivity() {
 
 
         binding?.orderBtn?.setOnClickListener {
-            if(model?.status == "Menunggu" && role == "user") {
+            if(binding?.orderBtn?.text == "Batalkan Orderan") {
                 AlertDialog.Builder(this)
                     .setTitle("Konfirmasi Batalkan Orderan")
                     .setMessage("Apa kamu yakin ingin membatalkan orderan ini ?")
@@ -120,10 +117,206 @@ class OrderDetailActivity : AppCompatActivity() {
                     }
                     .setNegativeButton("TIDAK", null)
                     .show()
+            } else if (binding?.orderBtn?.text == "Konfirmasi Orderan") {
+                AlertDialog.Builder(this)
+                    .setTitle("Konfirmasi Orderan")
+                    .setMessage("Apa kamu yakin ingin mengongfirmasi orderan ini ?")
+                    .setIcon(R.drawable.ic_baseline_warning_24)
+                    .setPositiveButton("YA") { dialogInterface,_ ->
+                        dialogInterface.dismiss()
+                        confirmOrderAsDriver()
+                    }
+                    .setNegativeButton("TIDAK", null)
+                    .show()
             }
         }
 
 
+        binding?.phoneCall?.setOnClickListener {
+            val intent = Intent(Intent.ACTION_CALL, Uri.parse("tel:" + model?.driverNumber))
+            startActivity(intent)
+        }
+
+        binding?.acc?.setOnClickListener {
+            if(binding?.status?.text.toString() == "Order Diterima") {
+                accPaymentDialog()
+            } else if (binding?.status?.text.toString() == "Sudah Bayar"){
+                finishOrderDialog()
+            }
+        }
+
+        binding?.decline?.setOnClickListener {
+            AlertDialog.Builder(this)
+                .setTitle("Konfirmasi Batalkan Orderan")
+                .setMessage("Apa kamu yakin ingin membatalkan orderan ini ?")
+                .setIcon(R.drawable.ic_baseline_warning_24)
+                .setPositiveButton("YA") { dialogInterface,_ ->
+                    dialogInterface.dismiss()
+                    cancelOrder()
+                }
+                .setNegativeButton("TIDAK", null)
+                .show()
+        }
+
+    }
+
+    private fun accPaymentDialog() {
+        AlertDialog.Builder(this)
+            .setTitle("Konfirmasi Menerima Pembayaran")
+            .setMessage("Apa kamu yakin sudah menerima transfer dari kustomer ini ?")
+            .setIcon(R.drawable.ic_baseline_warning_24)
+            .setPositiveButton("YA") { dialogInterface,_ ->
+                dialogInterface.dismiss()
+                accPayment()
+            }
+            .setNegativeButton("TIDAK", null)
+            .show()
+    }
+
+    @SuppressLint("SetTextI18n")
+    private fun accPayment() {
+        FirebaseFirestore
+            .getInstance()
+            .collection("order")
+            .document(model?.orderId!!)
+            .update("status", "Sudah Bayar")
+            .addOnCompleteListener {
+                if(it.isSuccessful) {
+                    binding?.acc?.visibility = View.GONE
+                    binding?.decline?.visibility = View.GONE
+                    binding?.status?.text = "Sudah Bayar"
+                    binding?.bgStatus?.backgroundTintList = ContextCompat.getColorStateList(this, android.R.color.holo_green_dark)
+
+                    showSuccessDialog("Sukses Menerima Pembayaran", "Status order ini berubah menjadi Sudah Bayar.")
+                } else {
+                    showFailureDialog("Gagal Menerima Pembayaran")
+                }
+            }
+    }
+
+    private fun showFailureDialog(title: String) {
+        AlertDialog.Builder(this)
+            .setTitle(title)
+            .setMessage("Mohon periksa koneksi internet anda dan coba lagi nanti")
+            .setIcon(R.drawable.ic_baseline_clear_24)
+            .setPositiveButton("OKE") { dialogInterface, _ ->
+                dialogInterface.dismiss()
+            }
+            .show()
+    }
+
+    private fun showSuccessDialog(title: String, message: String) {
+        AlertDialog.Builder(this)
+            .setTitle(title)
+            .setMessage(message)
+            .setIcon(R.drawable.ic_baseline_check_circle_outline_24)
+            .setPositiveButton("OKE") { dialogInterface, _ ->
+                dialogInterface.dismiss()
+            }
+            .show()
+    }
+
+    @SuppressLint("SetTextI18n", "SimpleDateFormat")
+    private fun finishOrderDialog() {
+
+        val mProgressDialog = ProgressDialog(this)
+        mProgressDialog.setMessage("Mohon tunggu hingga proses selesai...")
+        mProgressDialog.setCanceledOnTouchOutside(false)
+        mProgressDialog.show()
+
+        FirebaseFirestore
+            .getInstance()
+            .collection("order")
+            .document(model?.orderId!!)
+            .update("status", "Selesai")
+            .addOnCompleteListener {
+                if(it.isSuccessful) {
+                    binding?.acc?.visibility = View.GONE
+                    binding?.status?.text = "Selesai"
+                    binding?.bgStatus?.backgroundTintList = ContextCompat.getColorStateList(this, R.color.purple_500)
+
+                    val df = SimpleDateFormat("dd-MMM-yyyy, HH:mm:ss")
+                    val dateFinish: String = df.format(Date())
+
+                    val income = model?.priceTotal?.minus((model?.priceTotal?.times(0.2)!!))
+
+                    val data = mapOf(
+                        "orderId" to model?.orderId,
+                        "partnerId" to model?.driverId,
+                        "orderType" to model?.orderType,
+                        "date" to dateFinish,
+                        "dateTimeInMillis" to System.currentTimeMillis(),
+                        "income" to income?.toLong(),
+                    )
+
+                    FirebaseFirestore
+                        .getInstance()
+                        .collection("income")
+                        .document(model?.orderId!!)
+                        .set(data)
+                        .addOnCompleteListener { task ->
+                            if(task.isSuccessful) {
+                                mProgressDialog.dismiss()
+                                showSuccessDialog("Sukses Menyelesaikan Orderan", "Anda memperoleh pendapatan dari orderan ini, silahkan cek navigasi beranda")
+                            } else {
+                                mProgressDialog.dismiss()
+                                showFailureDialog("Gagal Menyelesaikan Orderan")
+                            }
+                        }
+
+                } else {
+                    mProgressDialog.dismiss()
+                    showFailureDialog("Gagal Menyelesaikan Orderan")
+                }
+            }
+    }
+
+    private fun confirmOrderAsDriver() {
+        val mProgressDialog = ProgressDialog(this)
+        mProgressDialog.setMessage("Mohon tunggu hingga proses selesai...")
+        mProgressDialog.setCanceledOnTouchOutside(false)
+        mProgressDialog.show()
+
+        val uid = FirebaseAuth.getInstance().currentUser!!.uid
+        FirebaseFirestore
+            .getInstance()
+            .collection("users")
+            .document(uid)
+            .get()
+            .addOnSuccessListener {
+                val name = "" + it.data?.get("fullname")
+                val phone = "" + it.data?.get("phone")
+                val image = "" + it.data?.get("image")
+
+                val data = mapOf(
+                    "driverId" to uid,
+                    "driverImage" to image,
+                    "driverName" to name,
+                    "driverNumber" to phone,
+                    "status" to "Order Diterima"
+                )
+
+
+                model?.orderId?.let { it1 ->
+                    FirebaseFirestore
+                        .getInstance()
+                        .collection("order")
+                        .document(it1)
+                        .update(data)
+                        .addOnCompleteListener { task ->
+                            if(task.isSuccessful) {
+                                mProgressDialog.dismiss()
+                                Toast.makeText(this, "Anda menerima order ini", Toast.LENGTH_SHORT).show()
+                                onBackPressed()
+                            } else {
+                                mProgressDialog.dismiss()
+                                Toast.makeText(this, "Upps, gagal menerima order ini, silahkan periksa koneksi internet anda", Toast.LENGTH_SHORT).show()
+                            }
+                        }
+                }
+
+
+            }
     }
 
     @SuppressLint("SetTextI18n")
@@ -141,11 +334,43 @@ class OrderDetailActivity : AppCompatActivity() {
                     if(model?.status == "Menunggu") {
                         binding?.orderBtn?.visibility = View.VISIBLE
                         binding?.orderBtn?.text = "Konfirmasi Orderan"
+                    } else if (model?.status == "Sudah Bayar") {
+                        binding?.acc?.visibility = View.VISIBLE
                     }
                 } else if(role == "user") {
                     if(model?.status == "Menunggu") {
                         binding?.orderBtn?.visibility = View.VISIBLE
                         binding?.orderBtn?.text = "Batalkan Orderan"
+                        binding?.rekening?.visibility = View.VISIBLE
+                        binding?.payment?.visibility = View.VISIBLE
+
+                    } else {
+                        binding?.constraintLayout?.visibility = View.VISIBLE
+
+                        Glide.with(this)
+                            .load(model?.driverImage)
+                            .into(binding!!.image)
+
+                        binding?.driverName?.text = model?.driverName
+                    }
+                } else if (role == "admin") {
+                    if(model?.status == "Menunggu") {
+                        binding?.orderBtn?.visibility = View.VISIBLE
+                        binding?.orderBtn?.text = "Batalkan Orderan"
+                        binding?.rekening?.visibility = View.VISIBLE
+                        binding?.payment?.visibility = View.VISIBLE
+
+                    } else if(model?.status == "Order Diterima") {
+                        binding?.acc?.visibility = View.VISIBLE
+                        binding?.decline?.visibility = View.VISIBLE
+                    } else {
+                        binding?.constraintLayout?.visibility = View.VISIBLE
+
+                        Glide.with(this)
+                            .load(model?.driverImage)
+                            .into(binding!!.image)
+
+                        binding?.driverName?.text = model?.driverName
                     }
                 }
             }

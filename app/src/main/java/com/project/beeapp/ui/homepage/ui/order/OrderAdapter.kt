@@ -55,6 +55,8 @@ class OrderAdapter : RecyclerView.Adapter<OrderAdapter.ViewHolder>() {
                     }
                 }
 
+                
+
                 cv.setOnClickListener {
                     val intent = Intent(itemView.context, OrderDetailActivity::class.java)
                     intent.putExtra(OrderDetailActivity.EXTRA_ORDER, orderModel)
