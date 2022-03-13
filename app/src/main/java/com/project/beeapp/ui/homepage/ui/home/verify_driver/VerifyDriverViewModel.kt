@@ -20,7 +20,6 @@ class VerifyDriverViewModel : ViewModel() {
         try {
             FirebaseFirestore.getInstance().collection("users")
                 .whereEqualTo("role", "driver")
-                .orderBy("status", Query.Direction.ASCENDING)
                 .get()
                 .addOnSuccessListener { documents ->
                     for (document in documents) {

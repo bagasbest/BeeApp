@@ -12,6 +12,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.BeeApp">
         <activity
+            android:name=".ui.homepage.ui.home.akumulasi_pendapatan_mitra.AccumulatePartnerOrderDetailActivity"
+            android:exported="false" />
+        <activity
             android:name=".ui.homepage.ui.home.akumulasi_pendapatan_mitra.AccumulatePartnerOrderActivity"
             android:exported="false" />
         <activity

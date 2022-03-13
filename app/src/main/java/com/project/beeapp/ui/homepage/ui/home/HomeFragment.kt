@@ -16,13 +16,21 @@ import com.project.beeapp.MainActivity
 import com.project.beeapp.R
 import com.project.beeapp.databinding.FragmentHomeBinding
 import com.project.beeapp.ui.homepage.ui.home.income.IncomeAdapter
+import com.project.beeapp.ui.homepage.ui.home.income.IncomeModel
 import com.project.beeapp.ui.homepage.ui.home.income.IncomeViewModel
+import java.text.DecimalFormat
+import java.text.NumberFormat
+import java.text.SimpleDateFormat
+import java.util.*
+import kotlin.collections.ArrayList
 
 class HomeFragment : Fragment() {
 
 
     private var _binding: FragmentHomeBinding? = null
     private lateinit var incomeAdapter: IncomeAdapter
+    private val nominalCurrency: NumberFormat = DecimalFormat("#,###")
+    private val user = FirebaseAuth.getInstance().currentUser
 
     // This property is only valid between onCreateView and
     // onDestroyView.
@@ -59,6 +67,8 @@ class HomeFragment : Fragment() {
                         initRecyclerView()
                         initViewModel()
 
+
+
                     }
                 }
             }
@@ -80,11 +90,69 @@ class HomeFragment : Fragment() {
             if (income.size > 0) {
                 incomeAdapter.setData(income)
                 binding.noData.visibility = View.GONE
+
+                getTotalIncome(income)
+                getMonthlyIncome()
+                getDailyIncome()
             } else {
                 binding.noData.visibility = View.VISIBLE
             }
             binding.progressBarDriver.visibility = View.GONE
         }
+    }
+
+    @SuppressLint("SetTextI18n", "SimpleDateFormat")
+    private fun getDailyIncome() {
+        val df = SimpleDateFormat("dd-MMM-yyyy")
+        val currentDay: String = df.format(Date())
+
+
+        FirebaseFirestore
+            .getInstance()
+            .collection("income")
+            .whereEqualTo("partnerId", user!!.uid)
+            .whereEqualTo("date", currentDay)
+            .get()
+            .addOnSuccessListener { documents ->
+                var dailyIncome = 0L
+                for(document in documents) {
+                    dailyIncome += document.data["income"] as Long
+                }
+
+                binding.daily.text = "Hari ini: Rp.${nominalCurrency.format(dailyIncome)}"
+            }
+    }
+
+    @SuppressLint("SimpleDateFormat", "SetTextI18n")
+    private fun getMonthlyIncome() {
+        val df = SimpleDateFormat("MM")
+        val currentMonth: String = df.format(Date())
+
+
+        FirebaseFirestore
+            .getInstance()
+            .collection("income")
+            .whereEqualTo("partnerId", user!!.uid)
+            .whereEqualTo("month", currentMonth)
+            .get()
+            .addOnSuccessListener { documents ->
+                var monthlyIncome = 0L
+                for(document in documents) {
+                    monthlyIncome += document.data["income"] as Long
+                }
+
+                binding.monthly.text = "Bulan ini: Rp.${nominalCurrency.format(monthlyIncome)}"
+            }
+    }
+
+    @SuppressLint("SetTextI18n")
+    private fun getTotalIncome(income: ArrayList<IncomeModel>) {
+        var incomeTotal = 0L
+        for(i in income.indices) {
+            incomeTotal += income[i].income!!
+        }
+
+        binding.total.text = "Total: Rp.${nominalCurrency.format(incomeTotal)}"
     }
 
     override fun onCreateView(

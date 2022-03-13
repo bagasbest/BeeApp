@@ -337,7 +337,7 @@
         android:layout_marginStart="16sp"
         android:layout_marginTop="16sp"
         android:id="@+id/driverRole"
-        android:visibility="visible"
+        android:visibility="gone"
         android:layout_marginEnd="16sp"
         android:orientation="vertical"
         android:layout_marginBottom="72dp"
@@ -354,11 +354,11 @@
             android:textStyle="bold" />
 
         <TextView
-            android:id="@+id/weekly"
+            android:id="@+id/daily"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
-            android:text="Pekan ini: "
+            android:text="Hari ini: "
             android:textColor="@color/black" />
 
         <TextView

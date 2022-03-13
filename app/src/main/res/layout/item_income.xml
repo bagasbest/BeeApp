@@ -37,15 +37,24 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/orderType" />
 
-
         <TextView
-            android:layout_width="wrap_content"
+            android:id="@+id/date"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Pendapatan bersih"
-            android:layout_marginTop="16sp"
+            android:text="Date: 19 MAY 2021, 19:00:00"
             android:textColor="@color/black"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/orderId" />
+
+        <TextView
+            android:id="@+id/textView27"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16sp"
+            android:text="Pendapatan bersih"
+            android:textColor="@color/black"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/date" />
 
         <TextView
             android:id="@+id/price"
@@ -57,7 +66,7 @@
             android:layout_marginTop="16sp"
             android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="@+id/orderId"
-            app:layout_constraintTop_toBottomOf="@+id/orderId" />
+            app:layout_constraintTop_toBottomOf="@+id/date" />
 
 
 

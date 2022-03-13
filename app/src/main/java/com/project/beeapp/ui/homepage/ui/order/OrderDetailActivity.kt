@@ -235,8 +235,15 @@ class OrderDetailActivity : AppCompatActivity() {
                     binding?.status?.text = "Selesai"
                     binding?.bgStatus?.backgroundTintList = ContextCompat.getColorStateList(this, R.color.purple_500)
 
-                    val df = SimpleDateFormat("dd-MMM-yyyy, HH:mm:ss")
+                    val df = SimpleDateFormat("dd-MMM-yyyy")
                     val dateFinish: String = df.format(Date())
+
+                    val df2= SimpleDateFormat("MM")
+                    val month: String = df2.format(Date())
+
+
+                    val df3= SimpleDateFormat("yyyy")
+                    val year: String = df3.format(Date())
 
                     val income = model?.priceTotal?.minus((model?.priceTotal?.times(0.2)!!))
 
@@ -247,6 +254,8 @@ class OrderDetailActivity : AppCompatActivity() {
                         "date" to dateFinish,
                         "dateTimeInMillis" to System.currentTimeMillis(),
                         "income" to income?.toLong(),
+                        "month" to month,
+                        "year" to year,
                     )
 
                     FirebaseFirestore

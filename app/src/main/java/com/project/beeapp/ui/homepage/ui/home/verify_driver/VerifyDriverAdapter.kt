@@ -10,10 +10,11 @@ import com.bumptech.glide.Glide
 import com.project.beeapp.R
 import com.project.beeapp.databinding.ItemOrderBinding
 import com.project.beeapp.databinding.ItemVerifyDriverBinding
+import com.project.beeapp.ui.homepage.ui.home.akumulasi_pendapatan_mitra.AccumulatePartnerOrderDetailActivity
 import com.project.beeapp.ui.homepage.ui.order.OrderDetailActivity
 import com.project.beeapp.ui.homepage.ui.order.OrderModel
 
-class VerifyDriverAdapter : RecyclerView.Adapter<VerifyDriverAdapter.ViewHolder>() {
+class VerifyDriverAdapter(private val option: String) : RecyclerView.Adapter<VerifyDriverAdapter.ViewHolder>() {
 
 
     private val driverList = ArrayList<VerifyDriverModel>()
@@ -57,12 +58,21 @@ class VerifyDriverAdapter : RecyclerView.Adapter<VerifyDriverAdapter.ViewHolder>
                 }
 
 
-
-                cv.setOnClickListener {
-                    val intent = Intent(itemView.context, VerifyDriverDetailActivity::class.java)
-                    intent.putExtra(VerifyDriverDetailActivity.EXTRA_DRIVER, model)
-                    itemView.context.startActivity(intent)
+                if(option == "verify") {
+                    cv.setOnClickListener {
+                        val intent = Intent(itemView.context, VerifyDriverDetailActivity::class.java)
+                        intent.putExtra(VerifyDriverDetailActivity.EXTRA_DRIVER, model)
+                        itemView.context.startActivity(intent)
+                    }
+                } else {
+                    cv.setOnClickListener {
+                        val intent = Intent(itemView.context, AccumulatePartnerOrderDetailActivity::class.java)
+                        intent.putExtra(AccumulatePartnerOrderDetailActivity.EXTRA_DRIVER, model)
+                        itemView.context.startActivity(intent)
+                    }
                 }
+
+
 
             }
         }

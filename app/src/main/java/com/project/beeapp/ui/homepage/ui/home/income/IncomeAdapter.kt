@@ -27,6 +27,7 @@ class IncomeAdapter : RecyclerView.Adapter<IncomeAdapter.ViewHolder>() {
             with(binding) {
                 orderType.text = model.orderType
                 orderId.text = "Order ID: ${model.orderId}"
+                date.text = "Date: ${model.date}"
                 price.text = "Rp.${nominalCurrency.format(model.income)}"
 
                 }

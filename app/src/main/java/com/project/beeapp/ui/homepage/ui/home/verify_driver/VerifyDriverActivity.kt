@@ -20,7 +20,7 @@ class VerifyDriverActivity : AppCompatActivity() {
 
     private fun initRecyclerView() {
         binding?.rvOrderProcess?.layoutManager = LinearLayoutManager(this)
-        adapter = VerifyDriverAdapter()
+        adapter = VerifyDriverAdapter("verify")
         binding?.rvOrderProcess?.adapter = adapter
     }
 
