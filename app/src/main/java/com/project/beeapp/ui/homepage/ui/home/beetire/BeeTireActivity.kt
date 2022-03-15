@@ -1,4 +1,4 @@
-package com.project.beeapp.ui.homepage.ui.home
+package com.project.beeapp.ui.homepage.ui.home.beetire
 
 import android.annotation.SuppressLint
 import android.app.ProgressDialog
@@ -13,15 +13,17 @@ import androidx.appcompat.app.AlertDialog
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.project.beeapp.R
-import com.project.beeapp.databinding.ActivityBeeWashBinding
+import com.project.beeapp.databinding.ActivityBeeTireBinding
+import com.project.beeapp.ui.homepage.ui.home.beewash.BeeWashEditActivity
 import java.text.DecimalFormat
 import java.text.NumberFormat
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.concurrent.schedule
 
-class BeeWashActivity : AppCompatActivity() {
-    private var binding: ActivityBeeWashBinding? = null
+class BeeTireActivity : AppCompatActivity() {
+
+    private var binding: ActivityBeeTireBinding? = null
     private var option: String? = null
     private val myUid = FirebaseAuth.getInstance().currentUser!!.uid
     private var provinsi: String? = null
@@ -35,8 +37,9 @@ class BeeWashActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ActivityBeeWashBinding.inflate(layoutInflater)
+        binding = ActivityBeeTireBinding.inflate(layoutInflater)
         setContentView(binding?.root)
+
         val format: NumberFormat = DecimalFormat("#,###")
 
 
@@ -73,13 +76,13 @@ class BeeWashActivity : AppCompatActivity() {
 
         binding?.view13?.setOnClickListener {
             option = "bike"
-            Toast.makeText(this, "Memilih mencuci motor", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "Memilih menambal ban motor", Toast.LENGTH_SHORT).show()
             binding?.qty?.setText("")
         }
 
         binding?.view14?.setOnClickListener {
             option = "car"
-            Toast.makeText(this, "Memilih mencuci mobil", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "Memilih menambal ban mobil", Toast.LENGTH_SHORT).show()
             binding?.qty?.setText("")
         }
 
@@ -91,17 +94,18 @@ class BeeWashActivity : AppCompatActivity() {
             val intent = Intent (this, BeeWashEditActivity::class.java)
             intent.putExtra(BeeWashEditActivity.EXTRA_CAR, priceCar.toString())
             intent.putExtra(BeeWashEditActivity.EXTRA_BIKE, priceBike.toString())
+            intent.putExtra(BeeWashEditActivity.OPTION, "beeTire")
             startActivity(intent)
         }
 
-
     }
+
 
     private fun getPricing() {
         FirebaseFirestore
             .getInstance()
             .collection("pricing")
-            .document("beeWash")
+            .document("beeTire")
             .get()
             .addOnSuccessListener {
                 if(it.exists()) {
@@ -168,7 +172,7 @@ class BeeWashActivity : AppCompatActivity() {
                 "kecamatan" to kecamatan,
                 "kelurahan" to kelurahan,
                 "address" to address,
-                "orderType" to "BeeWash",
+                "orderType" to "BeeTire",
                 "option" to option,
                 "date" to formattedDate,
                 "qty" to qty.toInt(),

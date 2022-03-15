@@ -12,6 +12,15 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.BeeApp">
         <activity
+            android:name=".ui.homepage.ui.home.beefuel.BeeFuelEditActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.homepage.ui.home.beefuel.BeeFuelActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.homepage.ui.home.beetire.BeeTireActivity"
+            android:exported="false" />
+        <activity
             android:name=".ui.homepage.ui.home.akumulasi_pendapatan_mitra.AccumulatePartnerOrderDetailActivity"
             android:exported="false" />
         <activity
@@ -27,13 +36,13 @@
             android:name=".ui.homepage.ui.home.verify_driver.VerifyDriverActivity"
             android:exported="false" />
         <activity
-            android:name=".ui.homepage.ui.home.BeeWashEditActivity"
+            android:name=".ui.homepage.ui.home.beewash.BeeWashEditActivity"
             android:exported="false" />
         <activity
             android:name=".ui.homepage.ui.order.OrderDetailActivity"
             android:exported="false" />
         <activity
-            android:name=".ui.homepage.ui.home.BeeWashActivity"
+            android:name=".ui.homepage.ui.home.beewash.BeeWashActivity"
             android:exported="false" />
         <activity
             android:name=".ui.homepage.HomeActivity"

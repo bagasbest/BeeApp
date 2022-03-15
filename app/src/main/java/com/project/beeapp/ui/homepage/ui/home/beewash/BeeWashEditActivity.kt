@@ -1,10 +1,10 @@
-package com.project.beeapp.ui.homepage.ui.home
+package com.project.beeapp.ui.homepage.ui.home.beewash
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.View
 import android.widget.Toast
 import com.google.firebase.firestore.FirebaseFirestore
-import com.project.beeapp.R
 import com.project.beeapp.databinding.ActivityBeeWashEditBinding
 
 class BeeWashEditActivity : AppCompatActivity() {
@@ -17,7 +17,7 @@ class BeeWashEditActivity : AppCompatActivity() {
         setContentView(binding?.root)
 
         binding?.priceBike?.setText(intent.getStringExtra(EXTRA_BIKE))
-        binding?.priceCar?.setText(intent.getStringExtra(EXTRA_BIKE))
+        binding?.priceCar?.setText(intent.getStringExtra(EXTRA_CAR))
 
         binding?.backButton?.setOnClickListener {
             onBackPressed()
@@ -40,22 +40,28 @@ class BeeWashEditActivity : AppCompatActivity() {
             return
         }
 
+        binding?.progressBar?.visibility = View.VISIBLE
+
         val data = mapOf(
             "car" to car.toLong(),
             "bike" to bike.toLong(),
         )
 
+        val document = intent.getStringExtra(OPTION)
+
         FirebaseFirestore
             .getInstance()
             .collection("pricing")
-            .document("beeWash")
+            .document(document!!)
             .set(data)
             .addOnCompleteListener {
                 if(it.isSuccessful) {
-                    Toast.makeText(this, "Berhasil menyimpan harga", Toast.LENGTH_SHORT).show()
+                    binding?.progressBar?.visibility = View.GONE
+                    Toast.makeText(this, "Berhasil memperbarui harga", Toast.LENGTH_SHORT).show()
                     onBackPressed()
                 } else {
-                    Toast.makeText(this, "Gagal menyimpan harga", Toast.LENGTH_SHORT).show()
+                    binding?.progressBar?.visibility = View.GONE
+                    Toast.makeText(this, "Gagal memperbarui harga", Toast.LENGTH_SHORT).show()
 
                 }
             }
@@ -69,5 +75,6 @@ class BeeWashEditActivity : AppCompatActivity() {
     companion object {
         const val EXTRA_CAR = "car"
         const val EXTRA_BIKE = "bike"
+        const val OPTION = "option"
     }
 }

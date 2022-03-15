@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.homepage.ui.home.beewash.BeeWashActivity">
+    tools:context=".ui.homepage.ui.home.beetire.BeeTireActivity">
 
 
     <ImageButton
@@ -43,7 +43,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:text="Bee Wash"
+        android:text="Bee Tire"
         android:textColor="@color/black"
         android:textSize="18sp"
         android:textStyle="bold"
@@ -69,7 +69,7 @@
         android:layout_marginStart="16sp"
         android:layout_marginTop="16sp"
         android:layout_marginEnd="16dp"
-        android:text="Menyediakan jasa pencucian Motor dan Mmobil, dimana partner BeeFlo yang akan datang ke lokasi anda"
+        android:text="Menyediakan jasa Tambal Ban Motor dan Mobil, dimana partner BeeFlo yang akan datang ke lokasi anda"
         android:textColor="@color/black"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -92,7 +92,7 @@
         android:layout_height="60dp"
         android:scaleType="fitXY"
         app:riv_corner_radius="12sp"
-        android:src="@drawable/motocycle"
+        android:src="@drawable/motorcycle_icon"
         app:layout_constraintBottom_toBottomOf="@+id/view13"
         app:layout_constraintEnd_toEndOf="@+id/view13"
         app:layout_constraintStart_toStartOf="@+id/view13"
@@ -101,7 +101,7 @@
     <com.makeramen.roundedimageview.RoundedImageView
         android:layout_width="60dp"
         android:layout_height="60dp"
-        android:src="@drawable/wash"
+        android:src="@drawable/car_icon"
         android:elevation="1dp"
         app:layout_constraintBottom_toBottomOf="@+id/view13"
         app:layout_constraintEnd_toEndOf="@+id/view14"
@@ -125,7 +125,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
-        android:text="Bee Wash Bike"
+        android:text="Bee Tire Bike"
         android:textColor="@color/black"
         android:textSize="18sp"
         app:layout_constraintEnd_toEndOf="@+id/view13"
@@ -136,7 +136,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
-        android:text="Bee Wash Car"
+        android:text="Bee Tire Car"
         android:textColor="@color/black"
         android:textSize="18sp"
         app:layout_constraintEnd_toEndOf="@+id/view14"
@@ -181,7 +181,7 @@
             android:id="@+id/qty"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Total kendaraan yang ingin dicuci"
+            android:hint="Total kendaraan yang ingin ditambal ban"
             android:inputType="number" />
 
     </com.google.android.material.textfield.TextInputLayout>

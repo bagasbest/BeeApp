@@ -85,7 +85,7 @@ class OrderDetailActivity : AppCompatActivity() {
         }
 
 
-        if(model?.status == "Belum Bayar" || model?.status == "Order Diterima") {
+        if(model?.status == "Menunggu" || model?.status == "Order Diterima") {
             binding?.imageHint?.visibility = View.VISIBLE
         }
 

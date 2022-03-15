@@ -15,6 +15,10 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.project.beeapp.MainActivity
 import com.project.beeapp.R
 import com.project.beeapp.databinding.FragmentHomeBinding
+import com.project.beeapp.ui.homepage.ui.home.beefuel.BeeFuelActivity
+import com.project.beeapp.ui.homepage.ui.home.beefuel.BeeFuelModel
+import com.project.beeapp.ui.homepage.ui.home.beetire.BeeTireActivity
+import com.project.beeapp.ui.homepage.ui.home.beewash.BeeWashActivity
 import com.project.beeapp.ui.homepage.ui.home.income.IncomeAdapter
 import com.project.beeapp.ui.homepage.ui.home.income.IncomeModel
 import com.project.beeapp.ui.homepage.ui.home.income.IncomeViewModel
@@ -203,6 +207,14 @@ class HomeFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         binding.view2.setOnClickListener {
             startActivity(Intent(activity, BeeWashActivity::class.java))
+        }
+
+        binding.view5.setOnClickListener {
+            startActivity(Intent(activity, BeeTireActivity::class.java))
+        }
+
+        binding.view3.setOnClickListener {
+            startActivity(Intent(activity, BeeFuelActivity::class.java))
         }
 
         binding.logout.setOnClickListener {

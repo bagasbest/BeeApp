@@ -14,4 +14,15 @@
         <item>Blokir</item>
         <item>PHK</item>
     </string-array>
+
+
+    <string-array name="fuel_type">
+        <item>Dex</item>
+        <item>Dex Lite</item>
+        <item>Pertalite</item>
+        <item>Pertamax</item>
+        <item>Pertamax Turbo</item>
+        <item>Premium</item>
+        <item>Solar</item>
+    </string-array>
 </resources>

@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.homepage.ui.home.beewash.BeeWashActivity">
+    tools:context=".ui.homepage.ui.home.beefuel.BeeFuelActivity">
 
 
     <ImageButton
@@ -43,7 +43,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:text="Bee Wash"
+        android:text="Bee Fuel"
         android:textColor="@color/black"
         android:textSize="18sp"
         android:textStyle="bold"
@@ -69,79 +69,32 @@
         android:layout_marginStart="16sp"
         android:layout_marginTop="16sp"
         android:layout_marginEnd="16dp"
-        android:text="Menyediakan jasa pencucian Motor dan Mmobil, dimana partner BeeFlo yang akan datang ke lokasi anda"
+        android:text="Menyediakan jasa pengantaran dan pengisian bahan bakar Motor dan Mobil, dimana partner BeeFlo yang akan datang ke lokasi anda"
         android:textColor="@color/black"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/view12" />
 
-    <View
-        android:id="@+id/view13"
-        android:layout_width="75dp"
-        android:layout_height="75dp"
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/textInputLayout12"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
-        android:layout_marginStart="70dp"
-        android:background="@drawable/bg_rounded"
-        android:backgroundTint="@color/purple_500"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView28" />
-
-    <com.makeramen.roundedimageview.RoundedImageView
-        android:id="@+id/imageView2"
-        android:layout_width="60dp"
-        android:layout_height="60dp"
-        android:scaleType="fitXY"
-        app:riv_corner_radius="12sp"
-        android:src="@drawable/motocycle"
-        app:layout_constraintBottom_toBottomOf="@+id/view13"
-        app:layout_constraintEnd_toEndOf="@+id/view13"
-        app:layout_constraintStart_toStartOf="@+id/view13"
-        app:layout_constraintTop_toTopOf="@+id/view13" />
-
-    <com.makeramen.roundedimageview.RoundedImageView
-        android:layout_width="60dp"
-        android:layout_height="60dp"
-        android:src="@drawable/wash"
-        android:elevation="1dp"
-        app:layout_constraintBottom_toBottomOf="@+id/view13"
-        app:layout_constraintEnd_toEndOf="@+id/view14"
-        app:layout_constraintStart_toStartOf="@+id/view14"
-        app:layout_constraintTop_toTopOf="@+id/view13"
-        app:riv_corner_radius="12sp" />
-
-    <View
-        android:id="@+id/view14"
-        android:layout_width="75dp"
-        android:layout_height="75dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginEnd="70dp"
-        android:background="@drawable/bg_rounded"
-        android:backgroundTint="@color/purple_500"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView28" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView28">
 
-    <TextView
-        android:id="@+id/textView4"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:text="Bee Wash Bike"
-        android:textColor="@color/black"
-        android:textSize="18sp"
-        app:layout_constraintEnd_toEndOf="@+id/view13"
-        app:layout_constraintStart_toStartOf="@+id/view13"
-        app:layout_constraintTop_toBottomOf="@+id/view13" />
+        <com.rosemaryapp.amazingspinner.AmazingSpinner
+            android:id="@+id/fuelType"
+            style="@style/Widget.MaterialComponents.AutoCompleteTextView.OutlinedBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Pilih Jenis Bahan Bakar" />
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:text="Bee Wash Car"
-        android:textColor="@color/black"
-        android:textSize="18sp"
-        app:layout_constraintEnd_toEndOf="@+id/view14"
-        app:layout_constraintStart_toStartOf="@+id/view14"
-        app:layout_constraintTop_toBottomOf="@+id/view13" />
+    </com.google.android.material.textfield.TextInputLayout>
 
 
     <com.google.android.material.textfield.TextInputLayout
@@ -150,11 +103,11 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="30dp"
         android:layout_marginEnd="16dp"
         app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="10dp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView4">
+        app:layout_constraintTop_toBottomOf="@+id/textInputLayout12">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/address"
@@ -167,21 +120,22 @@
     </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/textInputLayout11"
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:layout_marginEnd="16dp"
         android:layout_marginTop="10dp"
+        android:layout_marginEnd="16dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textInputLayout">
 
         <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/qty"
+            android:id="@+id/liter"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Total kendaraan yang ingin dicuci"
+            android:hint="Berapa liter yang anda butuhkan ?"
             android:inputType="number" />
 
     </com.google.android.material.textfield.TextInputLayout>

@@ -19,7 +19,7 @@ class OrderViewModel : ViewModel() {
         try {
             FirebaseFirestore.getInstance().collection("order")
                 .whereEqualTo("userId", myUid)
-                .whereNotEqualTo("status", "Selesai")
+                .whereNotIn("status", listOf("Menunggu", "Selesai"))
                 .get()
                 .addOnSuccessListener { documents ->
                     for (document in documents) {
@@ -201,7 +201,7 @@ class OrderViewModel : ViewModel() {
         try {
             FirebaseFirestore.getInstance().collection("order")
                 .whereEqualTo("driverId", myUID)
-                .whereNotEqualTo("status", "Selesai")
+                .whereNotIn("status", listOf("Menunggu", "Selesai"))
                 .get()
                 .addOnSuccessListener { documents ->
                     for (document in documents) {
