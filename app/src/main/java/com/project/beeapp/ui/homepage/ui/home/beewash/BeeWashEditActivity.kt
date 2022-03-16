@@ -1,11 +1,15 @@
 package com.project.beeapp.ui.homepage.ui.home.beewash
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
 import com.google.firebase.firestore.FirebaseFirestore
+import com.project.beeapp.MainActivity
 import com.project.beeapp.databinding.ActivityBeeWashEditBinding
+import com.project.beeapp.ui.homepage.HomeActivity
+import com.project.beeapp.ui.homepage.ui.home.HomeFragment
 
 class BeeWashEditActivity : AppCompatActivity() {
 
@@ -15,6 +19,13 @@ class BeeWashEditActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityBeeWashEditBinding.inflate(layoutInflater)
         setContentView(binding?.root)
+
+        val option = intent.getStringExtra(OPTION);
+        if(option == "beeTire") {
+            binding?.textView5?.text = "Bee Tire Edit Harga"
+            binding?.priceCar?.hint = "Harga Tambal Ban Mobil"
+            binding?.priceBike?.hint = "Harga Tambal Ban Motor"
+        }
 
         binding?.priceBike?.setText(intent.getStringExtra(EXTRA_BIKE))
         binding?.priceCar?.setText(intent.getStringExtra(EXTRA_CAR))
@@ -58,7 +69,10 @@ class BeeWashEditActivity : AppCompatActivity() {
                 if(it.isSuccessful) {
                     binding?.progressBar?.visibility = View.GONE
                     Toast.makeText(this, "Berhasil memperbarui harga", Toast.LENGTH_SHORT).show()
-                    onBackPressed()
+                    val intent = Intent(this, HomeActivity::class.java)
+                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK)
+                    startActivity(intent)
+                    finish()
                 } else {
                     binding?.progressBar?.visibility = View.GONE
                     Toast.makeText(this, "Gagal memperbarui harga", Toast.LENGTH_SHORT).show()

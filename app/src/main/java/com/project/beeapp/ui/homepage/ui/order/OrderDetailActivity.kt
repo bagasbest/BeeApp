@@ -4,12 +4,12 @@ import android.annotation.SuppressLint
 import android.app.ProgressDialog
 import android.content.Intent
 import android.net.Uri
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import com.bumptech.glide.Glide
 import com.github.dhaval2404.imagepicker.ImagePicker
@@ -30,6 +30,7 @@ class OrderDetailActivity : AppCompatActivity() {
     private var role: String? = null
     private var dp: String? = null
     private val REQUEST_FROM_GALLERY = 1001
+    private val uid = FirebaseAuth.getInstance().currentUser!!.uid
 
     @SuppressLint("SetTextI18n")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -56,6 +57,7 @@ class OrderDetailActivity : AppCompatActivity() {
         binding?.priceTotal?.text = "Rp.${nominalCurrency.format(model?.priceTotal)}"
 
         if(model?.paymentProof != "") {
+            binding?.payment?.visibility = View.VISIBLE
             Glide.with(this)
                 .load(model?.paymentProof)
                 .into(binding!!.paymentProof)
@@ -86,7 +88,9 @@ class OrderDetailActivity : AppCompatActivity() {
 
 
         if(model?.status == "Menunggu" || model?.status == "Order Diterima") {
-            binding?.imageHint?.visibility = View.VISIBLE
+            if(model?.userId == uid) {
+                binding?.imageHint?.visibility = View.VISIBLE
+            }
         }
 
 
@@ -133,8 +137,10 @@ class OrderDetailActivity : AppCompatActivity() {
 
 
         binding?.phoneCall?.setOnClickListener {
-            val intent = Intent(Intent.ACTION_CALL, Uri.parse("tel:" + model?.driverNumber))
-            startActivity(intent)
+            if(model?.status == "Sudah Bayar") {
+                val intent = Intent(Intent.ACTION_DIAL, Uri.fromParts("tel", model?.driverNumber, null))
+                startActivity(intent)
+            }
         }
 
         binding?.acc?.setOnClickListener {
@@ -286,7 +292,6 @@ class OrderDetailActivity : AppCompatActivity() {
         mProgressDialog.setCanceledOnTouchOutside(false)
         mProgressDialog.show()
 
-        val uid = FirebaseAuth.getInstance().currentUser!!.uid
         FirebaseFirestore
             .getInstance()
             .collection("users")
@@ -340,11 +345,14 @@ class OrderDetailActivity : AppCompatActivity() {
                role = it.data?.get("role").toString()
 
                 if(role == "driver") {
-                    if(model?.status == "Menunggu") {
-                        binding?.orderBtn?.visibility = View.VISIBLE
-                        binding?.orderBtn?.text = "Konfirmasi Orderan"
-                    } else if (model?.status == "Sudah Bayar") {
-                        binding?.acc?.visibility = View.VISIBLE
+                    when (model?.status) {
+                        "Menunggu" -> {
+                            binding?.orderBtn?.visibility = View.VISIBLE
+                            binding?.orderBtn?.text = "Konfirmasi Orderan"
+                        }
+                        "Sudah Bayar" -> {
+                            binding?.acc?.visibility = View.VISIBLE
+                        }
                     }
                 } else if(role == "user") {
                     if(model?.status == "Menunggu") {
@@ -363,23 +371,35 @@ class OrderDetailActivity : AppCompatActivity() {
                         binding?.driverName?.text = model?.driverName
                     }
                 } else if (role == "admin") {
-                    if(model?.status == "Menunggu") {
-                        binding?.orderBtn?.visibility = View.VISIBLE
-                        binding?.orderBtn?.text = "Batalkan Orderan"
-                        binding?.rekening?.visibility = View.VISIBLE
-                        binding?.payment?.visibility = View.VISIBLE
+                    when (model?.status) {
+                        "Menunggu" -> {
+                            binding?.orderBtn?.visibility = View.VISIBLE
+                            binding?.orderBtn?.text = "Batalkan Orderan"
+                            binding?.rekening?.visibility = View.VISIBLE
+                            binding?.payment?.visibility = View.VISIBLE
+                            binding?.decline?.visibility = View.VISIBLE
+                        }
+                        "Order Diterima" -> {
+                            binding?.acc?.visibility = View.VISIBLE
+                            binding?.decline?.visibility = View.VISIBLE
 
-                    } else if(model?.status == "Order Diterima") {
-                        binding?.acc?.visibility = View.VISIBLE
-                        binding?.decline?.visibility = View.VISIBLE
-                    } else {
-                        binding?.constraintLayout?.visibility = View.VISIBLE
+                            binding?.constraintLayout?.visibility = View.VISIBLE
 
-                        Glide.with(this)
-                            .load(model?.driverImage)
-                            .into(binding!!.image)
+                            Glide.with(this)
+                                .load(model?.driverImage)
+                                .into(binding!!.image)
 
-                        binding?.driverName?.text = model?.driverName
+                            binding?.driverName?.text = model?.driverName
+                        }
+                        else -> {
+                            binding?.constraintLayout?.visibility = View.VISIBLE
+
+                            Glide.with(this)
+                                .load(model?.driverImage)
+                                .into(binding!!.image)
+
+                            binding?.driverName?.text = model?.driverName
+                        }
                     }
                 }
             }

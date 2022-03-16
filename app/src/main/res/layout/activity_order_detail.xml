@@ -461,10 +461,14 @@
 
 
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="match_parent"
             android:id="@+id/payment"
-            android:visibility="gone"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="30dp"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/orderBtn">
 
             <TextView
@@ -497,8 +501,8 @@
                 android:layout_width="80dp"
                 android:layout_height="80dp"
                 android:contentDescription="@string/image"
-                android:visibility="gone"
                 android:src="@drawable/ic_baseline_add_a_photo_24"
+                android:visibility="gone"
                 app:layout_constraintBottom_toBottomOf="@+id/paymentProof"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"

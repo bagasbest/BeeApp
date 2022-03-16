@@ -3,9 +3,14 @@ package com.project.beeapp.ui.homepage.ui.home.akumulasi_pendapatan_mitra
 import android.annotation.SuppressLint
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.View
+import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
 import com.google.firebase.firestore.FirebaseFirestore
 import com.project.beeapp.databinding.ActivityAccumulatePartnerOrderDetailBinding
+import com.project.beeapp.ui.homepage.ui.home.income.IncomeAdapter
+import com.project.beeapp.ui.homepage.ui.home.income.IncomeViewModel
 import com.project.beeapp.ui.homepage.ui.home.verify_driver.VerifyDriverModel
 import java.text.DecimalFormat
 import java.text.NumberFormat
@@ -17,6 +22,7 @@ class AccumulatePartnerOrderDetailActivity : AppCompatActivity() {
     private var binding: ActivityAccumulatePartnerOrderDetailBinding? = null
     private var model: VerifyDriverModel? = null
     private val nominalCurrency: NumberFormat = DecimalFormat("#,###")
+    private lateinit var incomeAdapter: IncomeAdapter
 
     @SuppressLint("SetTextI18n")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -37,10 +43,42 @@ class AccumulatePartnerOrderDetailActivity : AppCompatActivity() {
         binding?.phone?.text = "No.Handphone: ${model?.phone}"
         binding?.npwp?.text = "NPWP: ${model?.npwp}"
 
-        getIncomeTotal()
-        getIncomeMonthly()
-        getIncomeDaily()
+        initRecyclerView()
+        initViewModel()
 
+
+        binding?.backButton?.setOnClickListener {
+            onBackPressed()
+        }
+
+    }
+
+    private fun initRecyclerView() {
+        binding?.rvIncome?.layoutManager = LinearLayoutManager(this)
+        incomeAdapter = IncomeAdapter()
+        binding?.rvIncome?.adapter = incomeAdapter
+    }
+
+    private fun initViewModel() {
+        val viewModel = ViewModelProvider(this)[IncomeViewModel::class.java]
+
+        binding?.progressBarDriver?.visibility = View.VISIBLE
+        model?.uid?.let { viewModel.setListIncome(it) }
+        viewModel.getIncome().observe(this) { income ->
+            if (income.size > 0) {
+                incomeAdapter.setData(income)
+                binding?.noData?.visibility = View.GONE
+
+
+                getIncomeTotal()
+                getIncomeMonthly()
+                getIncomeDaily()
+
+            } else {
+                binding?.noData?.visibility = View.VISIBLE
+            }
+            binding?.progressBarDriver?.visibility = View.GONE
+        }
     }
 
     @SuppressLint("SetTextI18n")
