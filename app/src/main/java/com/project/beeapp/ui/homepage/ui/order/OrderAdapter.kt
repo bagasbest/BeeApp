@@ -27,15 +27,36 @@ class OrderAdapter : RecyclerView.Adapter<OrderAdapter.ViewHolder>() {
         fun bind(orderModel: OrderModel) {
             with(binding) {
 
-                Glide.with(itemView.context)
-                    .load(R.drawable.bee_wash_icon)
-                    .into(image)
+
 
                 orderId.text = "ID Pemesanna: INV-${orderModel.orderId}"
                 customerName.text = "Pemesan: ${orderModel.username}"
                 date.text = "Tanggal: ${orderModel.date}"
                 orderType.text = "${orderModel.orderType}, ${orderModel.option}"
                 status.text = orderModel.status
+
+
+                if(orderModel.orderType == "BeeWash" && orderModel.option == "car") {
+                    Glide.with(itemView.context)
+                        .load(R.drawable.wash)
+                        .into(image)
+                } else if (orderModel.orderType == "BeeWash" && orderModel.option == "bike") {
+                    Glide.with(itemView.context)
+                        .load(R.drawable.motocycle)
+                        .into(image)
+                } else if (orderModel.orderType == "BeeTire" && orderModel.option == "bike") {
+                    Glide.with(itemView.context)
+                        .load(R.drawable.tires)
+                        .into(image)
+                } else if (orderModel.orderType == "BeeTire" && orderModel.option == "car") {
+                    Glide.with(itemView.context)
+                        .load(R.drawable.tires)
+                        .into(image)
+                } else if (orderModel.orderType == "BeeFuel") {
+                    Glide.with(itemView.context)
+                        .load(R.drawable.fuel)
+                        .into(image)
+                }
 
                 when (orderModel.status) {
                     "Menunggu" -> {
