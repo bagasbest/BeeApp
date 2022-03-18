@@ -25,5 +25,6 @@ data class OrderModel(
     var driverNumber: String? = null,
     var driverImage: String? = null,
     var paymentProof: String? = null,
+    var userNumber: String? = null,
 
 ) : Parcelable

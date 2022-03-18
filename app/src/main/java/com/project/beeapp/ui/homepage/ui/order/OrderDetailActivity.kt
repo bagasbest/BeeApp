@@ -5,17 +5,14 @@ import android.app.ProgressDialog
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import com.bumptech.glide.Glide
-import com.github.dhaval2404.imagepicker.ImagePicker
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.storage.FirebaseStorage
 import com.project.beeapp.R
 import com.project.beeapp.databinding.ActivityOrderDetailBinding
 import java.text.DecimalFormat
@@ -28,8 +25,6 @@ class OrderDetailActivity : AppCompatActivity() {
     private var binding: ActivityOrderDetailBinding? = null
     private var model: OrderModel? = null
     private var role: String? = null
-    private var dp: String? = null
-    private val REQUEST_FROM_GALLERY = 1001
     private val uid = FirebaseAuth.getInstance().currentUser!!.uid
 
     @SuppressLint("SetTextI18n")
@@ -38,13 +33,19 @@ class OrderDetailActivity : AppCompatActivity() {
         binding = ActivityOrderDetailBinding.inflate(layoutInflater)
         setContentView(binding?.root)
 
-
-
         model = intent.getParcelableExtra<OrderModel>(EXTRA_ORDER) as OrderModel
         val nominalCurrency: NumberFormat = DecimalFormat("#,###")
 
         checkRole()
 
+
+        if(model?.paymentProof != "") {
+            binding?.constraintLayout2?.visibility = View.VISIBLE
+            Glide.with(this)
+                .load(model?.paymentProof)
+                .into(binding!!.paymentProof)
+
+        }
 
         binding?.orderId?.text = "INV-${model?.orderId}"
         binding?.provinsi?.text = model?.provinsi
@@ -56,43 +57,32 @@ class OrderDetailActivity : AppCompatActivity() {
         binding?.address?.text = model?.address
         binding?.priceTotal?.text = "Rp.${nominalCurrency.format(model?.priceTotal)}"
 
-        if(model?.paymentProof != "") {
-            binding?.payment?.visibility = View.VISIBLE
-            Glide.with(this)
-                .load(model?.paymentProof)
-                .into(binding!!.paymentProof)
-        }
 
         when (model?.status) {
-            "Menunggu" -> {
-                binding?.bgStatus?.backgroundTintList = ContextCompat.getColorStateList(this, android.R.color.darker_gray)
-            }
             "Order Diterima" -> {
-                binding?.bgStatus?.backgroundTintList = ContextCompat.getColorStateList(this, android.R.color.holo_orange_dark)
-            }
-            "Belum Bayar" -> {
-                binding?.bgStatus?.backgroundTintList = ContextCompat.getColorStateList(this, android.R.color.holo_blue_dark)
+                binding?.bgStatus?.backgroundTintList =
+                    ContextCompat.getColorStateList(this, android.R.color.holo_orange_dark)
+                binding?.noData?.visibility = View.GONE
             }
             "Sudah Bayar" -> {
-                binding?.bgStatus?.backgroundTintList = ContextCompat.getColorStateList(this, android.R.color.holo_green_dark)
+                binding?.bgStatus?.backgroundTintList =
+                    ContextCompat.getColorStateList(this, android.R.color.holo_green_dark)
             }
             "Selesai" -> {
-                binding?.bgStatus?.backgroundTintList = ContextCompat.getColorStateList(this, R.color.purple_500)
+                binding?.bgStatus?.backgroundTintList =
+                    ContextCompat.getColorStateList(this, R.color.purple_500)
+                binding?.noData?.visibility = View.GONE
+            }
+            "Cash" -> {
+                binding?.bgStatus?.backgroundTintList =
+                    ContextCompat.getColorStateList(this, android.R.color.darker_gray)
+            }
+            else -> {
+                binding?.bgStatus?.backgroundTintList =
+                    ContextCompat.getColorStateList(this, android.R.color.darker_gray)
+                binding?.noData?.text = "Menunggu Verifikasi Admin"
             }
         }
-
-        if(model?.status != "Menunggu") {
-            binding?.noData?.visibility = View.GONE
-            binding?.payment?.visibility = View.VISIBLE
-        }
-
-
-        if(model?.status == "Menunggu" || model?.status == "Order Diterima") {
-            if(model?.userId == uid) {
-                binding?.imageHint?.visibility = View.VISIBLE
-            }
-        }
-
 
 
 
@@ -100,22 +90,14 @@ class OrderDetailActivity : AppCompatActivity() {
             onBackPressed()
         }
 
-        // KLIK TAMBAH GAMBAR
-        binding?.imageHint?.setOnClickListener {
-            ImagePicker.with(this)
-                .galleryOnly()
-                .compress(1024)
-                .start(REQUEST_FROM_GALLERY);
-        }
-
 
         binding?.orderBtn?.setOnClickListener {
-            if(binding?.orderBtn?.text == "Batalkan Orderan") {
+            if (binding?.orderBtn?.text == "Batalkan Orderan") {
                 AlertDialog.Builder(this)
                     .setTitle("Konfirmasi Batalkan Orderan")
                     .setMessage("Apa kamu yakin ingin membatalkan orderan ini ?")
                     .setIcon(R.drawable.ic_baseline_warning_24)
-                    .setPositiveButton("YA") { dialogInterface,_ ->
+                    .setPositiveButton("YA") { dialogInterface, _ ->
                         dialogInterface.dismiss()
                         cancelOrder()
                     }
@@ -126,7 +108,7 @@ class OrderDetailActivity : AppCompatActivity() {
                     .setTitle("Konfirmasi Orderan")
                     .setMessage("Apa kamu yakin ingin mengongfirmasi orderan ini ?")
                     .setIcon(R.drawable.ic_baseline_warning_24)
-                    .setPositiveButton("YA") { dialogInterface,_ ->
+                    .setPositiveButton("YA") { dialogInterface, _ ->
                         dialogInterface.dismiss()
                         confirmOrderAsDriver()
                     }
@@ -137,16 +119,21 @@ class OrderDetailActivity : AppCompatActivity() {
 
 
         binding?.phoneCall?.setOnClickListener {
-            if(model?.status == "Sudah Bayar") {
-                val intent = Intent(Intent.ACTION_DIAL, Uri.fromParts("tel", model?.driverNumber, null))
+            if (model?.status == "Sudah Bayar" && model?.userId == uid) {
+                val intent =
+                    Intent(Intent.ACTION_DIAL, Uri.fromParts("tel", model?.driverNumber, null))
+                startActivity(intent)
+            } else {
+                val intent =
+                    Intent(Intent.ACTION_DIAL, Uri.fromParts("tel", model?.userNumber, null))
                 startActivity(intent)
             }
         }
 
         binding?.acc?.setOnClickListener {
-            if(binding?.status?.text.toString() == "Order Diterima") {
+            if (model?.status == "Bank BCA" || model?.status == "Bank BNI") {
                 accPaymentDialog()
-            } else if (binding?.status?.text.toString() == "Sudah Bayar"){
+            } else if (model?.status == "Order Diterima") {
                 finishOrderDialog()
             }
         }
@@ -156,7 +143,7 @@ class OrderDetailActivity : AppCompatActivity() {
                 .setTitle("Konfirmasi Batalkan Orderan")
                 .setMessage("Apa kamu yakin ingin membatalkan orderan ini ?")
                 .setIcon(R.drawable.ic_baseline_warning_24)
-                .setPositiveButton("YA") { dialogInterface,_ ->
+                .setPositiveButton("YA") { dialogInterface, _ ->
                     dialogInterface.dismiss()
                     cancelOrder()
                 }
@@ -171,7 +158,7 @@ class OrderDetailActivity : AppCompatActivity() {
             .setTitle("Konfirmasi Menerima Pembayaran")
             .setMessage("Apa kamu yakin sudah menerima transfer dari kustomer ini ?")
             .setIcon(R.drawable.ic_baseline_warning_24)
-            .setPositiveButton("YA") { dialogInterface,_ ->
+            .setPositiveButton("YA") { dialogInterface, _ ->
                 dialogInterface.dismiss()
                 accPayment()
             }
@@ -187,13 +174,18 @@ class OrderDetailActivity : AppCompatActivity() {
             .document(model?.orderId!!)
             .update("status", "Sudah Bayar")
             .addOnCompleteListener {
-                if(it.isSuccessful) {
+                if (it.isSuccessful) {
                     binding?.acc?.visibility = View.GONE
                     binding?.decline?.visibility = View.GONE
+                    binding?.noData?.text = "Sudah Diverifikasi Admin"
                     binding?.status?.text = "Sudah Bayar"
-                    binding?.bgStatus?.backgroundTintList = ContextCompat.getColorStateList(this, android.R.color.holo_green_dark)
+                    binding?.bgStatus?.backgroundTintList =
+                        ContextCompat.getColorStateList(this, android.R.color.holo_green_dark)
 
-                    showSuccessDialog("Sukses Menerima Pembayaran", "Status order ini berubah menjadi Sudah Bayar.")
+                    showSuccessDialog(
+                        "Sukses Menerima Pembayaran",
+                        "Status order ini berubah menjadi Sudah Bayar."
+                    )
                 } else {
                     showFailureDialog("Gagal Menerima Pembayaran")
                 }
@@ -236,19 +228,20 @@ class OrderDetailActivity : AppCompatActivity() {
             .document(model?.orderId!!)
             .update("status", "Selesai")
             .addOnCompleteListener {
-                if(it.isSuccessful) {
+                if (it.isSuccessful) {
                     binding?.acc?.visibility = View.GONE
                     binding?.status?.text = "Selesai"
-                    binding?.bgStatus?.backgroundTintList = ContextCompat.getColorStateList(this, R.color.purple_500)
+                    binding?.bgStatus?.backgroundTintList =
+                        ContextCompat.getColorStateList(this, R.color.purple_500)
 
                     val df = SimpleDateFormat("dd-MMM-yyyy")
                     val dateFinish: String = df.format(Date())
 
-                    val df2= SimpleDateFormat("MM")
+                    val df2 = SimpleDateFormat("MM")
                     val month: String = df2.format(Date())
 
 
-                    val df3= SimpleDateFormat("yyyy")
+                    val df3 = SimpleDateFormat("yyyy")
                     val year: String = df3.format(Date())
 
                     val income = model?.priceTotal?.minus((model?.priceTotal?.times(0.2)!!))
@@ -270,9 +263,12 @@ class OrderDetailActivity : AppCompatActivity() {
                         .document(model?.orderId!!)
                         .set(data)
                         .addOnCompleteListener { task ->
-                            if(task.isSuccessful) {
+                            if (task.isSuccessful) {
                                 mProgressDialog.dismiss()
-                                showSuccessDialog("Sukses Menyelesaikan Orderan", "Anda memperoleh pendapatan dari orderan ini, silahkan cek navigasi beranda")
+                                showSuccessDialog(
+                                    "Sukses Menyelesaikan Orderan",
+                                    "Anda memperoleh pendapatan dari orderan ini, silahkan cek navigasi beranda"
+                                )
                             } else {
                                 mProgressDialog.dismiss()
                                 showFailureDialog("Gagal Menyelesaikan Orderan")
@@ -318,13 +314,18 @@ class OrderDetailActivity : AppCompatActivity() {
                         .document(it1)
                         .update(data)
                         .addOnCompleteListener { task ->
-                            if(task.isSuccessful) {
+                            if (task.isSuccessful) {
                                 mProgressDialog.dismiss()
-                                Toast.makeText(this, "Anda menerima order ini", Toast.LENGTH_SHORT).show()
+                                Toast.makeText(this, "Anda menerima order ini", Toast.LENGTH_SHORT)
+                                    .show()
                                 onBackPressed()
                             } else {
                                 mProgressDialog.dismiss()
-                                Toast.makeText(this, "Upps, gagal menerima order ini, silahkan periksa koneksi internet anda", Toast.LENGTH_SHORT).show()
+                                Toast.makeText(
+                                    this,
+                                    "Upps, gagal menerima order ini, silahkan periksa koneksi internet anda",
+                                    Toast.LENGTH_SHORT
+                                ).show()
                             }
                         }
                 }
@@ -342,24 +343,27 @@ class OrderDetailActivity : AppCompatActivity() {
             .document(uid)
             .get()
             .addOnSuccessListener {
-               role = it.data?.get("role").toString()
+                role = it.data?.get("role").toString()
 
-                if(role == "driver") {
-                    when (model?.status) {
-                        "Menunggu" -> {
-                            binding?.orderBtn?.visibility = View.VISIBLE
-                            binding?.orderBtn?.text = "Konfirmasi Orderan"
-                        }
-                        "Sudah Bayar" -> {
-                            binding?.acc?.visibility = View.VISIBLE
-                        }
+                if (role == "driver") {
+                    if (model?.status == "Cash" || model?.status == "Sudah Bayar") {
+                        binding?.orderBtn?.visibility = View.VISIBLE
+                        binding?.orderBtn?.text = "Konfirmasi Orderan"
+                    } else if (model?.status == "Order Diterima") {
+                        binding?.acc?.visibility = View.VISIBLE
+
+                        binding?.constraintLayout?.visibility = View.VISIBLE
+
+                        Glide.with(this)
+                            .load(R.drawable.ic_baseline_account_circle_gray)
+                            .into(binding!!.image)
+
+                        binding?.driverName?.text = model?.username
                     }
-                } else if(role == "user") {
-                    if(model?.status == "Menunggu") {
+                } else if (role == "user") {
+                    if (model?.status == "Cash" || model?.status == "Bank BCA" || model?.status == "Bank BNI") {
                         binding?.orderBtn?.visibility = View.VISIBLE
                         binding?.orderBtn?.text = "Batalkan Orderan"
-                        binding?.rekening?.visibility = View.VISIBLE
-                        binding?.payment?.visibility = View.VISIBLE
 
                     } else {
                         binding?.constraintLayout?.visibility = View.VISIBLE
@@ -371,35 +375,17 @@ class OrderDetailActivity : AppCompatActivity() {
                         binding?.driverName?.text = model?.driverName
                     }
                 } else if (role == "admin") {
-                    when (model?.status) {
-                        "Menunggu" -> {
-                            binding?.orderBtn?.visibility = View.VISIBLE
-                            binding?.orderBtn?.text = "Batalkan Orderan"
-                            binding?.rekening?.visibility = View.VISIBLE
-                            binding?.payment?.visibility = View.VISIBLE
-                            binding?.decline?.visibility = View.VISIBLE
-                        }
-                        "Order Diterima" -> {
-                            binding?.acc?.visibility = View.VISIBLE
-                            binding?.decline?.visibility = View.VISIBLE
+                    if (model?.status == "Bank BCA" || model?.status == "Bank BNI") {
+                        binding?.acc?.visibility = View.VISIBLE
+                        binding?.decline?.visibility = View.VISIBLE
+                    } else {
+                        binding?.constraintLayout?.visibility = View.VISIBLE
 
-                            binding?.constraintLayout?.visibility = View.VISIBLE
+                        Glide.with(this)
+                            .load(model?.driverImage)
+                            .into(binding!!.image)
 
-                            Glide.with(this)
-                                .load(model?.driverImage)
-                                .into(binding!!.image)
-
-                            binding?.driverName?.text = model?.driverName
-                        }
-                        else -> {
-                            binding?.constraintLayout?.visibility = View.VISIBLE
-
-                            Glide.with(this)
-                                .load(model?.driverImage)
-                                .into(binding!!.image)
-
-                            binding?.driverName?.text = model?.driverName
-                        }
+                        binding?.driverName?.text = model?.driverName
                     }
                 }
             }
@@ -412,75 +398,16 @@ class OrderDetailActivity : AppCompatActivity() {
                 .collection("order")
                 .document(it)
                 .delete()
-                .addOnCompleteListener { task->
-                    if(task.isSuccessful) {
+                .addOnCompleteListener { task ->
+                    if (task.isSuccessful) {
                         binding?.orderBtn?.visibility = View.GONE
                         binding?.constraintLayout?.visibility = View.INVISIBLE
-                        Toast.makeText(this, "Berhasil membatalkan orderan ini", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this, "Berhasil membatalkan orderan ini", Toast.LENGTH_SHORT)
+                            .show()
                         onBackPressed()
                     }
                 }
         }
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        if (resultCode == RESULT_OK) {
-            if (requestCode == REQUEST_FROM_GALLERY) {
-                uploadArticleDp(data?.data)
-            }
-        }
-    }
-
-
-    /// fungsi untuk mengupload foto kedalam cloud storage
-    private fun uploadArticleDp(data: Uri?) {
-        val mStorageRef = FirebaseStorage.getInstance().reference
-        val mProgressDialog = ProgressDialog(this)
-        mProgressDialog.setMessage("Mohon tunggu hingga proses selesai...")
-        mProgressDialog.setCanceledOnTouchOutside(false)
-        mProgressDialog.show()
-        val imageFileName = "paymentProof/image_" + System.currentTimeMillis() + ".png"
-        mStorageRef.child(imageFileName).putFile(data!!)
-            .addOnSuccessListener {
-                mStorageRef.child(imageFileName).downloadUrl
-                    .addOnSuccessListener { uri: Uri ->
-                        mProgressDialog.dismiss()
-                        dp = uri.toString()
-                        savePaymentProofOnDatabase()
-                        Glide
-                            .with(this)
-                            .load(dp)
-                            .into(binding!!.paymentProof)
-                    }
-                    .addOnFailureListener { e: Exception ->
-                        mProgressDialog.dismiss()
-                        Toast.makeText(
-                            this,
-                            "Gagal mengunggah gambar",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                        Log.d("imageDp: ", e.toString())
-                    }
-            }
-            .addOnFailureListener { e: Exception ->
-                mProgressDialog.dismiss()
-                Toast.makeText(
-                    this,
-                    "Gagal mengunggah gambar",
-                    Toast.LENGTH_SHORT
-                )
-                    .show()
-                Log.d("imageDp: ", e.toString())
-            }
-    }
-
-    private fun savePaymentProofOnDatabase() {
-        FirebaseFirestore
-            .getInstance()
-            .collection("order")
-            .document(model?.orderId!!)
-            .update("paymentProof", dp)
     }
 
 

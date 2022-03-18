@@ -59,20 +59,17 @@ class OrderAdapter : RecyclerView.Adapter<OrderAdapter.ViewHolder>() {
                 }
 
                 when (orderModel.status) {
-                    "Menunggu" -> {
-                        bgStatus.backgroundTintList = ContextCompat.getColorStateList(itemView.context, android.R.color.darker_gray)
-                    }
                     "Order Diterima" -> {
                         bgStatus.backgroundTintList = ContextCompat.getColorStateList(itemView.context, android.R.color.holo_orange_dark)
-                    }
-                    "Belum Bayar" -> {
-                        bgStatus.backgroundTintList = ContextCompat.getColorStateList(itemView.context, android.R.color.holo_blue_dark)
                     }
                     "Sudah Bayar" -> {
                         bgStatus.backgroundTintList = ContextCompat.getColorStateList(itemView.context, android.R.color.holo_green_dark)
                     }
                     "Selesai" -> {
                         bgStatus.backgroundTintList = ContextCompat.getColorStateList(itemView.context, R.color.purple_500)
+                    }
+                    else -> {
+                        bgStatus.backgroundTintList = ContextCompat.getColorStateList(itemView.context, android.R.color.darker_gray)
                     }
                 }
 

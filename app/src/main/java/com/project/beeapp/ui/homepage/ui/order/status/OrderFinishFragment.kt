@@ -60,10 +60,16 @@ class OrderFinishFragment : Fragment() {
 
 
         binding?.progressBar?.visibility = View.VISIBLE
-        if(role == "user" || role == "admin") {
-            viewModel.setListOrderFinish(myUID)
-        } else {
-            viewModel.setListOrderProcessByDriverFinish(myUID)
+        when (role) {
+            "user" -> {
+                viewModel.setListOrderFinish(myUID)
+            }
+            "driver" -> {
+                viewModel.setListOrderProcessByDriverFinish(myUID)
+            }
+            else -> {
+                binding!!.progressBar.visibility = View.GONE
+            }
         }
         viewModel.getOrderList().observe(this) { orderFinish ->
             if (orderFinish.size > 0) {

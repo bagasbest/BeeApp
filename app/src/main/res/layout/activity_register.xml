@@ -253,16 +253,14 @@
                         android:textColor="@color/purple_500" />
 
 
+                    <Spinner
+                        android:id="@+id/provinsi"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="5dp"
+                        android:padding="10dp" />
 
-                        <Spinner
-                            android:id="@+id/provinsi"
-                            android:layout_marginTop="5dp"
-                            android:layout_width="match_parent"
-                            android:padding="10dp"
-                            android:layout_height="wrap_content" />
-
-
-                        <Spinner
+                    <Spinner
                             android:id="@+id/kota"
                             android:layout_marginTop="5dp"
                             android:padding="10dp"

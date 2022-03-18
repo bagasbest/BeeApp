@@ -25,4 +25,9 @@
         <item>Premium</item>
         <item>Solar</item>
     </string-array>
+
+    <string-array name="location_option">
+        <item>Sesuai Alamat Anda</item>
+        <item>Lokasi Lain</item>
+    </string-array>
 </resources>

@@ -55,10 +55,6 @@ class OrderPickFragment : Fragment() {
         // Inflate the layout for this fragment
         binding = FragmentOrderPickBinding.inflate(inflater, container, false)
 
-
-
-
-
         return binding?.root
     }
 
@@ -73,10 +69,16 @@ class OrderPickFragment : Fragment() {
 
 
         binding?.progressBar?.visibility = View.VISIBLE
-        if(role == "user" || role == "admin") {
-            viewModel.setListOrderProcessByPick(myUID)
-        } else {
-            viewModel.setListOrderProcessByDriver(driverLocKecamatan)
+        when (role) {
+            "user" -> {
+                viewModel.setListOrderProcessByPick(myUID)
+            }
+            "driver" -> {
+                viewModel.setListOrderProcessByDriver(driverLocKecamatan)
+            }
+            else -> {
+                viewModel.setListOrderProcessByAdmin()
+            }
         }
         viewModel.getOrderList().observe(this) { orderFinish ->
             if (orderFinish.size > 0) {

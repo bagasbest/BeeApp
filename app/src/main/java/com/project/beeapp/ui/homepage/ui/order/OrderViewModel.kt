@@ -44,6 +44,7 @@ class OrderViewModel : ViewModel() {
                         model.driverNumber = document.data["driverNumber"].toString()
                         model.driverImage = document.data["driverImage"].toString()
                         model.paymentProof = document.data["paymentProof"].toString()
+                        model.userNumber = document.data["userNumber"].toString()
 
                         listItems.add(model)
                     }
@@ -89,6 +90,7 @@ class OrderViewModel : ViewModel() {
                         model.driverNumber = document.data["driverNumber"].toString()
                         model.driverImage = document.data["driverImage"].toString()
                         model.paymentProof = document.data["paymentProof"].toString()
+                        model.userNumber = document.data["userNumber"].toString()
 
                         listItems.add(model)
                     }
@@ -110,7 +112,7 @@ class OrderViewModel : ViewModel() {
         try {
             FirebaseFirestore.getInstance().collection("order")
                 .whereEqualTo("kecamatan", driverLocKecamatan)
-                .whereEqualTo("status", "Menunggu")
+                .whereIn("status", listOf("Cash","Sudah Bayar"))
                 .get()
                 .addOnSuccessListener { documents ->
                     for (document in documents) {
@@ -135,6 +137,7 @@ class OrderViewModel : ViewModel() {
                         model.driverNumber = document.data["driverNumber"].toString()
                         model.driverImage = document.data["driverImage"].toString()
                         model.paymentProof = document.data["paymentProof"].toString()
+                        model.userNumber = document.data["userNumber"].toString()
 
                         listItems.add(model)
                     }
@@ -155,7 +158,7 @@ class OrderViewModel : ViewModel() {
         try {
             FirebaseFirestore.getInstance().collection("order")
                 .whereEqualTo("userId", myUID)
-                .whereEqualTo("status", "Menunggu")
+                .whereIn("status", listOf("Cash", "Bank BNI", "Bank BCA"))
                 .get()
                 .addOnSuccessListener { documents ->
                     for (document in documents) {
@@ -180,6 +183,7 @@ class OrderViewModel : ViewModel() {
                         model.driverNumber = document.data["driverNumber"].toString()
                         model.driverImage = document.data["driverImage"].toString()
                         model.paymentProof = document.data["paymentProof"].toString()
+                        model.userNumber = document.data["userNumber"].toString()
 
                         listItems.add(model)
                     }
@@ -192,6 +196,52 @@ class OrderViewModel : ViewModel() {
             error.printStackTrace()
         }
     }
+
+    fun setListOrderProcessByAdmin() {
+        listItems.clear()
+
+        try {
+            FirebaseFirestore.getInstance().collection("order")
+                .whereIn("status", listOf("Bank BCA", "Bank BNI"))
+                .get()
+                .addOnSuccessListener { documents ->
+                    for (document in documents) {
+                        val model = OrderModel()
+                        model.orderId = document.data["orderId"].toString()
+                        model.userId = document.data["userId"].toString()
+                        model.username = document.data["username"].toString()
+                        model.status = document.data["status"].toString()
+                        model.date = document.data["date"].toString()
+                        model.option = document.data["option"].toString()
+                        model.provinsi = document.data["provinsi"].toString()
+                        model.kabupaten = document.data["kabupaten"].toString()
+                        model.kecamatan = document.data["kecamatan"].toString()
+                        model.kelurahan = document.data["kelurahan"].toString()
+                        model.address = document.data["address"].toString()
+                        model.date = document.data["date"].toString()
+                        model.qty = document.data["qty"].toString().toInt()
+                        model.priceTotal = document.data["priceTotal"] as Long
+                        model.orderType = document.data["orderType"].toString()
+                        model.driverId = document.data["driverId"].toString()
+                        model.driverName = document.data["driverName"].toString()
+                        model.driverNumber = document.data["driverNumber"].toString()
+                        model.driverImage = document.data["driverImage"].toString()
+                        model.paymentProof = document.data["paymentProof"].toString()
+                        model.userNumber = document.data["userNumber"].toString()
+
+                        listItems.add(model)
+                    }
+                    orderList.postValue(listItems)
+                }
+                .addOnFailureListener { exception ->
+                    Log.w(TAG, "Error getting documents: ", exception)
+                }
+        } catch (error: Exception) {
+            error.printStackTrace()
+        }
+    }
+
+
 
     fun setListOrderProcessByDriverOnGoing(myUID: String) {
 
@@ -226,6 +276,7 @@ class OrderViewModel : ViewModel() {
                         model.driverNumber = document.data["driverNumber"].toString()
                         model.driverImage = document.data["driverImage"].toString()
                         model.paymentProof = document.data["paymentProof"].toString()
+                        model.userNumber = document.data["userNumber"].toString()
 
 
                         listItems.add(model)
@@ -273,6 +324,7 @@ class OrderViewModel : ViewModel() {
                         model.driverNumber = document.data["driverNumber"].toString()
                         model.driverImage = document.data["driverImage"].toString()
                         model.paymentProof = document.data["paymentProof"].toString()
+                        model.userNumber = document.data["userNumber"].toString()
 
                         listItems.add(model)
                     }
