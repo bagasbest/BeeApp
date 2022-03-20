@@ -5,7 +5,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import com.bumptech.glide.Glide
 import com.google.android.material.tabs.TabLayout
+import com.project.beeapp.R
 import com.project.beeapp.databinding.FragmentOrderBinding
 
 class OrderFragment : Fragment() {
@@ -25,6 +27,10 @@ class OrderFragment : Fragment() {
 
         _binding = FragmentOrderBinding.inflate(inflater, container, false)
 
+
+        Glide.with(requireActivity())
+            .load(R.drawable.logo_trans2)
+            .into(binding.imageView3)
 
 
         binding.tabs.addTab(binding.tabs.newTab().setText("Menunggu"))

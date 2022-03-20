@@ -68,6 +68,10 @@ class RegisterActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener
                 .start(REQUEST_FROM_GALLERY);
         }
 
+        binding?.backButton?.setOnClickListener {
+            onBackPressed()
+        }
+
 
     }
 
@@ -148,6 +152,7 @@ class RegisterActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener
                         "npwp" to "" + npwp,
                         "image" to "" + dp,
                         "status" to status,
+                        "isWork" to false,
                     )
 
                     FirebaseFirestore

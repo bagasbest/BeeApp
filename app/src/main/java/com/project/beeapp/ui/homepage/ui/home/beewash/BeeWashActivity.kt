@@ -85,6 +85,11 @@ class BeeWashActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener 
         setPaymentChoose()
         setLocationChoose()
 
+        Glide.with(this)
+            .load(R.drawable.logo_trans2)
+            .into(binding!!.imageView3)
+
+
         binding?.qty?.addTextChangedListener(object : TextWatcher {
             @SuppressLint("SetTextI18n")
             override fun afterTextChanged(qty: Editable?) {

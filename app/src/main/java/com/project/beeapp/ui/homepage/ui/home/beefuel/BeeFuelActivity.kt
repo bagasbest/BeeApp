@@ -86,6 +86,10 @@ class BeeFuelActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener 
         setPaymentChoose()
         setLocationChoose()
 
+        Glide.with(this)
+            .load(R.drawable.logo_trans2)
+            .into(binding!!.imageView3)
+
         val adapter = ArrayAdapter.createFromResource(
             this,
             R.array.fuel_type, android.R.layout.simple_list_item_1

@@ -19,6 +19,7 @@ import com.project.beeapp.ui.homepage.ui.home.beefuel.BeeFuelActivity
 import com.project.beeapp.ui.homepage.ui.home.beefuel.BeeFuelModel
 import com.project.beeapp.ui.homepage.ui.home.beetire.BeeTireActivity
 import com.project.beeapp.ui.homepage.ui.home.beewash.BeeWashActivity
+import com.project.beeapp.ui.homepage.ui.home.help.HelpActivity
 import com.project.beeapp.ui.homepage.ui.home.income.IncomeAdapter
 import com.project.beeapp.ui.homepage.ui.home.income.IncomeModel
 import com.project.beeapp.ui.homepage.ui.home.income.IncomeViewModel
@@ -59,14 +60,17 @@ class HomeFragment : Fragment() {
                         binding.textView.text = "Beranda BeeFlo"
                         binding.verifyDriver.visibility = View.VISIBLE
                         binding.userOrAdminRole.visibility = View.VISIBLE
+                        binding.textView35.text = "Status: Admin"
                     }
                     "" + it.data?.get("role") == "user" -> {
                         binding.textView.text = "Beranda BeeFlo"
                         binding.userOrAdminRole.visibility = View.VISIBLE
+                        binding.textView35.text = "Status: Kustomer"
                     }
                     "" + it.data?.get("role") == "driver" -> {
                         binding.textView.text = "Pendapatan Saya"
                         binding.driverRole.visibility = View.VISIBLE
+                        binding.textView35.text = "Status: Mitra"
 
                         initRecyclerView()
                         initViewModel()
@@ -200,6 +204,10 @@ class HomeFragment : Fragment() {
             .load(R.drawable.paper)
             .into(binding.roundedImageView4)
 
+        Glide.with(requireActivity())
+            .load(R.drawable.logo_trans2)
+            .into(binding.imageView3)
+
         return binding.root
     }
 
@@ -228,6 +236,14 @@ class HomeFragment : Fragment() {
 
         binding.verifyDriver.setOnClickListener {
             startActivity(Intent(activity, AdminActivity::class.java))
+        }
+
+        binding.view9.setOnClickListener {
+            startActivity(Intent(activity, HelpActivity::class.java))
+        }
+
+        binding.helpMitra.setOnClickListener {
+            startActivity(Intent(activity, HelpActivity::class.java))
         }
     }
 

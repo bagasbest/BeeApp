@@ -1,5 +1,6 @@
 package com.project.beeapp.ui.homepage.ui.order.status
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -31,6 +32,7 @@ class OrderPickFragment : Fragment() {
 
     }
 
+    @SuppressLint("SetTextI18n")
     private fun checkRole() {
         FirebaseFirestore
             .getInstance()
@@ -41,10 +43,16 @@ class OrderPickFragment : Fragment() {
                 role = it.data?.get("role").toString()
                 driverLocKecamatan = it.data?.get("locKecamatan").toString()
                 driverLocKelurahan = it.data?.get("locKelurahan").toString()
+                val isWork = it.data?.get("isWork") as Boolean
 
-
-                initRecyclerView()
-                initViewModel()
+                if(!isWork) {
+                    initRecyclerView()
+                    initViewModel()
+                } else {
+                    binding?.noData?.visibility = View.VISIBLE
+                    binding?.rvOrderProcess?.visibility = View.GONE
+                    binding?.noData?.text = "Anda Sedang Berkerja"
+                }
             }
     }
 

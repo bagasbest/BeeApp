@@ -5,26 +5,34 @@ import android.app.ProgressDialog
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.os.Handler
+import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.lifecycleScope
 import com.bumptech.glide.Glide
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.project.beeapp.R
 import com.project.beeapp.databinding.ActivityOrderDetailBinding
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import java.text.DecimalFormat
 import java.text.NumberFormat
 import java.text.SimpleDateFormat
 import java.util.*
+import kotlin.concurrent.schedule
 
 class OrderDetailActivity : AppCompatActivity() {
 
     private var binding: ActivityOrderDetailBinding? = null
     private var model: OrderModel? = null
     private var role: String? = null
+    private var percentage: Double? = 0.0
     private val uid = FirebaseAuth.getInstance().currentUser!!.uid
 
     @SuppressLint("SetTextI18n")
@@ -111,6 +119,7 @@ class OrderDetailActivity : AppCompatActivity() {
                     .setPositiveButton("YA") { dialogInterface, _ ->
                         dialogInterface.dismiss()
                         confirmOrderAsDriver()
+                        setStatusDriverWork(true)
                     }
                     .setNegativeButton("TIDAK", null)
                     .show()
@@ -151,6 +160,14 @@ class OrderDetailActivity : AppCompatActivity() {
                 .show()
         }
 
+    }
+
+    private fun setStatusDriverWork(status: Boolean) {
+        FirebaseFirestore
+            .getInstance()
+            .collection("users")
+            .document(uid)
+            .update("isWork", status)
     }
 
     private fun accPaymentDialog() {
@@ -222,63 +239,84 @@ class OrderDetailActivity : AppCompatActivity() {
         mProgressDialog.setCanceledOnTouchOutside(false)
         mProgressDialog.show()
 
+        runBlocking {
+            launch {
+                delay(1000L)
+                FirebaseFirestore
+                    .getInstance()
+                    .collection("order")
+                    .document(model?.orderId!!)
+                    .update("status", "Selesai")
+                    .addOnCompleteListener {
+                        if (it.isSuccessful) {
+                            binding?.acc?.visibility = View.GONE
+                            binding?.status?.text = "Selesai"
+                            binding?.bgStatus?.backgroundTintList =
+                                ContextCompat.getColorStateList(this@OrderDetailActivity, R.color.purple_500)
+
+                            val df = SimpleDateFormat("dd-MMM-yyyy")
+                            val dateFinish: String = df.format(Date())
+
+                            val df2 = SimpleDateFormat("MM")
+                            val month: String = df2.format(Date())
+
+
+                            val df3 = SimpleDateFormat("yyyy")
+                            val year: String = df3.format(Date())
+
+                            val income = model?.priceTotal?.minus((model?.priceTotal?.times(percentage!!)!!))
+
+                            val data = mapOf(
+                                "orderId" to model?.orderId,
+                                "partnerId" to model?.driverId,
+                                "orderType" to model?.orderType,
+                                "date" to dateFinish,
+                                "dateTimeInMillis" to System.currentTimeMillis(),
+                                "income" to income?.toLong(),
+                                "month" to month,
+                                "year" to year,
+                            )
+
+                            FirebaseFirestore
+                                .getInstance()
+                                .collection("income")
+                                .document(model?.orderId!!)
+                                .set(data)
+                                .addOnCompleteListener { task ->
+                                    if (task.isSuccessful) {
+                                        setStatusDriverWork(false)
+                                        Handler().postDelayed({
+                                            mProgressDialog.dismiss()
+                                            showSuccessDialog(
+                                                "Sukses Menyelesaikan Orderan",
+                                                "Anda memperoleh pendapatan dari orderan ini, silahkan cek navigasi beranda"
+                                            )
+                                        }, 1000)
+                                    } else {
+                                        mProgressDialog.dismiss()
+                                        showFailureDialog("Gagal Menyelesaikan Orderan")
+                                    }
+                                }
+
+                        } else {
+                            mProgressDialog.dismiss()
+                            showFailureDialog("Gagal Menyelesaikan Orderan")
+                        }
+                    }
+            }
+            getPercentage()
+        }
+    }
+
+    private fun getPercentage() {
         FirebaseFirestore
             .getInstance()
-            .collection("order")
-            .document(model?.orderId!!)
-            .update("status", "Selesai")
-            .addOnCompleteListener {
-                if (it.isSuccessful) {
-                    binding?.acc?.visibility = View.GONE
-                    binding?.status?.text = "Selesai"
-                    binding?.bgStatus?.backgroundTintList =
-                        ContextCompat.getColorStateList(this, R.color.purple_500)
-
-                    val df = SimpleDateFormat("dd-MMM-yyyy")
-                    val dateFinish: String = df.format(Date())
-
-                    val df2 = SimpleDateFormat("MM")
-                    val month: String = df2.format(Date())
-
-
-                    val df3 = SimpleDateFormat("yyyy")
-                    val year: String = df3.format(Date())
-
-                    val income = model?.priceTotal?.minus((model?.priceTotal?.times(0.2)!!))
-
-                    val data = mapOf(
-                        "orderId" to model?.orderId,
-                        "partnerId" to model?.driverId,
-                        "orderType" to model?.orderType,
-                        "date" to dateFinish,
-                        "dateTimeInMillis" to System.currentTimeMillis(),
-                        "income" to income?.toLong(),
-                        "month" to month,
-                        "year" to year,
-                    )
-
-                    FirebaseFirestore
-                        .getInstance()
-                        .collection("income")
-                        .document(model?.orderId!!)
-                        .set(data)
-                        .addOnCompleteListener { task ->
-                            if (task.isSuccessful) {
-                                mProgressDialog.dismiss()
-                                showSuccessDialog(
-                                    "Sukses Menyelesaikan Orderan",
-                                    "Anda memperoleh pendapatan dari orderan ini, silahkan cek navigasi beranda"
-                                )
-                            } else {
-                                mProgressDialog.dismiss()
-                                showFailureDialog("Gagal Menyelesaikan Orderan")
-                            }
-                        }
-
-                } else {
-                    mProgressDialog.dismiss()
-                    showFailureDialog("Gagal Menyelesaikan Orderan")
-                }
+            .collection("percentage")
+            .document("percentage")
+            .get()
+            .addOnSuccessListener {
+                percentage = it.data?.get("percentage") as Double
+                Log.e("tag", percentage.toString())
             }
     }
 
