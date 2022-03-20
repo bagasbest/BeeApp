@@ -3,7 +3,6 @@ package com.project.beeapp
 import android.app.ProgressDialog
 import android.content.Intent
 import android.net.Uri
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.View
@@ -11,7 +10,16 @@ import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.RadioButton
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatActivity
+import com.bumptech.glide.Glide
+import com.github.dhaval2404.imagepicker.ImagePicker
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
+import com.google.firebase.auth.FirebaseAuthUserCollisionException
+import com.google.firebase.auth.FirebaseAuthWeakPasswordException
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.storage.FirebaseStorage
 import com.project.beeapp.api.RetrofitClient
 import com.project.beeapp.api.model.ResponseKecamatan
 import com.project.beeapp.api.model.ResponseKelurahan
@@ -21,28 +29,23 @@ import com.project.beeapp.databinding.ActivityRegisterBinding
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import androidx.appcompat.app.AlertDialog
-import com.bumptech.glide.Glide
-import com.github.dhaval2404.imagepicker.ImagePicker
-import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.storage.FirebaseStorage
 
 
 class RegisterActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
 
     private var binding: ActivityRegisterBinding? = null
-    private var listIdProv   = ArrayList<Int>()
+    private var listIdProv = ArrayList<Int>()
     private var listNameProv = ArrayList<String>()
-    private var listIdKota   = ArrayList<Int>()
+    private var listIdKota = ArrayList<Int>()
     private var listNameKota = ArrayList<String>()
-    private var listIdKec    = ArrayList<Int>()
-    private var listNameKec  = ArrayList<String>()
-    private var listIdKel    = ArrayList<Int>()
-    private var listNameKel  = ArrayList<String>()
+    private var listIdKec = ArrayList<Int>()
+    private var listNameKec = ArrayList<String>()
+    private var listIdKel = ArrayList<Int>()
+    private var listNameKel = ArrayList<String>()
 
     private var dp: String? = null
     private val REQUEST_FROM_GALLERY = 1001
-    private var role : String? = null
+    private var role: String? = null
     private lateinit var status: String
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -70,7 +73,7 @@ class RegisterActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener
 
     private fun formValidation() {
         val username = binding?.username?.text.toString().trim()
-        val email= binding?.email?.text.toString().trim()
+        val email = binding?.email?.text.toString().trim()
         val phone = binding?.phone?.text.toString().trim()
         val password = binding?.password?.text.toString().trim()
         val fullname = binding?.fullName?.text.toString().trim()
@@ -85,6 +88,10 @@ class RegisterActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener
                 Toast.makeText(this, "Email tidak boleh kosong", Toast.LENGTH_SHORT).show()
                 return
             }
+            !email.contains("@") || !email.contains(".") -> {
+                Toast.makeText(this, "Format email salah", Toast.LENGTH_SHORT).show()
+                return
+            }
             phone.isEmpty() -> {
                 Toast.makeText(this, "No.Telepon tidak boleh kosong", Toast.LENGTH_SHORT).show()
                 return
@@ -93,8 +100,16 @@ class RegisterActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener
                 Toast.makeText(this, "Kata sandi tidak boleh kosong", Toast.LENGTH_SHORT).show()
                 return
             }
+            password.length < 6 -> {
+                Toast.makeText(this, "Kata sandi minimal 6 karakter", Toast.LENGTH_SHORT).show()
+                return
+            }
             role == null -> {
-                Toast.makeText(this, "Anda ingin mendaftar sebagai kustomer atau sebagai mitra/driver ?, silahkan pilih", Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    this,
+                    "Anda ingin mendaftar sebagai kustomer atau sebagai mitra/driver ?, silahkan pilih",
+                    Toast.LENGTH_SHORT
+                ).show()
                 return
             }
             role == "mitra" && dp == null -> {
@@ -108,11 +123,11 @@ class RegisterActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener
             .getInstance()
             .createUserWithEmailAndPassword(email, password)
             .addOnCompleteListener {
-                if(it.isSuccessful) {
+                if (it.isSuccessful) {
 
                     val userId = FirebaseAuth.getInstance().currentUser!!.uid
 
-                    status = if(role == "driver") {
+                    status = if (role == "driver") {
                         "Menunggu"
                     } else {
                         "user"
@@ -129,9 +144,9 @@ class RegisterActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener
                         "locKabupaten" to binding?.kota?.selectedItem.toString(),
                         "locKecamatan" to binding?.kecamatan?.selectedItem.toString(),
                         "locKelurahan" to binding?.kelurahan?.selectedItem.toString(),
-                        "fullname" to ""+fullname,
-                        "npwp" to ""+npwp,
-                        "image" to ""+dp,
+                        "fullname" to "" + fullname,
+                        "npwp" to "" + npwp,
+                        "image" to "" + dp,
                         "status" to status,
                     )
 
@@ -140,34 +155,40 @@ class RegisterActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener
                         .collection("users")
                         .document(userId)
                         .set(data)
-                        .addOnCompleteListener { task->
-                            if(task.isSuccessful) {
+                        .addOnCompleteListener { task ->
+                            if (task.isSuccessful) {
                                 binding?.progressBar?.visibility = View.GONE
                                 showSuccessDialog()
                             } else {
                                 binding?.progressBar?.visibility = View.GONE
-                                showFailureDialog()
+                                showFailureDialog("Silahkan mendaftar kembali dengan informasi yang benar, dan pastikan koneksi internet lancar")
                             }
                         }
                 } else {
                     binding?.progressBar?.visibility = View.GONE
-                    showFailureDialog()
+                    try {
+                        throw it.exception!!
+                    } catch (e: FirebaseAuthUserCollisionException) {
+                        showFailureDialog("Email yang anda daftarkan sudah digunakan, silahkan coba email lain")
+                    } catch (e: java.lang.Exception) {
+                        Log.e("TAG", e.message!!)
+                    }
                 }
             }
     }
 
     fun onRadioButtonClicked(view: View) {
-        if(view is RadioButton) {
+        if (view is RadioButton) {
             val checked = view.isChecked
 
-            when(view.id) {
+            when (view.id) {
                 R.id.user ->
-                    if(checked) {
+                    if (checked) {
                         role = "user"
                         binding?.privateInformation?.visibility = View.GONE
                     }
                 R.id.driver ->
-                    if(checked) {
+                    if (checked) {
                         role = "driver"
                         binding?.privateInformation?.visibility = View.VISIBLE
                     }
@@ -176,7 +197,7 @@ class RegisterActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener
     }
 
     private fun showProvinsi() {
-        RetrofitClient.instance.getProvinsi().enqueue(object: Callback<ResponseProvinsi> {
+        RetrofitClient.instance.getProvinsi().enqueue(object : Callback<ResponseProvinsi> {
             override fun onResponse(
                 call: Call<ResponseProvinsi>,
                 response: Response<ResponseProvinsi>
@@ -190,7 +211,11 @@ class RegisterActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener
                 }
 
                 binding?.provinsi?.onItemSelectedListener = this@RegisterActivity
-                val adapter = ArrayAdapter(this@RegisterActivity, android.R.layout.simple_spinner_dropdown_item, listNameProv)
+                val adapter = ArrayAdapter(
+                    this@RegisterActivity,
+                    android.R.layout.simple_spinner_dropdown_item,
+                    listNameProv
+                )
 
                 binding?.provinsi?.adapter = adapter
             }
@@ -204,7 +229,7 @@ class RegisterActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener
 
 
     private fun showKota(idProv: Int) {
-        RetrofitClient.instance.getKota(idProv).enqueue(object : Callback<ResponseKota>{
+        RetrofitClient.instance.getKota(idProv).enqueue(object : Callback<ResponseKota> {
             override fun onResponse(call: Call<ResponseKota>, response: Response<ResponseKota>) {
 
                 val listResponse = response.body()?.kotaKabupaten
@@ -217,7 +242,11 @@ class RegisterActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener
                 }
 
                 binding?.kota?.onItemSelectedListener = this@RegisterActivity
-                val adapter = ArrayAdapter(this@RegisterActivity, android.R.layout.simple_spinner_dropdown_item, listNameKota)
+                val adapter = ArrayAdapter(
+                    this@RegisterActivity,
+                    android.R.layout.simple_spinner_dropdown_item,
+                    listNameKota
+                )
                 binding?.kota?.adapter = adapter
 
             }
@@ -229,9 +258,8 @@ class RegisterActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener
     }
 
 
-
     private fun showKecamatan(idKota: Int) {
-        RetrofitClient.instance.getKecamatan(idKota).enqueue(object : Callback<ResponseKecamatan>{
+        RetrofitClient.instance.getKecamatan(idKota).enqueue(object : Callback<ResponseKecamatan> {
             override fun onResponse(
                 call: Call<ResponseKecamatan>,
                 response: Response<ResponseKecamatan>
@@ -263,38 +291,38 @@ class RegisterActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener
     }
 
 
-
     private fun showKelurahan(idKecamatan: Int) {
-        RetrofitClient.instance.getKelurahan(idKecamatan).enqueue(object : Callback<ResponseKelurahan> {
-            override fun onResponse(
-                call: Call<ResponseKelurahan>,
-                response: Response<ResponseKelurahan>
-            ) {
-               val listResponse = response.body()?.kelurahan
+        RetrofitClient.instance.getKelurahan(idKecamatan)
+            .enqueue(object : Callback<ResponseKelurahan> {
+                override fun onResponse(
+                    call: Call<ResponseKelurahan>,
+                    response: Response<ResponseKelurahan>
+                ) {
+                    val listResponse = response.body()?.kelurahan
 
-                listIdKel.clear()
-                listNameKel.clear()
-                listResponse?.forEach {
-                    listIdKel.add(it.id)
-                    listNameKel.add(it.nama)
+                    listIdKel.clear()
+                    listNameKel.clear()
+                    listResponse?.forEach {
+                        listIdKel.add(it.id)
+                        listNameKel.add(it.nama)
+                    }
+
+                    binding?.kelurahan?.onItemSelectedListener = this@RegisterActivity
+                    val adapter = ArrayAdapter(
+                        this@RegisterActivity,
+                        android.R.layout.simple_spinner_dropdown_item,
+                        listNameKel,
+                    )
+
+                    binding?.kelurahan?.adapter = adapter
+
                 }
 
-                binding?.kelurahan?.onItemSelectedListener = this@RegisterActivity
-                val adapter = ArrayAdapter(
-                    this@RegisterActivity,
-                    android.R.layout.simple_spinner_dropdown_item,
-                    listNameKel,
-                )
+                override fun onFailure(call: Call<ResponseKelurahan>, t: Throwable) {
 
-                binding?.kelurahan?.adapter = adapter
+                }
 
-            }
-
-            override fun onFailure(call: Call<ResponseKelurahan>, t: Throwable) {
-
-            }
-
-        })
+            })
     }
 
 
@@ -318,10 +346,10 @@ class RegisterActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener
 
 
     /// munculkan dialog ketika gagal registrasi
-    private fun showFailureDialog() {
+    private fun showFailureDialog(message: String) {
         AlertDialog.Builder(this)
             .setTitle("Gagal melakukan registrasi")
-            .setMessage("Silahkan mendaftar kembali dengan informasi yang benar")
+            .setMessage(message)
             .setIcon(R.drawable.ic_baseline_clear_24)
             .setPositiveButton("OKE") { dialogInterface, _ ->
                 dialogInterface.dismiss()

@@ -1,8 +1,11 @@
 package com.project.beeapp.ui.homepage.ui.home.beetire
 
 import android.annotation.SuppressLint
+import android.app.Dialog
 import android.app.ProgressDialog
 import android.content.Intent
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -12,6 +15,7 @@ import android.util.Log
 import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
+import android.widget.Button
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
@@ -147,6 +151,22 @@ class BeeTireActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener 
                 .galleryOnly()
                 .compress(1024)
                 .start(REQUEST_FROM_GALLERY);
+        }
+
+
+        binding?.info?.setOnClickListener {
+            val btnSubmit: Button
+            val dialog = Dialog(this)
+            dialog.setContentView(R.layout.popup_info_payment)
+            dialog.setCanceledOnTouchOutside(false)
+            btnSubmit = dialog.findViewById(R.id.submit)
+
+            btnSubmit.setOnClickListener {
+                dialog.dismiss()
+            }
+
+            dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+            dialog.show()
         }
 
     }
