@@ -1,28 +1,38 @@
 package com.project.beeapp.ui.homepage.ui.home
 
 import android.annotation.SuppressLint
+import android.app.ProgressDialog
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
+import com.denzcoskun.imageslider.constants.ScaleTypes
+import com.denzcoskun.imageslider.models.SlideModel
+import com.github.dhaval2404.imagepicker.ImagePicker
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.storage.FirebaseStorage
 import com.project.beeapp.MainActivity
 import com.project.beeapp.R
 import com.project.beeapp.databinding.FragmentHomeBinding
 import com.project.beeapp.ui.homepage.ui.home.beefuel.BeeFuelActivity
-import com.project.beeapp.ui.homepage.ui.home.beefuel.BeeFuelModel
 import com.project.beeapp.ui.homepage.ui.home.beetire.BeeTireActivity
 import com.project.beeapp.ui.homepage.ui.home.beewash.BeeWashActivity
 import com.project.beeapp.ui.homepage.ui.home.help.HelpActivity
 import com.project.beeapp.ui.homepage.ui.home.income.IncomeAdapter
 import com.project.beeapp.ui.homepage.ui.home.income.IncomeModel
 import com.project.beeapp.ui.homepage.ui.home.income.IncomeViewModel
+import com.project.beeapp.ui.homepage.ui.home.promotion.PromotionActivity
+import com.project.beeapp.ui.homepage.ui.home.promotion.PromotionModel
 import java.text.DecimalFormat
 import java.text.NumberFormat
 import java.text.SimpleDateFormat
@@ -36,6 +46,9 @@ class HomeFragment : Fragment() {
     private lateinit var incomeAdapter: IncomeAdapter
     private val nominalCurrency: NumberFormat = DecimalFormat("#,###")
     private val user = FirebaseAuth.getInstance().currentUser
+    private var dp: String? = null
+    private val REQUEST_FROM_GALLERY = 1001
+    private val promotionList = ArrayList<PromotionModel>()
 
     // This property is only valid between onCreateView and
     // onDestroyView.
@@ -61,11 +74,20 @@ class HomeFragment : Fragment() {
                         binding.verifyDriver.visibility = View.VISIBLE
                         binding.userOrAdminRole.visibility = View.VISIBLE
                         binding.textView35.text = "Status: Admin"
+                        binding.addImageSlider.visibility = View.VISIBLE
+                        binding.edit.visibility = View.VISIBLE
+
+                        setImageSlider()
+
+
                     }
                     "" + it.data?.get("role") == "user" -> {
                         binding.textView.text = "Beranda BeeFlo"
                         binding.userOrAdminRole.visibility = View.VISIBLE
                         binding.textView35.text = "Status: Kustomer"
+
+                        setImageSlider()
+
                     }
                     "" + it.data?.get("role") == "driver" -> {
                         binding.textView.text = "Pendapatan Saya"
@@ -78,6 +100,32 @@ class HomeFragment : Fragment() {
 
 
                     }
+                }
+            }
+    }
+
+    private fun setImageSlider() {
+        val imageList: ArrayList<SlideModel> = ArrayList() // Create image list
+        promotionList.clear()
+
+        FirebaseFirestore
+            .getInstance()
+            .collection("image_slider")
+            .get()
+            .addOnSuccessListener { documents ->
+                if(documents.size() > 0) {
+                    for(document in documents) {
+                        val model = PromotionModel()
+                        val image = "" + document.data["image"]
+                        val uid = "" + document.data["uid"]
+
+                        model.image = image
+                        model.uid = uid
+
+                        imageList.add(SlideModel(image, ScaleTypes.CENTER_CROP))
+                        promotionList.add(model)
+                    }
+                    binding.sliderImage.setImageList(imageList)
                 }
             }
     }
@@ -171,7 +219,6 @@ class HomeFragment : Fragment() {
 
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
 
-
         Glide.with(requireActivity())
             .load(R.drawable.wash)
             .into(binding.beeWash)
@@ -245,6 +292,88 @@ class HomeFragment : Fragment() {
         binding.helpMitra.setOnClickListener {
             startActivity(Intent(activity, HelpActivity::class.java))
         }
+
+        binding.addImageSlider.setOnClickListener {
+            ImagePicker.with(this)
+                .galleryOnly()
+                .compress(1024)
+                .start(REQUEST_FROM_GALLERY);
+        }
+
+        binding.edit.setOnClickListener {
+            val intent = Intent(activity, PromotionActivity::class.java)
+            intent.putExtra(PromotionActivity.EXTRA_PROMOTION, promotionList)
+            startActivity(intent)
+        }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (resultCode == AppCompatActivity.RESULT_OK) {
+            if (requestCode == REQUEST_FROM_GALLERY) {
+                uploadArticleDp(data?.data)
+            }
+        }
+    }
+
+
+    /// fungsi untuk mengupload foto kedalam cloud storage
+    private fun uploadArticleDp(data: Uri?) {
+        val mStorageRef = FirebaseStorage.getInstance().reference
+        val mProgressDialog = ProgressDialog(activity)
+        mProgressDialog.setMessage("Mohon tunggu hingga proses selesai...")
+        mProgressDialog.setCanceledOnTouchOutside(false)
+        mProgressDialog.show()
+        val imageFileName = "imageSlider/image_" + System.currentTimeMillis() + ".png"
+        mStorageRef.child(imageFileName).putFile(data!!)
+            .addOnSuccessListener {
+                mStorageRef.child(imageFileName).downloadUrl
+                    .addOnSuccessListener { uri: Uri ->
+                        dp = uri.toString()
+                        saveImageSliderToDatabase(mProgressDialog)
+                    }
+                    .addOnFailureListener { e: Exception ->
+                        mProgressDialog.dismiss()
+                        Toast.makeText(
+                            activity,
+                            "Gagal mengunggah gambar",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                        Log.d("imageDp: ", e.toString())
+                    }
+            }
+            .addOnFailureListener { e: Exception ->
+                mProgressDialog.dismiss()
+                Toast.makeText(
+                    activity,
+                    "Gagal mengunggah gambar",
+                    Toast.LENGTH_SHORT
+                )
+                    .show()
+                Log.d("imageDp: ", e.toString())
+            }
+    }
+
+    private fun saveImageSliderToDatabase(mProgressDialog: ProgressDialog) {
+        val uid = System.currentTimeMillis().toString()
+        val data = mapOf(
+            "image" to dp,
+            "uid" to uid
+        )
+        FirebaseFirestore
+            .getInstance()
+            .collection("image_slider")
+            .document(uid)
+            .set(data)
+            .addOnCompleteListener {
+                if(it.isSuccessful) {
+                    mProgressDialog.dismiss()
+                    setImageSlider()
+                } else {
+                    mProgressDialog.dismiss()
+                    Toast.makeText(activity, "Gagal menambahkan slider image", Toast.LENGTH_SHORT).show()
+                }
+            }
     }
 
 

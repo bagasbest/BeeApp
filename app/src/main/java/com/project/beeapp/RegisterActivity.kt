@@ -1,6 +1,7 @@
 package com.project.beeapp
 
 import android.app.ProgressDialog
+import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -15,10 +16,9 @@ import androidx.appcompat.app.AppCompatActivity
 import com.bumptech.glide.Glide
 import com.github.dhaval2404.imagepicker.ImagePicker
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
 import com.google.firebase.auth.FirebaseAuthUserCollisionException
-import com.google.firebase.auth.FirebaseAuthWeakPasswordException
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.messaging.FirebaseMessaging
 import com.google.firebase.storage.FirebaseStorage
 import com.project.beeapp.api.RetrofitClient
 import com.project.beeapp.api.model.ResponseKecamatan
@@ -26,14 +26,25 @@ import com.project.beeapp.api.model.ResponseKelurahan
 import com.project.beeapp.api.model.ResponseKota
 import com.project.beeapp.api.model.ResponseProvinsi
 import com.project.beeapp.databinding.ActivityRegisterBinding
+import com.project.beeapp.notification.FirebaseService
+import com.project.beeapp.notification.NotificationData
+import com.project.beeapp.notification.PushNotification
+import com.project.beeapp.notification.RetrofitInstance
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.text.SimpleDateFormat
+import java.util.*
+import kotlin.collections.ArrayList
 
 
 class RegisterActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
 
     private var binding: ActivityRegisterBinding? = null
+    private val TAG = RegisterActivity::class.java.simpleName
     private var listIdProv = ArrayList<Int>()
     private var listNameProv = ArrayList<String>()
     private var listIdKota = ArrayList<Int>()
@@ -47,11 +58,19 @@ class RegisterActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener
     private val REQUEST_FROM_GALLERY = 1001
     private var role: String? = null
     private lateinit var status: String
+    private var myToken: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityRegisterBinding.inflate(layoutInflater)
         setContentView(binding?.root)
+
+        FirebaseService.sharedPref = getSharedPreferences("sharedPref", Context.MODE_PRIVATE)
+        FirebaseMessaging.getInstance().token.addOnSuccessListener { result ->
+            FirebaseService.token = result
+            myToken = result
+        }
+        FirebaseMessaging.getInstance().subscribeToTopic(TOPIC)
 
         showProvinsi()
 
@@ -116,7 +135,7 @@ class RegisterActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener
                 ).show()
                 return
             }
-            role == "mitra" && dp == null -> {
+            role == "driver" && dp == null -> {
                 Toast.makeText(this, "Silahkan unggah foto formal anda", Toast.LENGTH_SHORT).show()
                 return
             }
@@ -153,6 +172,7 @@ class RegisterActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener
                         "image" to "" + dp,
                         "status" to status,
                         "isWork" to false,
+                        "token" to myToken.toString(),
                     )
 
                     FirebaseFirestore
@@ -162,8 +182,21 @@ class RegisterActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener
                         .set(data)
                         .addOnCompleteListener { task ->
                             if (task.isSuccessful) {
-                                binding?.progressBar?.visibility = View.GONE
-                                showSuccessDialog()
+
+                                if(role == "driver") {
+                                    if(myToken != null) {
+                                        sendNotificationToAdmin(fullname, userId)
+                                        getAdminToken(fullname)
+                                    } else {
+                                        binding?.progressBar?.visibility = View.GONE
+                                        showFailureDialog("Token kosong, mohon pastikan koneksi internet anda stabil dan coba lagi")
+                                    }
+                                } else {
+                                    binding?.progressBar?.visibility = View.GONE
+                                    showSuccessDialog()
+                                }
+
+
                             } else {
                                 binding?.progressBar?.visibility = View.GONE
                                 showFailureDialog("Silahkan mendaftar kembali dengan informasi yang benar, dan pastikan koneksi internet lancar")
@@ -178,6 +211,49 @@ class RegisterActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener
                     } catch (e: java.lang.Exception) {
                         Log.e("TAG", e.message!!)
                     }
+                }
+            }
+    }
+
+    private fun sendNotificationToAdmin(fullname: String, userId: String) {
+
+        val df = SimpleDateFormat("dd-MMM-yyyy, HH:mm:ss")
+        val formattedDate: String = df.format(Date())
+        val uid = System.currentTimeMillis().toString()
+
+        val data = mapOf(
+            "title" to "Konfirmasi Pendaftaran Mitra",
+            "message" to "$fullname telah mendaftar sebagai mitra",
+            "date" to formattedDate,
+            "type" to "admin",
+            "userId" to userId,
+            "uid" to uid
+        )
+
+        FirebaseFirestore
+            .getInstance()
+            .collection("notification")
+            .document(uid)
+            .set(data)
+    }
+
+    private fun getAdminToken(fullname: String) {
+        FirebaseFirestore
+            .getInstance()
+            .collection("users")
+            .document("CSpWB7SLOIQQ3eSjMVDpdC7Q8Yd2")
+            .get()
+            .addOnSuccessListener {
+                val token = "" + it.data?.get("token")
+
+                PushNotification(
+                    NotificationData(
+                        "Konfirmasi Pendaftaran Mitra",
+                        "$fullname telah mendaftar sebagai mitra"
+                    ),
+                    token
+                ).also { pushNotification ->
+                    sendNotification(pushNotification)
                 }
             }
     }
@@ -426,11 +502,39 @@ class RegisterActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener
             }
     }
 
+
+    private fun sendNotification(notification: PushNotification) =
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                val response = RetrofitInstance.api.pushNotification(notification)
+                runOnUiThread {
+                    if (response.isSuccessful) {
+                        binding?.progressBar?.visibility = View.GONE
+                        showSuccessDialog()
+                    } else {
+                        binding?.progressBar?.visibility = View.GONE
+                        Log.e("Error else", response.body().toString())
+                        showFailureDialog("Token kosong, mohon pastikan koneksi internet anda stabil dan coba lagi")
+                    }
+                }
+            } catch (e: Exception) {
+                binding?.progressBar?.visibility = View.GONE
+                Log.e("Error catch", e.toString())
+                runOnUiThread {
+                    showFailureDialog("Token kosong, mohon pastikan koneksi internet anda stabil dan coba lagi")
+                }
+            }
+        }
+
     /// HAPUSKAN ACTIVITY KETIKA SUDAH TIDAK DIGUNAKAN, AGAR MENGURANGI RISIKO MEMORY LEAKS
     override fun onDestroy() {
         super.onDestroy()
         binding = null
     }
 
+
+    companion object {
+        const val TOPIC = "/topics/register"
+    }
 
 }

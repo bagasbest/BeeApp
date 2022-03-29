@@ -18,6 +18,12 @@
         tools:layout="@layout/fragment_order" />
 
     <fragment
+        android:id="@+id/navigation_notification"
+        android:name="com.project.beeapp.ui.homepage.ui.notification.NotificationFragment"
+        android:label="Notifikasi"
+        tools:layout="@layout/fragment_notification" />
+
+    <fragment
         android:id="@+id/navigation_profile"
         android:name="com.project.beeapp.ui.homepage.ui.profile.ProfileFragment"
         android:label="@string/title_profile"

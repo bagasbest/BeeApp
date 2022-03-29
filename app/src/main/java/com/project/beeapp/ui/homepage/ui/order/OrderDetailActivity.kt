@@ -12,7 +12,6 @@ import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
-import androidx.lifecycle.lifecycleScope
 import com.bumptech.glide.Glide
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
@@ -25,7 +24,6 @@ import java.text.DecimalFormat
 import java.text.NumberFormat
 import java.text.SimpleDateFormat
 import java.util.*
-import kotlin.concurrent.schedule
 
 class OrderDetailActivity : AppCompatActivity() {
 
@@ -75,6 +73,7 @@ class OrderDetailActivity : AppCompatActivity() {
             "Sudah Bayar" -> {
                 binding?.bgStatus?.backgroundTintList =
                     ContextCompat.getColorStateList(this, android.R.color.holo_green_dark)
+                binding?.phoneCall?.visibility = View.GONE
             }
             "Selesai" -> {
                 binding?.bgStatus?.backgroundTintList =
@@ -128,7 +127,7 @@ class OrderDetailActivity : AppCompatActivity() {
 
 
         binding?.phoneCall?.setOnClickListener {
-            if (model?.status == "Sudah Bayar" && model?.userId == uid) {
+            if (model?.status == "Order Diterima" && model?.userId == uid) {
                 val intent =
                     Intent(Intent.ACTION_DIAL, Uri.fromParts("tel", model?.driverNumber, null))
                 startActivity(intent)
@@ -144,6 +143,7 @@ class OrderDetailActivity : AppCompatActivity() {
                 accPaymentDialog()
             } else if (model?.status == "Order Diterima") {
                 finishOrderDialog()
+                sendNotificationToUserByDriver(model?.driverName!!, "Selesai")
             }
         }
 
@@ -177,9 +177,13 @@ class OrderDetailActivity : AppCompatActivity() {
             .setIcon(R.drawable.ic_baseline_warning_24)
             .setPositiveButton("YA") { dialogInterface, _ ->
                 dialogInterface.dismiss()
+                sendNotificationToUserAccept()
                 accPayment()
             }
-            .setNegativeButton("TIDAK", null)
+            .setNegativeButton("TIDAK") { dialog, _ ->
+                dialog.dismiss()
+                sendNotificationToUserDecline()
+            }
             .show()
     }
 
@@ -335,6 +339,7 @@ class OrderDetailActivity : AppCompatActivity() {
                 val name = "" + it.data?.get("fullname")
                 val phone = "" + it.data?.get("phone")
                 val image = "" + it.data?.get("image")
+                sendNotificationToUserByDriver(name, "Mulai")
 
                 val data = mapOf(
                     "driverId" to uid,
@@ -445,6 +450,89 @@ class OrderDetailActivity : AppCompatActivity() {
                         onBackPressed()
                     }
                 }
+        }
+    }
+
+
+    private fun sendNotificationToUserAccept() {
+
+        val df = SimpleDateFormat("dd-MMM-yyyy, HH:mm:ss")
+        val formattedDate: String = df.format(Date())
+        val uid = System.currentTimeMillis().toString()
+
+        val data = mapOf(
+            "title" to "Pembayaran Dikonfirmasi Admin",
+            "message" to "Selanjutnya mitra BeeFlo akan mengonfirmasi orderan anda, silahkan tunggu",
+            "date" to formattedDate,
+            "type" to "user",
+            "userId" to model?.userId,
+            "uid" to uid
+        )
+
+        FirebaseFirestore
+            .getInstance()
+            .collection("notification")
+            .document(uid)
+            .set(data)
+    }
+
+    private fun sendNotificationToUserDecline() {
+
+        val df = SimpleDateFormat("dd-MMM-yyyy, HH:mm:ss")
+        val formattedDate: String = df.format(Date())
+        val uid = System.currentTimeMillis().toString()
+
+        val data = mapOf(
+            "title" to "Pembayaran Ditolak Admin",
+            "message" to "Bukti pembayaran anda ditolak admin, karena tidak ada saldo yang masuk ke rekening",
+            "date" to formattedDate,
+            "type" to "user",
+            "userId" to model?.userId,
+            "uid" to uid
+        )
+
+        FirebaseFirestore
+            .getInstance()
+            .collection("notification")
+            .document(uid)
+            .set(data)
+    }
+
+    private fun sendNotificationToUserByDriver(name: String, status: String) {
+        val df = SimpleDateFormat("dd-MMM-yyyy, HH:mm:ss")
+        val formattedDate: String = df.format(Date())
+        val uid = System.currentTimeMillis().toString()
+
+        if(status == "Mulai") {
+            val data = mapOf(
+                "title" to "Orderan Anda Dikonfirmasi Mitra",
+                "message" to "$name, mengkonfirmasi orderanmu",
+                "date" to formattedDate,
+                "type" to "user",
+                "userId" to model?.userId,
+                "uid" to uid
+            )
+
+            FirebaseFirestore
+                .getInstance()
+                .collection("notification")
+                .document(uid)
+                .set(data)
+        } else{
+            val data = mapOf(
+                "title" to "Orderan Anda Diselesaikan Mitra",
+                "message" to "$name, berhasil menyelesaikan orderanmu",
+                "date" to formattedDate,
+                "type" to "user",
+                "userId" to model?.userId,
+                "uid" to uid
+            )
+
+            FirebaseFirestore
+                .getInstance()
+                .collection("notification")
+                .document(uid)
+                .set(data)
         }
     }
 

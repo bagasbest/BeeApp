@@ -347,11 +347,16 @@ class BeeTireActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener 
         val df = SimpleDateFormat("dd-MMM-yyyy, HH:mm:ss")
         val formattedDate: String = df.format(Date())
 
-        if(bankName == "Cash") {
-            dp = ""
-        }
 
         Timer().schedule(2000) {
+
+            if(bankName == "Cash") {
+                dp = ""
+            } else {
+                sendNotificationToAdmin(name!!, myUid, bankName)
+            }
+
+
             val order = mapOf(
                 "orderId" to orderId,
                 "userId" to myUid,
@@ -394,9 +399,30 @@ class BeeTireActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener 
                     }
             }
         }
-
-
     }
+
+    private fun sendNotificationToAdmin(fullname: String, userId: String, bankName: String?) {
+
+        val df = SimpleDateFormat("dd-MMM-yyyy, HH:mm:ss")
+        val formattedDate: String = df.format(Date())
+        val uid = System.currentTimeMillis().toString()
+
+        val data = mapOf(
+            "title" to "Konfirmasi Bukti Pembayaran",
+            "message" to "$fullname telah mentransfer uang ke rekening $bankName, silahkan lakukan verifikasi",
+            "date" to formattedDate,
+            "type" to "admin",
+            "userId" to userId,
+            "uid" to uid
+        )
+
+        FirebaseFirestore
+            .getInstance()
+            .collection("notification")
+            .document(uid)
+            .set(data)
+    }
+
 
     private fun getUserInformation() {
         FirebaseFirestore

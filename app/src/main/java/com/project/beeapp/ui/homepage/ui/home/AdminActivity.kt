@@ -6,6 +6,7 @@ import android.os.Bundle
 import com.project.beeapp.databinding.ActivityAdminBinding
 import com.project.beeapp.ui.homepage.ui.home.akumulasi_pendapatan_mitra.AccumulatePartnerOrderActivity
 import com.project.beeapp.ui.homepage.ui.home.bagi_hasil.BagiHasilActivity
+import com.project.beeapp.ui.homepage.ui.home.rekening.RekeningActivity
 import com.project.beeapp.ui.homepage.ui.home.verify_driver.VerifyDriverActivity
 
 class AdminActivity : AppCompatActivity() {
@@ -31,6 +32,10 @@ class AdminActivity : AppCompatActivity() {
 
         binding?.bagiHasil?.setOnClickListener {
             startActivity(Intent(this, BagiHasilActivity::class.java))
+        }
+
+        binding?.rekening?.setOnClickListener {
+            startActivity(Intent(this, RekeningActivity::class.java))
         }
 
     }

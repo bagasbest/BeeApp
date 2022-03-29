@@ -21,10 +21,13 @@
         <entry key="..\:/TUBES_GALERI/BeeApp/app/src/main/res/layout/activity_homepage.xml" value="0.16802536231884058" />
         <entry key="..\:/TUBES_GALERI/BeeApp/app/src/main/res/layout/activity_main.xml" value="0.264" />
         <entry key="..\:/TUBES_GALERI/BeeApp/app/src/main/res/layout/activity_order_detail.xml" value="0.176" />
+        <entry key="..\:/TUBES_GALERI/BeeApp/app/src/main/res/layout/activity_promotion.xml" value="0.23645833333333333" />
         <entry key="..\:/TUBES_GALERI/BeeApp/app/src/main/res/layout/activity_register.xml" value="0.264" />
+        <entry key="..\:/TUBES_GALERI/BeeApp/app/src/main/res/layout/activity_rekening.xml" value="0.176" />
         <entry key="..\:/TUBES_GALERI/BeeApp/app/src/main/res/layout/activity_verify_driver.xml" value="0.23645833333333333" />
         <entry key="..\:/TUBES_GALERI/BeeApp/app/src/main/res/layout/activity_verify_driver_detail.xml" value="0.22239583333333332" />
-        <entry key="..\:/TUBES_GALERI/BeeApp/app/src/main/res/layout/fragment_home.xml" value="0.264" />
+        <entry key="..\:/TUBES_GALERI/BeeApp/app/src/main/res/layout/fragment_home.xml" value="0.176" />
+        <entry key="..\:/TUBES_GALERI/BeeApp/app/src/main/res/layout/fragment_notification.xml" value="0.23645833333333333" />
         <entry key="..\:/TUBES_GALERI/BeeApp/app/src/main/res/layout/fragment_order.xml" value="0.23645833333333333" />
         <entry key="..\:/TUBES_GALERI/BeeApp/app/src/main/res/layout/fragment_order_finish.xml" value="0.23645833333333333" />
         <entry key="..\:/TUBES_GALERI/BeeApp/app/src/main/res/layout/fragment_order_pick.xml" value="0.13134057971014493" />
@@ -32,7 +35,10 @@
         <entry key="..\:/TUBES_GALERI/BeeApp/app/src/main/res/layout/fragment_profile.xml" value="0.23645833333333333" />
         <entry key="..\:/TUBES_GALERI/BeeApp/app/src/main/res/layout/item_income.xml" value="0.23645833333333333" />
         <entry key="..\:/TUBES_GALERI/BeeApp/app/src/main/res/layout/item_income_partner.xml" value="0.23645833333333333" />
+        <entry key="..\:/TUBES_GALERI/BeeApp/app/src/main/res/layout/item_notification.xml" value="0.48405253283302063" />
         <entry key="..\:/TUBES_GALERI/BeeApp/app/src/main/res/layout/item_order.xml" value="0.264" />
+        <entry key="..\:/TUBES_GALERI/BeeApp/app/src/main/res/layout/item_promotion.xml" value="0.23645833333333333" />
+        <entry key="..\:/TUBES_GALERI/BeeApp/app/src/main/res/layout/item_rekening.xml" value="0.23645833333333333" />
         <entry key="..\:/TUBES_GALERI/BeeApp/app/src/main/res/layout/item_verify_driver.xml" value="0.23645833333333333" />
         <entry key="..\:/TUBES_GALERI/BeeApp/app/src/main/res/layout/popup_info_payment.xml" value="0.23645833333333333" />
         <entry key="..\:/TUBES_GALERI/BeeApp/app/src/main/res/menu/bottom_nav_menu.xml" value="0.21203703703703702" />

@@ -1,5 +1,6 @@
 package com.project.beeapp
 
+import android.content.Context
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -9,7 +10,9 @@ import androidx.appcompat.app.AlertDialog
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.messaging.FirebaseMessaging
 import com.project.beeapp.databinding.ActivityMainBinding
+import com.project.beeapp.notification.FirebaseService
 import com.project.beeapp.ui.homepage.HomeActivity
 
 class MainActivity : AppCompatActivity() {
@@ -111,9 +114,23 @@ class MainActivity : AppCompatActivity() {
             .signInWithEmailAndPassword(email, password)
             .addOnCompleteListener { task2 ->
                 if (task2.isSuccessful) {
-                    /// jika terdapat di database dan email serta password sama, maka masuk ke homepage
-                    binding?.progressBar?.visibility = View.GONE
-                    startActivity(Intent(this, HomeActivity::class.java))
+
+                    FirebaseService.sharedPref = getSharedPreferences("sharedPref", Context.MODE_PRIVATE)
+                    FirebaseMessaging.getInstance().token.addOnSuccessListener { result ->
+                        FirebaseService.token = result
+
+                        val myUid = FirebaseAuth.getInstance().currentUser!!.uid
+                        FirebaseFirestore
+                            .getInstance()
+                            .collection("users")
+                            .document(myUid)
+                            .update("token", result.toString())
+                            .addOnCompleteListener {
+                                /// jika terdapat di database dan email serta password sama, maka masuk ke homepage
+                                binding?.progressBar?.visibility = View.GONE
+                                startActivity(Intent(this, HomeActivity::class.java))
+                            }
+                    }
                 } else {
                     /// jika tidak terdapat di database dan email serta password, maka tidak bisa login
                     binding?.progressBar?.visibility = View.GONE
