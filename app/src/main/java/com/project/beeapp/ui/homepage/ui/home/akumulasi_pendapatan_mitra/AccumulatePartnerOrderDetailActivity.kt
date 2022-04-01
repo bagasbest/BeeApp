@@ -7,15 +7,18 @@ import android.view.View
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
+import com.google.android.material.datepicker.MaterialDatePicker
 import com.google.firebase.firestore.FirebaseFirestore
 import com.project.beeapp.databinding.ActivityAccumulatePartnerOrderDetailBinding
 import com.project.beeapp.ui.homepage.ui.home.income.IncomeAdapter
+import com.project.beeapp.ui.homepage.ui.home.income.IncomeModel
 import com.project.beeapp.ui.homepage.ui.home.income.IncomeViewModel
 import com.project.beeapp.ui.homepage.ui.home.verify_driver.VerifyDriverModel
 import java.text.DecimalFormat
 import java.text.NumberFormat
 import java.text.SimpleDateFormat
 import java.util.*
+import kotlin.collections.ArrayList
 
 class AccumulatePartnerOrderDetailActivity : AppCompatActivity() {
 
@@ -44,35 +47,63 @@ class AccumulatePartnerOrderDetailActivity : AppCompatActivity() {
         binding?.npwp?.text = "NPWP: ${model?.npwp}"
 
         initRecyclerView()
-        initViewModel()
+        initViewModel("")
 
 
         binding?.backButton?.setOnClickListener {
             onBackPressed()
         }
 
+        binding?.filter?.setOnClickListener {
+            showCalendar()
+        }
+    }
+
+    @SuppressLint("SimpleDateFormat")
+    private fun showCalendar() {
+        val datePicker: MaterialDatePicker<*> =
+            MaterialDatePicker.Builder.datePicker().setTitleText("Filter Pendapatan Pada Tanggal").build()
+        datePicker.show(supportFragmentManager, datePicker.toString())
+        datePicker.addOnPositiveButtonClickListener { selection: Any ->
+            val sdf = SimpleDateFormat("dd-MMM-yyyy")
+            val format = sdf.format(Date(selection.toString().toLong()))
+            binding?.filter?.text = format
+
+            initRecyclerView()
+            initViewModel(format)
+        }
     }
 
     private fun initRecyclerView() {
-        binding?.rvIncome?.layoutManager = LinearLayoutManager(this)
+        val layoutManager = LinearLayoutManager(this)
+        layoutManager.reverseLayout = true
+        layoutManager.stackFromEnd = true
+        binding?.rvIncome?.layoutManager = layoutManager
         incomeAdapter = IncomeAdapter()
         binding?.rvIncome?.adapter = incomeAdapter
     }
 
-    private fun initViewModel() {
+    private fun initViewModel(filterDate: String) {
         val viewModel = ViewModelProvider(this)[IncomeViewModel::class.java]
 
         binding?.progressBarDriver?.visibility = View.VISIBLE
-        model?.uid?.let { viewModel.setListIncome(it) }
+        if(filterDate == "") {
+            model?.uid?.let { viewModel.setListIncome(it) }
+        } else {
+            model?.uid?.let { viewModel.setListIncomeByFilter(it, filterDate) }
+        }
         viewModel.getIncome().observe(this) { income ->
             if (income.size > 0) {
                 incomeAdapter.setData(income)
                 binding?.noData?.visibility = View.GONE
 
+                if(filterDate == "") {
+                    getIncomeMonthly()
+                    getIncomeDaily()
+                }
 
-                getIncomeTotal()
-                getIncomeMonthly()
-                getIncomeDaily()
+                getIncomeTotal(income, filterDate)
+
 
             } else {
                 binding?.noData?.visibility = View.VISIBLE
@@ -82,19 +113,19 @@ class AccumulatePartnerOrderDetailActivity : AppCompatActivity() {
     }
 
     @SuppressLint("SetTextI18n")
-    private fun getIncomeTotal() {
-        FirebaseFirestore
-            .getInstance()
-            .collection("income")
-            .whereEqualTo("partnerId", model?.uid)
-            .get()
-            .addOnSuccessListener { documents ->
-                var totalIncome = 0L
-                for(document in documents) {
-                    totalIncome += document.data["income"] as Long
-                }
-                binding?.total?.text = "Pendapatan Total: Rp.${nominalCurrency.format(totalIncome)}"
-            }
+    private fun getIncomeTotal(income: ArrayList<IncomeModel>, filterDate: String) {
+        var incomeTotal = 0L
+        for(i in income.indices) {
+            incomeTotal += income[i].income!!
+        }
+
+        if(filterDate == ""){
+            binding?.total?.text = "Pendapatan Total: Rp.${nominalCurrency.format(incomeTotal)}"
+        } else {
+            binding?.daily?.visibility = View.GONE
+            binding?.monthly?.visibility = View.GONE
+            binding?.total?.text = "Pendapatan Tanggal Tersebut: Rp.${nominalCurrency.format(incomeTotal)}"
+        }
     }
 
     @SuppressLint("SimpleDateFormat", "SetTextI18n")

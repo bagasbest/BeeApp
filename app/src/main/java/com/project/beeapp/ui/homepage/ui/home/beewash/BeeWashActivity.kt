@@ -32,6 +32,8 @@ import com.project.beeapp.api.model.ResponseKota
 import com.project.beeapp.api.model.ResponseProvinsi
 import com.project.beeapp.databinding.ActivityBeeWashBinding
 import com.project.beeapp.ui.homepage.ui.home.beefuel.PaymentModel
+import com.project.beeapp.utils.SendNotification
+import kotlinx.coroutines.*
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -51,8 +53,12 @@ class BeeWashActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener 
     private var kelurahan: String? = null
     private var name: String? = null
     private var phone: String? = null
-    private var priceCar: Long? = 0L
-    private var priceBike: Long? = 0L
+    private var priceSmallCar: Long? = 0L
+    private var priceMediumCar: Long? = 0L
+    private var priceLargeCar: Long? = 0L
+    private var priceSmallBike: Long? = 0L
+    private var priceMediumBike: Long? = 0L
+    private var priceLargeBike: Long? = 0L
     private var priceTotal: Long? = 0L
 
     private var bankName: String? = null
@@ -72,6 +78,7 @@ class BeeWashActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener 
     private var listNameKel  = ArrayList<String>()
 
     private var locationOption: String? = null
+    private var vehicleType: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -84,6 +91,7 @@ class BeeWashActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener 
         getPricing()
         setPaymentChoose()
         setLocationChoose()
+        setVehicleType()
 
         Glide.with(this)
             .load(R.drawable.logo_trans2)
@@ -93,16 +101,41 @@ class BeeWashActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener 
         binding?.qty?.addTextChangedListener(object : TextWatcher {
             @SuppressLint("SetTextI18n")
             override fun afterTextChanged(qty: Editable?) {
-                if (qty.toString().isEmpty() || option == null) {
+                if (qty.toString().isEmpty() || option == null || vehicleType == null) {
                     priceTotal = 0
                     binding?.priceTotal?.text = "Total Biaya Rp.${priceTotal}"
                 } else {
                     if (option == "car") {
-                        priceTotal = priceCar?.times(qty.toString().toLong())
-                        binding?.priceTotal?.text = "Total Biaya Rp.${format.format(priceTotal)}"
+                        when (vehicleType) {
+                            "Kendaraan Kecil" -> {
+                                priceTotal = priceSmallCar?.times(qty.toString().toLong())
+                                binding?.priceTotal?.text = "Total Biaya Rp.${format.format(priceTotal)}"
+                            }
+                            "Kendaraan Sedang" -> {
+                                priceTotal = priceMediumCar?.times(qty.toString().toLong())
+                                binding?.priceTotal?.text = "Total Biaya Rp.${format.format(priceTotal)}"
+                            }
+                            else -> {
+                                priceTotal = priceLargeCar?.times(qty.toString().toLong())
+                                binding?.priceTotal?.text = "Total Biaya Rp.${format.format(priceTotal)}"
+                            }
+                        }
+
                     } else {
-                        priceTotal = priceBike?.times(qty.toString().toLong())
-                        binding?.priceTotal?.text = "Total Biaya Rp.${format.format(priceTotal)}"
+                        when (vehicleType) {
+                            "Kendaraan Kecil" -> {
+                                priceTotal = priceSmallBike?.times(qty.toString().toLong())
+                                binding?.priceTotal?.text = "Total Biaya Rp.${format.format(priceTotal)}"
+                            }
+                            "Kendaraan Sedang" -> {
+                                priceTotal = priceMediumBike?.times(qty.toString().toLong())
+                                binding?.priceTotal?.text = "Total Biaya Rp.${format.format(priceTotal)}"
+                            }
+                            else -> {
+                                priceTotal = priceLargeBike?.times(qty.toString().toLong())
+                                binding?.priceTotal?.text = "Total Biaya Rp.${format.format(priceTotal)}"
+                            }
+                        }
                     }
                 }
             }
@@ -140,9 +173,6 @@ class BeeWashActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener 
 
         binding?.edit?.setOnClickListener {
             val intent = Intent (this, BeeWashEditActivity::class.java)
-            intent.putExtra(BeeWashEditActivity.EXTRA_CAR, priceCar.toString())
-            intent.putExtra(BeeWashEditActivity.EXTRA_BIKE, priceBike.toString())
-            intent.putExtra(BeeWashEditActivity.OPTION, "beeWash")
             startActivity(intent)
         }
 
@@ -161,6 +191,43 @@ class BeeWashActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener 
             dialog.show()
         }
 
+    }
+
+    @SuppressLint("SetTextI18n")
+    private fun setVehicleType() {
+        val adapter = ArrayAdapter.createFromResource(
+            this,
+            R.array.type, android.R.layout.simple_list_item_1
+        )
+        // Specify the layout to use when the list of choices appears
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        // Apply the adapter to the spinner
+        binding?.type?.setAdapter(adapter)
+        binding?.type?.setOnItemClickListener { _, _, _, _ ->
+            binding?.typeDescriptor?.visibility = View.VISIBLE
+            binding?.qty?.setText("")
+            vehicleType = binding?.type?.text.toString()
+
+            when (vehicleType) {
+                "Kendaraan Kecil" -> {
+                    priceTotal = 0
+                    binding?.priceTotal?.text = "Total Biaya Rp.${priceTotal}"
+                    binding?.typeDescriptor?.text = "Motor: Sejenis Honda Beat, Vario, Mio atau motor gigi seperti Supra, Vega, atau Jupiter\n\nMobil: Sejenis Sedan, Hatchback, atau Station dan mobil bertipe kecil"
+                }
+                "Kendaraan Sedang" -> {
+                    priceTotal = 0
+                    binding?.priceTotal?.text = "Total Biaya Rp.${priceTotal}"
+                    binding?.typeDescriptor?.text = "Motor: Sejenis Motor NMAX\n\nMobil: Sejenis Minibus Avanza, Inova, Toyota dan sebagainya,"
+                }
+                else -> {
+                    priceTotal = 0
+                    binding?.priceTotal?.text = "Total Biaya Rp.${priceTotal}"
+                    binding?.typeDescriptor?.text = "Motor: Sejenis Vixion, Kawasaki, Verza, serta motor besar lainnya\n\nMobil: Sejenis Truk atau Bus"
+
+                }
+            }
+
+        }
     }
 
     private fun setLocationChoose() {
@@ -260,8 +327,12 @@ class BeeWashActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener 
             .get()
             .addOnSuccessListener {
                 if(it.exists()) {
-                    priceCar = it.data?.get("car") as Long
-                    priceBike = it.data?.get("bike") as Long
+                    priceSmallCar = it.data?.get("smallCar") as Long
+                    priceMediumCar = it.data?.get("mediumCar") as Long
+                    priceLargeCar = it.data?.get("largeCar") as Long
+                    priceSmallBike = it.data?.get("smallBike") as Long
+                    priceMediumBike = it.data?.get("mediumBike") as Long
+                    priceLargeBike = it.data?.get("largeBike") as Long
                 }
             }
     }
@@ -279,6 +350,7 @@ class BeeWashActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener 
             }
     }
 
+    @OptIn(DelicateCoroutinesApi::class)
     @SuppressLint("SimpleDateFormat")
     private fun formValidation() {
         val address = binding?.address?.text.toString().trim()
@@ -386,8 +458,16 @@ class BeeWashActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener 
                     .set(order)
                     .addOnCompleteListener {
                         if (it.isSuccessful) {
-                            mProgressDialog.dismiss()
-                            showSuccessDialog()
+                            val job = GlobalScope.launch(Dispatchers.Default) {
+                                SendNotification.sendNotificationFromUserToItself(myUid)
+                                delay(1000)
+                            }
+                            runBlocking {
+                                job.join()
+                                mProgressDialog.dismiss()
+                                showSuccessDialog()
+                            }
+
                         } else {
                             mProgressDialog.dismiss()
                             showFailureDialog()

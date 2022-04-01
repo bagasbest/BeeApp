@@ -30,6 +30,8 @@ import com.project.beeapp.api.model.ResponseKelurahan
 import com.project.beeapp.api.model.ResponseKota
 import com.project.beeapp.api.model.ResponseProvinsi
 import com.project.beeapp.databinding.ActivityBeeFuelBinding
+import com.project.beeapp.utils.SendNotification
+import kotlinx.coroutines.*
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -405,8 +407,15 @@ class BeeFuelActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener 
                     .set(order)
                     .addOnCompleteListener {
                         if (it.isSuccessful) {
-                            mProgressDialog.dismiss()
-                            showSuccessDialog()
+                            val job = GlobalScope.launch(Dispatchers.Default) {
+                                SendNotification.sendNotificationFromUserToItself(myUid)
+                                delay(1000)
+                            }
+                            runBlocking {
+                                job.join()
+                                mProgressDialog.dismiss()
+                                showSuccessDialog()
+                            }
                         } else {
                             mProgressDialog.dismiss()
                             showFailureDialog()

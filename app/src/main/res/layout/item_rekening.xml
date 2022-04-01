@@ -41,6 +41,35 @@
             android:textColor="@color/black"
             android:id="@+id/recNumber" />
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:orientation="horizontal">
+
+            <ImageButton
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:id="@+id/edit"
+                android:contentDescription="@string/image"
+                android:src="@drawable/ic_baseline_edit_24"
+                android:background="@drawable/bg_rounded"
+                android:backgroundTint="@color/purple_500" />
+
+            <ImageButton
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:id="@+id/delete"
+                android:layout_marginStart="16dp"
+                app:tint="@color/white"
+                android:contentDescription="@string/image"
+                android:src="@drawable/ic_baseline_clear_24"
+                android:background="@drawable/bg_rounded"
+                android:backgroundTint="@color/purple_500" />
+
+
+        </LinearLayout>
+
     </LinearLayout>
 
 </androidx.cardview.widget.CardView>

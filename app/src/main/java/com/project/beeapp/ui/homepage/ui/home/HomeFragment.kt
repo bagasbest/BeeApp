@@ -18,6 +18,7 @@ import com.bumptech.glide.Glide
 import com.denzcoskun.imageslider.constants.ScaleTypes
 import com.denzcoskun.imageslider.models.SlideModel
 import com.github.dhaval2404.imagepicker.ImagePicker
+import com.google.android.material.datepicker.MaterialDatePicker
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
@@ -37,7 +38,7 @@ import java.text.DecimalFormat
 import java.text.NumberFormat
 import java.text.SimpleDateFormat
 import java.util.*
-import kotlin.collections.ArrayList
+
 
 class HomeFragment : Fragment() {
 
@@ -95,7 +96,7 @@ class HomeFragment : Fragment() {
                         binding.textView35.text = "Status: Mitra"
 
                         initRecyclerView()
-                        initViewModel()
+                        initViewModel("")
 
 
 
@@ -131,25 +132,33 @@ class HomeFragment : Fragment() {
     }
 
     private fun initRecyclerView() {
-        binding.rvIncome.layoutManager = LinearLayoutManager(activity)
+        val layoutManager = LinearLayoutManager(activity)
+        layoutManager.reverseLayout = true
+        layoutManager.stackFromEnd = true
+        binding.rvIncome.layoutManager = layoutManager
         incomeAdapter = IncomeAdapter()
         binding.rvIncome.adapter = incomeAdapter
     }
 
-    private fun initViewModel() {
+    private fun initViewModel(filterDate: String) {
         val viewModel = ViewModelProvider(this)[IncomeViewModel::class.java]
         val uid = FirebaseAuth.getInstance().currentUser!!.uid
 
         binding.progressBarDriver.visibility = View.VISIBLE
-        viewModel.setListIncome(uid)
-        viewModel.getIncome().observe(this) { income ->
+        if (filterDate == "") {
+            viewModel.setListIncome(uid)
+        } else {
+            viewModel.setListIncomeByFilter(uid, filterDate)
+        }
+        viewModel.getIncome().observe(viewLifecycleOwner) { income ->
             if (income.size > 0) {
                 incomeAdapter.setData(income)
                 binding.noData.visibility = View.GONE
-
-                getTotalIncome(income)
-                getMonthlyIncome()
-                getDailyIncome()
+                getTotalIncome(income, filterDate)
+                if(filterDate == "") {
+                    getMonthlyIncome()
+                    getDailyIncome()
+                }
             } else {
                 binding.noData.visibility = View.VISIBLE
             }
@@ -202,13 +211,19 @@ class HomeFragment : Fragment() {
     }
 
     @SuppressLint("SetTextI18n")
-    private fun getTotalIncome(income: ArrayList<IncomeModel>) {
+    private fun getTotalIncome(income: ArrayList<IncomeModel>, filterDate: String) {
         var incomeTotal = 0L
         for(i in income.indices) {
             incomeTotal += income[i].income!!
         }
 
-        binding.total.text = "Total: Rp.${nominalCurrency.format(incomeTotal)}"
+        if(filterDate == ""){
+            binding.total.text = "Total: Rp.${nominalCurrency.format(incomeTotal)}"
+        } else {
+            binding.daily.visibility = View.GONE
+            binding.monthly.visibility = View.GONE
+            binding.total.text = "Pendapatan Tanggal Tersebut: Rp.${nominalCurrency.format(incomeTotal)}"
+        }
     }
 
     override fun onCreateView(
@@ -304,6 +319,25 @@ class HomeFragment : Fragment() {
             val intent = Intent(activity, PromotionActivity::class.java)
             intent.putExtra(PromotionActivity.EXTRA_PROMOTION, promotionList)
             startActivity(intent)
+        }
+
+        binding.filter.setOnClickListener {
+            showCalendar()
+        }
+    }
+
+    @SuppressLint("SimpleDateFormat")
+    private fun showCalendar() {
+        val datePicker: MaterialDatePicker<*> =
+            MaterialDatePicker.Builder.datePicker().setTitleText("Filter Pendapatan Pada Tanggal").build()
+        datePicker.show(childFragmentManager, datePicker.toString())
+        datePicker.addOnPositiveButtonClickListener { selection: Any ->
+            val sdf = SimpleDateFormat("dd-MMM-yyyy")
+            val format = sdf.format(Date(selection.toString().toLong()))
+            binding.filter.text = format
+
+            initRecyclerView()
+            initViewModel(format)
         }
     }
 

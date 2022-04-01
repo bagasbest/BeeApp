@@ -30,10 +30,7 @@ class RekeningActivity : AppCompatActivity() {
         }
 
         binding?.refresh?.setOnClickListener {
-            binding?.addOrEdit?.text = "Tambahkan Rekening"
-            binding?.bankName?.setText("")
-            binding?.recNumber?.setText("")
-            binding?.recName?.setText("")
+            addRekening()
         }
 
 
@@ -80,6 +77,7 @@ class RekeningActivity : AppCompatActivity() {
                             .document(adapter.rekeningUid)
                             .update(data)
                             .addOnCompleteListener {
+                                mProgressDialog.dismiss()
                                 initRecyclerView()
                                 initViewModel()
                                 Toast.makeText(
@@ -87,7 +85,7 @@ class RekeningActivity : AppCompatActivity() {
                                     "Berhasil memperbarui rekening",
                                     Toast.LENGTH_SHORT
                                 ).show()
-
+                                addRekening()
                             }
 
 
@@ -106,6 +104,7 @@ class RekeningActivity : AppCompatActivity() {
                             .document(uid)
                             .set(data)
                             .addOnCompleteListener {
+                                mProgressDialog.dismiss()
                                 initRecyclerView()
                                 initViewModel()
                                 Toast.makeText(
@@ -113,6 +112,7 @@ class RekeningActivity : AppCompatActivity() {
                                     "Berhasil menambahkan rekening pembayaran",
                                     Toast.LENGTH_SHORT
                                 ).show()
+                                addRekening()
 
                             }
                     }
@@ -120,6 +120,13 @@ class RekeningActivity : AppCompatActivity() {
             }
         }
 
+    }
+
+    private fun addRekening() {
+        binding?.addOrEdit?.text = "Tambahkan Rekening"
+        binding?.bankName?.setText("")
+        binding?.recNumber?.setText("")
+        binding?.recName?.setText("")
     }
 
     private fun initRecyclerView() {

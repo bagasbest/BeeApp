@@ -96,13 +96,17 @@ class RegisterActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener
 
     private fun formValidation() {
         val username = binding?.username?.text.toString().trim()
+        val fullname = binding?.fullName?.text.toString().trim()
         val email = binding?.email?.text.toString().trim()
         val phone = binding?.phone?.text.toString().trim()
         val password = binding?.password?.text.toString().trim()
-        val fullname = binding?.fullName?.text.toString().trim()
         val npwp = binding?.npwp?.text.toString().trim()
 
         when {
+            fullname.isEmpty() -> {
+                Toast.makeText(this, "Nama lengkap tidak boleh kosong", Toast.LENGTH_SHORT).show()
+                return
+            }
             username.isEmpty() -> {
                 Toast.makeText(this, "Username tidak boleh kosong", Toast.LENGTH_SHORT).show()
                 return
@@ -167,7 +171,7 @@ class RegisterActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener
                         "locKabupaten" to binding?.kota?.selectedItem.toString(),
                         "locKecamatan" to binding?.kecamatan?.selectedItem.toString(),
                         "locKelurahan" to binding?.kelurahan?.selectedItem.toString(),
-                        "fullname" to "" + fullname,
+                        "fullname" to fullname,
                         "npwp" to "" + npwp,
                         "image" to "" + dp,
                         "status" to status,

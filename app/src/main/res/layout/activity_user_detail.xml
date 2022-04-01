@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.homepage.ui.home.akumulasi_pendapatan_mitra.AccumulatePartnerOrderDetailActivity">
+    tools:context=".ui.homepage.ui.home.aktifitas_konsumen.UserDetailActivity">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -30,7 +30,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
-            android:text="Detail Akumulasi Pendapatan Mitra"
+            android:text="Status Kustomer"
             android:textColor="@color/black"
             android:textSize="18sp"
             android:textStyle="bold"
@@ -50,19 +50,6 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/backButton" />
 
-        <TextView
-            android:id="@+id/status"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            android:text="Status: Aktif"
-            android:textColor="@android:color/holo_green_dark"
-            android:textSize="18sp"
-            android:textStyle="bold"
-            app:layout_constraintEnd_toEndOf="@+id/image"
-            app:layout_constraintStart_toStartOf="@+id/image"
-            app:layout_constraintTop_toBottomOf="@+id/image" />
-
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -74,7 +61,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/status">
+            app:layout_constraintTop_toBottomOf="@+id/image">
 
             <View
                 android:layout_width="match_parent"
@@ -85,7 +72,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16sp"
-                android:text="Informasi Mitra"
+                android:text="Informasi Kustomer"
                 android:textColor="@color/black"
                 android:textSize="16sp"
                 android:textStyle="bold" />
@@ -127,73 +114,17 @@
                 android:textSize="16sp" />
 
 
-            <TextView
-                android:id="@+id/npwp"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="5dp"
-                android:text="NPWP: "
-                android:textColor="@color/black"
-                android:textSize="16sp" />
-
             <View
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
                 android:layout_marginTop="16sp"
                 android:background="@android:color/darker_gray" />
 
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-                <TextView
-                    android:id="@+id/total"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="16sp"
-                    android:text="Pendapatan Total: Rp.0"
-                    android:textColor="@color/black"
-                    android:textSize="16sp" />
-
-                <Button
-                    android:id="@id/filter"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_centerHorizontal="true"
-                    android:layout_marginTop="16dp"
-                    android:layout_below="@id/daily"
-                    android:text="Filter" />
-
-
-                <TextView
-                    android:id="@+id/monthly"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="5dp"
-                    android:layout_below="@id/total"
-                    android:text="Pendapatan Bulan ini: Rp.0"
-                    android:textColor="@color/black"
-                    android:textSize="16sp" />
-
-                <TextView
-                    android:id="@+id/daily"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="5dp"
-                    android:layout_below="@id/monthly"
-                    android:text="Pendapatan Hari ini: Rp.0"
-                    android:textColor="@color/black"
-                    android:textSize="16sp" />
-
-
-
-            </RelativeLayout>
-
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
                 android:layout_marginTop="16dp"
-                android:layout_height="350dp">
+                android:layout_height="450dp">
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/rvIncome"
@@ -203,7 +134,7 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
-                    tools:listitem="@layout/item_income" />
+                    tools:listitem="@layout/item_order" />
 
 
                 <ProgressBar
@@ -232,22 +163,6 @@
                     app:layout_constraintTop_toTopOf="parent" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
-
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:layout_marginTop="16sp"
-                android:background="@android:color/darker_gray" />
-
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16sp"
-                android:text="Pendapatan sudah dipotong biaya jasa aplikasi sebesar 20%, tiap order yang diselesaikan."
-                android:textColor="@color/black" />
-
 
         </LinearLayout>
 

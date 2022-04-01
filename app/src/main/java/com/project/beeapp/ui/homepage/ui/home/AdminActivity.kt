@@ -4,6 +4,7 @@ import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import com.project.beeapp.databinding.ActivityAdminBinding
+import com.project.beeapp.ui.homepage.ui.home.aktifitas_konsumen.UserActivity
 import com.project.beeapp.ui.homepage.ui.home.akumulasi_pendapatan_mitra.AccumulatePartnerOrderActivity
 import com.project.beeapp.ui.homepage.ui.home.bagi_hasil.BagiHasilActivity
 import com.project.beeapp.ui.homepage.ui.home.rekening.RekeningActivity
@@ -36,6 +37,10 @@ class AdminActivity : AppCompatActivity() {
 
         binding?.rekening?.setOnClickListener {
             startActivity(Intent(this, RekeningActivity::class.java))
+        }
+
+        binding?.aktifitasKonsumenBtn?.setOnClickListener {
+            startActivity(Intent(this, UserActivity::class.java))
         }
 
     }

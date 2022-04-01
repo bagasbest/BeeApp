@@ -33,6 +33,8 @@ import com.project.beeapp.api.model.ResponseProvinsi
 import com.project.beeapp.databinding.ActivityBeeTireBinding
 import com.project.beeapp.ui.homepage.ui.home.beefuel.PaymentModel
 import com.project.beeapp.ui.homepage.ui.home.beewash.BeeWashEditActivity
+import com.project.beeapp.utils.SendNotification
+import kotlinx.coroutines.*
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -143,10 +145,9 @@ class BeeTireActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener 
         }
 
         binding?.edit?.setOnClickListener {
-            val intent = Intent (this, BeeWashEditActivity::class.java)
-            intent.putExtra(BeeWashEditActivity.EXTRA_CAR, priceCar.toString())
-            intent.putExtra(BeeWashEditActivity.EXTRA_BIKE, priceBike.toString())
-            intent.putExtra(BeeWashEditActivity.OPTION, "beeTire")
+            val intent = Intent (this, BeeTireEditActivity::class.java)
+            intent.putExtra(BeeTireEditActivity.EXTRA_PRICE_CAR, priceCar)
+            intent.putExtra(BeeTireEditActivity.EXTRA_PRICE_BIKE, priceBike)
             startActivity(intent)
         }
 
@@ -390,8 +391,15 @@ class BeeTireActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener 
                     .set(order)
                     .addOnCompleteListener {
                         if (it.isSuccessful) {
-                            mProgressDialog.dismiss()
-                            showSuccessDialog()
+                            val job = GlobalScope.launch(Dispatchers.Default) {
+                                SendNotification.sendNotificationFromUserToItself(myUid)
+                                delay(1000)
+                            }
+                            runBlocking {
+                                job.join()
+                                mProgressDialog.dismiss()
+                                showSuccessDialog()
+                            }
                         } else {
                             mProgressDialog.dismiss()
                             showFailureDialog()

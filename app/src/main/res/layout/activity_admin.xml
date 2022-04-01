@@ -85,6 +85,17 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/bagiHasil" />
 
+    <Button
+        android:id="@+id/aktifitasKonsumenBtn"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:layout_marginStart="16sp"
+        android:layout_marginEnd="16sp"
+        android:layout_marginTop="16sp"
+        android:text="Aktifitas Konsumen"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/rekening" />
 
     <Button
         android:id="@+id/promoBtn"
@@ -93,22 +104,26 @@
         android:layout_marginStart="16sp"
         android:layout_marginEnd="16sp"
         android:layout_marginTop="16sp"
+        android:backgroundTint="@android:color/darker_gray"
         android:text="Setup Promo (Coming Soon)"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/rekening" />
-
+        app:layout_constraintTop_toBottomOf="@+id/aktifitasKonsumenBtn" />
 
     <Button
-        android:id="@+id/aktifitasKonsumenBtn"
+        android:id="@+id/beeFloPoint"
         android:layout_width="match_parent"
         android:layout_height="60dp"
         android:layout_marginStart="16sp"
         android:layout_marginEnd="16sp"
         android:layout_marginTop="16sp"
-        android:text="Aktifitas Konsumen (Coming Soon)"
+        android:backgroundTint="@android:color/darker_gray"
+        android:text="Setup BeeFlo Cash (Coming Soon)"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/promoBtn" />
+
+
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

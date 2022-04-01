@@ -142,8 +142,7 @@ class OrderDetailActivity : AppCompatActivity() {
             if (model?.status == "Bank BCA" || model?.status == "Bank BNI") {
                 accPaymentDialog()
             } else if (model?.status == "Order Diterima") {
-                finishOrderDialog()
-                sendNotificationToUserByDriver(model?.driverName!!, "Selesai")
+                showAlertDialogFinishOrder()
             }
         }
 
@@ -160,6 +159,20 @@ class OrderDetailActivity : AppCompatActivity() {
                 .show()
         }
 
+    }
+
+    private fun showAlertDialogFinishOrder() {
+        AlertDialog.Builder(this)
+            .setTitle("Konfirmasi Menyelesaikan Orderan")
+            .setMessage("Apa anda yakin ingin menyelesaikan orderan ini ?")
+            .setIcon(R.drawable.ic_baseline_warning_24)
+            .setPositiveButton("YA") { dialogInterface, _ ->
+                dialogInterface.dismiss()
+                finishOrderDialog()
+                sendNotificationToUserByDriver(model?.driverName!!, "Selesai")
+            }
+            .setNegativeButton("TIDAK", null)
+            .show()
     }
 
     private fun setStatusDriverWork(status: Boolean) {

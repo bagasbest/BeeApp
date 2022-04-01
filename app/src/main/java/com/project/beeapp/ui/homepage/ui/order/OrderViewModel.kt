@@ -331,6 +331,52 @@ class OrderViewModel : ViewModel() {
         }
     }
 
+    fun setLisOrderAllById(uid: String?) {
+
+        listItems.clear()
+
+
+        try {
+            FirebaseFirestore.getInstance().collection("order")
+                .whereEqualTo("userId", uid)
+                .get()
+                .addOnSuccessListener { documents ->
+                    for (document in documents) {
+                        val model = OrderModel()
+                        model.orderId = document.data["orderId"].toString()
+                        model.userId = document.data["userId"].toString()
+                        model.username = document.data["username"].toString()
+                        model.status = document.data["status"].toString()
+                        model.option = document.data["option"].toString()
+                        model.provinsi = document.data["provinsi"].toString()
+                        model.kabupaten = document.data["kabupaten"].toString()
+                        model.kecamatan = document.data["kecamatan"].toString()
+                        model.kelurahan = document.data["kelurahan"].toString()
+                        model.address = document.data["address"].toString()
+                        model.date = document.data["date"].toString()
+                        model.qty = document.data["qty"].toString().toInt()
+                        model.priceTotal = document.data["priceTotal"] as Long
+                        model.orderType = document.data["orderType"].toString()
+                        model.driverId = document.data["driverId"].toString()
+                        model.driverName = document.data["driverName"].toString()
+                        model.driverNumber = document.data["driverNumber"].toString()
+                        model.driverImage = document.data["driverImage"].toString()
+                        model.paymentProof = document.data["paymentProof"].toString()
+                        model.userNumber = document.data["userNumber"].toString()
+
+                        listItems.add(model)
+                    }
+                    orderList.postValue(listItems)
+                }
+                .addOnFailureListener { exception ->
+                    Log.w(TAG, "Error getting documents: ", exception)
+                }
+        } catch (error: Exception) {
+            error.printStackTrace()
+        }
+    }
+
+
 
     fun getOrderList() : LiveData<ArrayList<OrderModel>> {
         return orderList

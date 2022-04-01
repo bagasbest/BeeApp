@@ -30,4 +30,11 @@
         <item>Sesuai Alamat Anda</item>
         <item>Lokasi Lain</item>
     </string-array>
+
+
+    <string-array name="type">
+        <item>Kendaraan Kecil</item>
+        <item>Kendaraan Sedang</item>
+        <item>Kendaraan Besar</item>
+    </string-array>
 </resources>

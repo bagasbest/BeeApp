@@ -20,15 +20,7 @@ class BeeWashEditActivity : AppCompatActivity() {
         binding = ActivityBeeWashEditBinding.inflate(layoutInflater)
         setContentView(binding?.root)
 
-        val option = intent.getStringExtra(OPTION);
-        if(option == "beeTire") {
-            binding?.textView5?.text = "Bee Tire Edit Harga"
-            binding?.priceCar?.hint = "Harga Tambal Ban Mobil"
-            binding?.priceBike?.hint = "Harga Tambal Ban Motor"
-        }
-
-        binding?.priceBike?.setText(intent.getStringExtra(EXTRA_BIKE))
-        binding?.priceCar?.setText(intent.getStringExtra(EXTRA_CAR))
+        getPriceFromDatabase()
 
         binding?.backButton?.setOnClickListener {
             onBackPressed()
@@ -39,56 +31,107 @@ class BeeWashEditActivity : AppCompatActivity() {
         }
     }
 
-    private fun formValidation() {
-        val car = binding?.priceCar?.text.toString().trim()
-        val bike = binding?.priceBike?.text.toString().trim()
-
-        if(car.isEmpty()) {
-            Toast.makeText(this, "Harga cuci mobil tidak boleh kosong", Toast.LENGTH_SHORT).show()
-            return
-        } else if (bike.isEmpty()) {
-            Toast.makeText(this, "Harga cuci mobil tidak boleh kosong", Toast.LENGTH_SHORT).show()
-            return
-        }
-
-        binding?.progressBar?.visibility = View.VISIBLE
-
-        val data = mapOf(
-            "car" to car.toLong(),
-            "bike" to bike.toLong(),
-        )
-
-        val document = intent.getStringExtra(OPTION)
-
+    private fun getPriceFromDatabase() {
         FirebaseFirestore
             .getInstance()
             .collection("pricing")
-            .document(document!!)
-            .set(data)
-            .addOnCompleteListener {
-                if(it.isSuccessful) {
-                    binding?.progressBar?.visibility = View.GONE
-                    Toast.makeText(this, "Berhasil memperbarui harga", Toast.LENGTH_SHORT).show()
-                    val intent = Intent(this, HomeActivity::class.java)
-                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK)
-                    startActivity(intent)
-                    finish()
-                } else {
-                    binding?.progressBar?.visibility = View.GONE
-                    Toast.makeText(this, "Gagal memperbarui harga", Toast.LENGTH_SHORT).show()
+            .document("beeWash")
+            .get()
+            .addOnSuccessListener {
+                if(it.exists()) {
+                    val smallCar = it.data?.get("smallCar") as Long
+                    val mediumCar = it.data?.get("mediumCar") as Long
+                    val largeCar = it.data?.get("largeCar") as Long
+                    val smallBike = it.data?.get("smallBike") as Long
+                    val mediumBike = it.data?.get("mediumBike") as Long
+                    val largeBike = it.data?.get("largeBike") as Long
+
+
+                    binding?.miniCar?.setText(smallCar.toString())
+                    binding?.mediumCar?.setText(mediumCar.toString())
+                    binding?.largeCar?.setText(largeCar.toString())
+                    binding?.miniBike?.setText(smallBike.toString())
+                    binding?.mediumBike?.setText(mediumBike.toString())
+                    binding?.largeBike?.setText(largeBike.toString())
 
                 }
             }
     }
 
+    private fun formValidation() {
+        val miniCar = binding?.miniCar?.text.toString().trim()
+        val mediumCar = binding?.mediumCar?.text.toString().trim()
+        val largeCar = binding?.largeCar?.text.toString().trim()
+        val miniBike= binding?.miniBike?.text.toString().trim()
+        val mediumBike = binding?.mediumBike?.text.toString().trim()
+        val largeBike = binding?.largeBike?.text.toString().trim()
+
+        when {
+            miniCar.isEmpty() -> {
+                Toast.makeText(this, "Harga cuci mobil bertipe kecil tidak boleh kosong", Toast.LENGTH_SHORT).show()
+                return
+            }
+            mediumCar.isEmpty() -> {
+                Toast.makeText(this, "Harga cuci mobil bertipe sedang tidak boleh kosong", Toast.LENGTH_SHORT).show()
+                return
+            }
+            largeCar.isEmpty() -> {
+                Toast.makeText(this, "Harga cuci mobil bertipe besar tidak boleh kosong", Toast.LENGTH_SHORT).show()
+                return
+            }
+            miniBike.isEmpty() -> {
+                Toast.makeText(this, "Harga cuci motor bertipe kecil tidak boleh kosong", Toast.LENGTH_SHORT).show()
+                return
+            }
+            mediumBike.isEmpty() -> {
+                Toast.makeText(this, "Harga cuci motor bertipe sedang tidak boleh kosong", Toast.LENGTH_SHORT).show()
+                return
+            }
+            largeBike.isEmpty() -> {
+                Toast.makeText(this, "Harga cuci motor bertipe besar tidak boleh kosong", Toast.LENGTH_SHORT).show()
+                return
+            }
+
+            else -> {
+                binding?.progressBar?.visibility = View.VISIBLE
+
+                val data = mapOf(
+                    "smallCar" to miniCar.toLong(),
+                    "mediumCar" to mediumCar.toLong(),
+                    "largeCar" to largeCar.toLong(),
+                    "smallBike" to miniBike.toLong(),
+                    "mediumBike" to mediumBike.toLong(),
+                    "largeBike" to largeBike.toLong(),
+                )
+
+                FirebaseFirestore
+                    .getInstance()
+                    .collection("pricing")
+                    .document("beeWash")
+                    .update(data)
+                    .addOnCompleteListener {
+                        if (it.isSuccessful) {
+                            binding?.progressBar?.visibility = View.GONE
+                            Toast.makeText(this, "Berhasil memperbarui harga", Toast.LENGTH_SHORT)
+                                .show()
+                            val intent = Intent(this, HomeActivity::class.java)
+                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK)
+                            startActivity(intent)
+                            finish()
+                        } else {
+                            binding?.progressBar?.visibility = View.GONE
+                            Toast.makeText(this, "Gagal memperbarui harga", Toast.LENGTH_SHORT)
+                                .show()
+
+                        }
+                    }
+            }
+        }
+
+    }
+
     override fun onDestroy() {
         super.onDestroy()
         binding = null
-    }
-
-    companion object {
-        const val EXTRA_CAR = "car"
-        const val EXTRA_BIKE = "bike"
-        const val OPTION = "option"
     }
 }

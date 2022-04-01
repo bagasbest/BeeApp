@@ -13,6 +13,7 @@
         <entry key="..\:/TUBES_GALERI/BeeApp/app/src/main/res/layout/activity_bee_fuel.xml" value="0.264" />
         <entry key="..\:/TUBES_GALERI/BeeApp/app/src/main/res/layout/activity_bee_fuel_edit.xml" value="0.23645833333333333" />
         <entry key="..\:/TUBES_GALERI/BeeApp/app/src/main/res/layout/activity_bee_tire.xml" value="0.23645833333333333" />
+        <entry key="..\:/TUBES_GALERI/BeeApp/app/src/main/res/layout/activity_bee_tire_edit.xml" value="0.23645833333333333" />
         <entry key="..\:/TUBES_GALERI/BeeApp/app/src/main/res/layout/activity_bee_wash.xml" value="0.264" />
         <entry key="..\:/TUBES_GALERI/BeeApp/app/src/main/res/layout/activity_bee_wash_edit.xml" value="0.264" />
         <entry key="..\:/TUBES_GALERI/BeeApp/app/src/main/res/layout/activity_help.xml" value="0.23645833333333333" />
@@ -23,10 +24,12 @@
         <entry key="..\:/TUBES_GALERI/BeeApp/app/src/main/res/layout/activity_order_detail.xml" value="0.176" />
         <entry key="..\:/TUBES_GALERI/BeeApp/app/src/main/res/layout/activity_promotion.xml" value="0.23645833333333333" />
         <entry key="..\:/TUBES_GALERI/BeeApp/app/src/main/res/layout/activity_register.xml" value="0.264" />
-        <entry key="..\:/TUBES_GALERI/BeeApp/app/src/main/res/layout/activity_rekening.xml" value="0.176" />
+        <entry key="..\:/TUBES_GALERI/BeeApp/app/src/main/res/layout/activity_rekening.xml" value="0.264" />
+        <entry key="..\:/TUBES_GALERI/BeeApp/app/src/main/res/layout/activity_user.xml" value="0.23645833333333333" />
+        <entry key="..\:/TUBES_GALERI/BeeApp/app/src/main/res/layout/activity_user_detail.xml" value="0.23645833333333333" />
         <entry key="..\:/TUBES_GALERI/BeeApp/app/src/main/res/layout/activity_verify_driver.xml" value="0.23645833333333333" />
         <entry key="..\:/TUBES_GALERI/BeeApp/app/src/main/res/layout/activity_verify_driver_detail.xml" value="0.22239583333333332" />
-        <entry key="..\:/TUBES_GALERI/BeeApp/app/src/main/res/layout/fragment_home.xml" value="0.176" />
+        <entry key="..\:/TUBES_GALERI/BeeApp/app/src/main/res/layout/fragment_home.xml" value="0.264" />
         <entry key="..\:/TUBES_GALERI/BeeApp/app/src/main/res/layout/fragment_notification.xml" value="0.23645833333333333" />
         <entry key="..\:/TUBES_GALERI/BeeApp/app/src/main/res/layout/fragment_order.xml" value="0.23645833333333333" />
         <entry key="..\:/TUBES_GALERI/BeeApp/app/src/main/res/layout/fragment_order_finish.xml" value="0.23645833333333333" />
