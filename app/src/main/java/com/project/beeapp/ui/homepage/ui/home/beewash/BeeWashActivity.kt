@@ -31,6 +31,9 @@ import com.project.beeapp.api.model.ResponseKelurahan
 import com.project.beeapp.api.model.ResponseKota
 import com.project.beeapp.api.model.ResponseProvinsi
 import com.project.beeapp.databinding.ActivityBeeWashBinding
+import com.project.beeapp.notification.NotificationData
+import com.project.beeapp.notification.PushNotification
+import com.project.beeapp.notification.RetrofitInstance
 import com.project.beeapp.ui.homepage.ui.home.beefuel.PaymentModel
 import com.project.beeapp.utils.SendNotification
 import kotlinx.coroutines.*
@@ -79,6 +82,7 @@ class BeeWashActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener 
 
     private var locationOption: String? = null
     private var vehicleType: String? = null
+    private var notificationUid: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -420,8 +424,10 @@ class BeeWashActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener 
 
             if(bankName == "Cash") {
                 dp = ""
+                getToken(name!!, "user")
             } else {
                 sendNotificationToAdmin(name!!, myUid, bankName)
+                getToken(name!!, "admin")
             }
 
 
@@ -476,6 +482,64 @@ class BeeWashActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener 
             }
         }
     }
+
+    private fun getToken(username: String, option: String) {
+
+        notificationUid = if(option == "user") {
+            myUid
+        } else {
+            "CSpWB7SLOIQQ3eSjMVDpdC7Q8Yd2"
+        }
+
+        FirebaseFirestore
+            .getInstance()
+            .collection("users")
+            .document(notificationUid!!)
+            .get()
+            .addOnSuccessListener {
+                val token = "" + it.data?.get("token")
+
+                if(option == "user") {
+                    PushNotification(
+                        NotificationData(
+                            "Order Berhasil",
+                            "Silahkan tunggu mitra BeeFlo akan menghapiri anda"
+                        ),
+                        token
+                    ).also { pushNotification ->
+                        sendNotification(pushNotification)
+                    }
+                } else {
+                    PushNotification(
+                        NotificationData(
+                            "Konfirmasi Pembayaran Mitra",
+                            "$username telah melakukan transfer pembayaran"
+                        ),
+                        token
+                    ).also { pushNotification ->
+                        sendNotification(pushNotification)
+                    }
+                }
+            }
+    }
+
+    private fun sendNotification(notification: PushNotification) =
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                val response = RetrofitInstance.api.pushNotification(notification)
+                runOnUiThread {
+                    if (!response.isSuccessful) {
+                        Log.e("Error else", response.body().toString())
+                        Toast.makeText(this@BeeWashActivity, "Token kosong, mohon pastikan koneksi internet anda stabil dan coba lagi", Toast.LENGTH_SHORT).show()
+                    }
+                }
+            } catch (e: Exception) {
+                Log.e("Error catch", e.toString())
+                runOnUiThread {
+                    Toast.makeText(this@BeeWashActivity, "Token kosong, mohon pastikan koneksi internet anda stabil dan coba lagi", Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
 
     private fun sendNotificationToAdmin(fullname: String, userId: String, bankName: String?) {
 

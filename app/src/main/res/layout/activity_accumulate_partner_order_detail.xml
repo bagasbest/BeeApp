@@ -155,14 +155,42 @@
                     android:textColor="@color/black"
                     android:textSize="16sp" />
 
+
+                <TextView
+                    android:id="@+id/filterTxt"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:layout_below="@id/daily"
+                    android:text="Filter berdasarkan tanggal awal dan akhir, yang dipilih oleh admin" />
+
                 <Button
-                    android:id="@id/filter"
+                    android:id="@+id/filterStart"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/filterTxt"
+                    android:layout_marginTop="16dp"
+                    android:text="Tanggal Awal" />
+
+                <Button
+                    android:id="@+id/filterFinish"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_below="@id/filterTxt"
+                    android:layout_marginTop="16dp"
+                    android:text="Tanggal Akhir" />
+
+
+                <Button
+                    android:id="@+id/showData"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_centerHorizontal="true"
                     android:layout_marginTop="16dp"
-                    android:layout_below="@id/daily"
-                    android:text="Filter" />
+                    android:layout_below="@id/filterStart"
+                    android:text="Tampilkan Hasil" />
+
 
 
                 <TextView

@@ -1,9 +1,12 @@
 package com.project.beeapp.ui.homepage.ui.home.promotion
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.project.beeapp.MainActivity
 import com.project.beeapp.databinding.ActivityPromotionBinding
+import com.project.beeapp.ui.homepage.HomeActivity
 
 class PromotionActivity : AppCompatActivity() {
 
@@ -22,7 +25,10 @@ class PromotionActivity : AppCompatActivity() {
         initRecyclerView()
 
         binding?.backButton?.setOnClickListener {
-            onBackPressed()
+            val intent = Intent(this, HomeActivity::class.java)
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK)
+            startActivity(intent)
+            finish()
         }
 
     }

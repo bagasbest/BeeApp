@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
@@ -142,6 +143,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun autoLogin() {
         if(FirebaseAuth.getInstance().currentUser != null) {
+            Log.e("tag", "sasaas")
             startActivity(Intent(this, HomeActivity::class.java))
             finish()
         }

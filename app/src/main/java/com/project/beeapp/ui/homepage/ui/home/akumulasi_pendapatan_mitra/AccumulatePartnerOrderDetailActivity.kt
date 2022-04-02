@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
+import android.widget.Toast
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
@@ -26,6 +27,8 @@ class AccumulatePartnerOrderDetailActivity : AppCompatActivity() {
     private var model: VerifyDriverModel? = null
     private val nominalCurrency: NumberFormat = DecimalFormat("#,###")
     private lateinit var incomeAdapter: IncomeAdapter
+    private var startDate: Long = 0L
+    private var finishDate: Long = 0L
 
     @SuppressLint("SetTextI18n")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -47,30 +50,59 @@ class AccumulatePartnerOrderDetailActivity : AppCompatActivity() {
         binding?.npwp?.text = "NPWP: ${model?.npwp}"
 
         initRecyclerView()
-        initViewModel("")
+        initViewModel(0, 0, "all")
 
 
         binding?.backButton?.setOnClickListener {
             onBackPressed()
         }
 
-        binding?.filter?.setOnClickListener {
-            showCalendar()
+        binding?.filterStart?.setOnClickListener {
+            showCalendar("start")
+        }
+
+        binding?.filterFinish?.setOnClickListener {
+            showCalendar("finish")
+        }
+
+        binding?.showData?.setOnClickListener {
+            formValidation()
+        }
+    }
+
+    private fun formValidation() {
+        when {
+            startDate == 0L -> {
+                Toast.makeText(this, "Mohon masukkan tanggal awal filter", Toast.LENGTH_SHORT).show()
+            }
+            finishDate == 0L -> {
+                Toast.makeText(this, "Mohon masukkan tanggal akhir filter", Toast.LENGTH_SHORT).show()
+            }
+            startDate > finishDate -> {
+                Toast.makeText(this, "Tanggal awal tidak boleh melebihi tanggal akhir", Toast.LENGTH_SHORT).show()
+            }
+            else -> {
+                initRecyclerView()
+                initViewModel(startDate, finishDate, "")
+            }
         }
     }
 
     @SuppressLint("SimpleDateFormat")
-    private fun showCalendar() {
+    private fun showCalendar(option: String) {
         val datePicker: MaterialDatePicker<*> =
             MaterialDatePicker.Builder.datePicker().setTitleText("Filter Pendapatan Pada Tanggal").build()
         datePicker.show(supportFragmentManager, datePicker.toString())
         datePicker.addOnPositiveButtonClickListener { selection: Any ->
             val sdf = SimpleDateFormat("dd-MMM-yyyy")
             val format = sdf.format(Date(selection.toString().toLong()))
-            binding?.filter?.text = format
-
-            initRecyclerView()
-            initViewModel(format)
+            if(option == "start"){
+                binding?.filterStart?.text = format
+                startDate = selection.toString().toLong()
+            } else {
+                binding?.filterFinish?.text = format
+                finishDate = selection.toString().toLong()
+            }
         }
     }
 
@@ -83,26 +115,26 @@ class AccumulatePartnerOrderDetailActivity : AppCompatActivity() {
         binding?.rvIncome?.adapter = incomeAdapter
     }
 
-    private fun initViewModel(filterDate: String) {
+    private fun initViewModel(dateStart: Long, dateFinish: Long, option: String) {
         val viewModel = ViewModelProvider(this)[IncomeViewModel::class.java]
 
         binding?.progressBarDriver?.visibility = View.VISIBLE
-        if(filterDate == "") {
-            model?.uid?.let { viewModel.setListIncome(it) }
+        if(option == "all") {
+            viewModel.setListIncome(model?.uid!!)
         } else {
-            model?.uid?.let { viewModel.setListIncomeByFilter(it, filterDate) }
+            viewModel.setListIncomeByFilterAdmin(dateStart, dateFinish)
         }
         viewModel.getIncome().observe(this) { income ->
             if (income.size > 0) {
                 incomeAdapter.setData(income)
                 binding?.noData?.visibility = View.GONE
 
-                if(filterDate == "") {
+                if(option == "all") {
                     getIncomeMonthly()
                     getIncomeDaily()
                 }
 
-                getIncomeTotal(income, filterDate)
+                getIncomeTotal(income, option)
 
 
             } else {
@@ -119,7 +151,7 @@ class AccumulatePartnerOrderDetailActivity : AppCompatActivity() {
             incomeTotal += income[i].income!!
         }
 
-        if(filterDate == ""){
+        if(filterDate == "all"){
             binding?.total?.text = "Pendapatan Total: Rp.${nominalCurrency.format(incomeTotal)}"
         } else {
             binding?.daily?.visibility = View.GONE

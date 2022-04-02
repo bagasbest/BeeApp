@@ -17,9 +17,10 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.project.beeapp.R
 import com.project.beeapp.databinding.ActivityOrderDetailBinding
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
+import com.project.beeapp.notification.NotificationData
+import com.project.beeapp.notification.PushNotification
+import com.project.beeapp.notification.RetrofitInstance
+import kotlinx.coroutines.*
 import java.text.DecimalFormat
 import java.text.NumberFormat
 import java.text.SimpleDateFormat
@@ -32,6 +33,7 @@ class OrderDetailActivity : AppCompatActivity() {
     private var role: String? = null
     private var percentage: Double? = 0.0
     private val uid = FirebaseAuth.getInstance().currentUser!!.uid
+    private var notificationUid: String? = null
 
     @SuppressLint("SetTextI18n")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -139,10 +141,11 @@ class OrderDetailActivity : AppCompatActivity() {
         }
 
         binding?.acc?.setOnClickListener {
-            if (model?.status == "Bank BCA" || model?.status == "Bank BNI") {
-                accPaymentDialog()
-            } else if (model?.status == "Order Diterima") {
+            if (model?.status == "Order Diterima") {
                 showAlertDialogFinishOrder()
+            }
+            else if (model?.status != "Cash" || model?.status != "Order Diterima" || model?.status != "Selesai") {
+                accPaymentDialog()
             }
         }
 
@@ -153,6 +156,8 @@ class OrderDetailActivity : AppCompatActivity() {
                 .setIcon(R.drawable.ic_baseline_warning_24)
                 .setPositiveButton("YA") { dialogInterface, _ ->
                     dialogInterface.dismiss()
+                    sendNotificationToUserDecline()
+                    getToken("decline", "user")
                     cancelOrder()
                 }
                 .setNegativeButton("TIDAK", null)
@@ -170,6 +175,7 @@ class OrderDetailActivity : AppCompatActivity() {
                 dialogInterface.dismiss()
                 finishOrderDialog()
                 sendNotificationToUserByDriver(model?.driverName!!, "Selesai")
+                getToken("finish", "user")
             }
             .setNegativeButton("TIDAK", null)
             .show()
@@ -191,11 +197,11 @@ class OrderDetailActivity : AppCompatActivity() {
             .setPositiveButton("YA") { dialogInterface, _ ->
                 dialogInterface.dismiss()
                 sendNotificationToUserAccept()
+                getToken("acc", "user")
                 accPayment()
             }
             .setNegativeButton("TIDAK") { dialog, _ ->
                 dialog.dismiss()
-                sendNotificationToUserDecline()
             }
             .show()
     }
@@ -353,6 +359,7 @@ class OrderDetailActivity : AppCompatActivity() {
                 val phone = "" + it.data?.get("phone")
                 val image = "" + it.data?.get("image")
                 sendNotificationToUserByDriver(name, "Mulai")
+                getToken("start", "user")
 
                 val data = mapOf(
                     "driverId" to uid,
@@ -417,7 +424,7 @@ class OrderDetailActivity : AppCompatActivity() {
                         binding?.driverName?.text = model?.username
                     }
                 } else if (role == "user") {
-                    if (model?.status == "Cash" || model?.status == "Bank BCA" || model?.status == "Bank BNI") {
+                    if (model?.status != "Order Diterima" || model?.status != "Selesai") {
                         binding?.orderBtn?.visibility = View.VISIBLE
                         binding?.orderBtn?.text = "Batalkan Orderan"
 
@@ -431,7 +438,7 @@ class OrderDetailActivity : AppCompatActivity() {
                         binding?.driverName?.text = model?.driverName
                     }
                 } else if (role == "admin") {
-                    if (model?.status == "Bank BCA" || model?.status == "Bank BNI") {
+                    if (model?.status != "Cash" || model?.status != "Order Diterima" || model?.status != "Selesai") {
                         binding?.acc?.visibility = View.VISIBLE
                         binding?.decline?.visibility = View.VISIBLE
                     } else {
@@ -548,6 +555,98 @@ class OrderDetailActivity : AppCompatActivity() {
                 .set(data)
         }
     }
+
+
+
+
+    private fun getToken(status: String, option: String) {
+
+        notificationUid = when (option) {
+            "user" -> {
+                model?.userId
+            }
+            "admin" -> {
+                "CSpWB7SLOIQQ3eSjMVDpdC7Q8Yd2"
+            }
+            else -> {
+                model?.driverId
+            }
+        }
+
+        FirebaseFirestore
+            .getInstance()
+            .collection("users")
+            .document(notificationUid!!)
+            .get()
+            .addOnSuccessListener {
+                val token = "" + it.data?.get("token")
+
+                when (status) {
+                    "start" -> {
+                        PushNotification(
+                            NotificationData(
+                                "Order Telah Dikonfirmasi",
+                                "Mitra ${model?.driverName} menerima orderan anda"
+                            ),
+                            token
+                        ).also { pushNotification ->
+                            sendNotification(pushNotification)
+                        }
+                    }
+                    "finish" -> {
+                        PushNotification(
+                            NotificationData(
+                                "Order Telah Diselesaikan",
+                                "Mitra ${model?.driverName} telah menyelesaikan orderan"
+                            ),
+                            token
+                        ).also { pushNotification ->
+                            sendNotification(pushNotification)
+                        }
+                    }
+                    "acc" -> {
+                        PushNotification(
+                            NotificationData(
+                                "Bukti Pembayaran Diterima",
+                                "Admin menerima pembayaran atas order ${model?.orderType} anda"
+                            ),
+                            token
+                        ).also { pushNotification ->
+                            sendNotification(pushNotification)
+                        }
+                    }
+                    "decline" -> {
+                        PushNotification(
+                            NotificationData(
+                                "Bukti Pembayaran Ditolak",
+                                "Admin menolak pembayaran atas order ${model?.orderType} anda"
+                            ),
+                            token
+                        ).also { pushNotification ->
+                            sendNotification(pushNotification)
+                        }
+                    }
+                }
+            }
+    }
+
+    private fun sendNotification(notification: PushNotification) =
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                val response = RetrofitInstance.api.pushNotification(notification)
+                runOnUiThread {
+                    if (!response.isSuccessful) {
+                        Log.e("Error else", response.body().toString())
+                        Toast.makeText(this@OrderDetailActivity, "Token kosong, mohon pastikan koneksi internet anda stabil dan coba lagi", Toast.LENGTH_SHORT).show()
+                    }
+                }
+            } catch (e: Exception) {
+                Log.e("Error catch", e.toString())
+                runOnUiThread {
+                    Toast.makeText(this@OrderDetailActivity, "Token kosong, mohon pastikan koneksi internet anda stabil dan coba lagi", Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
 
 
     override fun onDestroy() {
