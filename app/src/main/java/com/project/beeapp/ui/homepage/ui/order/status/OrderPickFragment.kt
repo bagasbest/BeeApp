@@ -93,17 +93,13 @@ class OrderPickFragment : Fragment() {
                 viewModel.setListOrderProcessByAdmin()
             }
             "adminKecamatan" -> {
-                viewModel.setListOrderProcessByAdmin()
+                viewModel.setListOrderProcessByAdminKecamatan(locationTask)
             }
         }
         viewModel.getOrderList().observe(this) { orderFinish ->
 
             if (orderFinish.size > 0) {
-                if(role != "adminKecamatan") {
-                    adapter!!.setData(orderFinish)
-                } else {
-                    Log.e("taf", orderFinish.toString())
-                }
+                adapter!!.setData(orderFinish)
                 binding?.noData?.visibility = View.GONE
             } else {
                 binding?.noData?.visibility = View.VISIBLE
