@@ -37,4 +37,9 @@
         <item>Kendaraan Sedang</item>
         <item>Kendaraan Besar</item>
     </string-array>
+
+    <string-array name="work_status">
+        <item>Mitra Standby</item>
+        <item>Mitra Sedang Bekerja</item>
+    </string-array>
 </resources>

@@ -70,6 +70,7 @@ class OrderProcessFragment : Fragment() {
             }
             else -> {
                 binding!!.progressBar.visibility = View.GONE
+                binding?.noData?.visibility = View.VISIBLE
             }
         }
         viewModel.getOrderList().observe(this) { orderFinish ->

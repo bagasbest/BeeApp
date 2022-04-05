@@ -1,129 +1,153 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".ui.homepage.ui.home.AdminActivity">
 
-
-
-    <ImageButton
-        android:id="@+id/backButton"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginStart="16dp"
-        android:contentDescription="@string/image"
-        android:background="@drawable/bg_rounded"
-        android:backgroundTint="@color/purple_500"
-        android:src="@drawable/ic_baseline_arrow_back_24"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:tint="@color/white" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Kontrol Admin"
-        android:layout_marginStart="16dp"
-        android:textColor="@color/black"
-        android:textSize="18sp"
-        android:textStyle="bold"
-        app:layout_constraintBottom_toBottomOf="@+id/backButton"
-        app:layout_constraintStart_toEndOf="@+id/backButton"
-        app:layout_constraintTop_toTopOf="@+id/backButton" />
-
-
-    <Button
-        android:id="@+id/mitraBtn"
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="60dp"
-        android:layout_marginTop="30dp"
-        android:layout_marginStart="16sp"
-        android:layout_marginEnd="16sp"
-        android:text="Daftar Mitra"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/backButton" />
+        android:layout_height="wrap_content">
 
 
-    <Button
-        android:id="@+id/akumulasiBtn"
-        android:layout_width="match_parent"
-        android:layout_height="60dp"
-        android:layout_marginTop="16sp"
-        android:layout_marginStart="16sp"
-        android:layout_marginEnd="16sp"
-        android:text="Akumulasi Pendapatan Mitra"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/mitraBtn" />
+        <ImageButton
+            android:id="@+id/backButton"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            android:background="@drawable/bg_rounded"
+            android:backgroundTint="@color/purple_500"
+            android:contentDescription="@string/image"
+            android:src="@drawable/ic_baseline_arrow_back_24"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:tint="@color/white" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:text="Kontrol Admin"
+            android:textColor="@color/black"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="@+id/backButton"
+            app:layout_constraintStart_toEndOf="@+id/backButton"
+            app:layout_constraintTop_toTopOf="@+id/backButton" />
 
 
-    <Button
-        android:id="@+id/bagiHasil"
-        android:layout_width="match_parent"
-        android:layout_height="60dp"
-        android:layout_marginTop="16sp"
-        android:layout_marginStart="16sp"
-        android:layout_marginEnd="16sp"
-        android:text="Setup Bagi Hasil Mitra"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/akumulasiBtn" />
-
-    <Button
-        android:id="@+id/rekening"
-        android:layout_width="match_parent"
-        android:layout_height="60dp"
-        android:layout_marginTop="16sp"
-        android:layout_marginStart="16sp"
-        android:layout_marginEnd="16sp"
-        android:text="Setup Rekening / Metode Pembayaran"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/bagiHasil" />
-
-    <Button
-        android:id="@+id/aktifitasKonsumenBtn"
-        android:layout_width="match_parent"
-        android:layout_height="60dp"
-        android:layout_marginStart="16sp"
-        android:layout_marginEnd="16sp"
-        android:layout_marginTop="16sp"
-        android:text="Aktifitas Konsumen"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/rekening" />
-
-    <Button
-        android:id="@+id/promoBtn"
-        android:layout_width="match_parent"
-        android:layout_height="60dp"
-        android:layout_marginStart="16sp"
-        android:layout_marginEnd="16sp"
-        android:layout_marginTop="16sp"
-        android:backgroundTint="@android:color/darker_gray"
-        android:text="Setup Promo (Coming Soon)"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/aktifitasKonsumenBtn" />
-
-    <Button
-        android:id="@+id/beeFloPoint"
-        android:layout_width="match_parent"
-        android:layout_height="60dp"
-        android:layout_marginStart="16sp"
-        android:layout_marginEnd="16sp"
-        android:layout_marginTop="16sp"
-        android:backgroundTint="@android:color/darker_gray"
-        android:text="Setup BeeFlo Cash (Coming Soon)"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/promoBtn" />
+        <Button
+            android:id="@+id/mitraBtn"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:layout_marginStart="16sp"
+            android:layout_marginTop="30dp"
+            android:layout_marginEnd="16sp"
+            android:text="Daftar Mitra"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/backButton" />
 
 
+        <Button
+            android:id="@+id/akumulasiBtn"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:layout_marginStart="16sp"
+            android:layout_marginTop="16sp"
+            android:layout_marginEnd="16sp"
+            android:text="Akumulasi Pendapatan Mitra"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/mitraBtn" />
 
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+        <Button
+            android:id="@+id/bagiHasil"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:layout_marginStart="16sp"
+            android:layout_marginTop="16sp"
+            android:visibility="gone"
+            android:layout_marginEnd="16sp"
+            android:text="Setup Bagi Hasil Mitra"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/akumulasiBtn" />
+
+        <Button
+            android:id="@+id/rekening"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:layout_marginStart="16sp"
+            android:layout_marginTop="16sp"
+            android:layout_marginEnd="16sp"
+            android:visibility="gone"
+            android:text="Setup Rekening / Metode Pembayaran"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/bagiHasil" />
+
+        <Button
+            android:id="@+id/aktifitasKonsumenBtn"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:layout_marginStart="16sp"
+            android:visibility="gone"
+            android:layout_marginTop="16sp"
+            android:layout_marginEnd="16sp"
+            android:text="Aktifitas Konsumen"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/rekening" />
+
+
+        <Button
+            android:id="@+id/adminDaerah"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:layout_marginStart="16sp"
+            android:layout_marginTop="16sp"
+            android:layout_marginEnd="16sp"
+            android:visibility="gone"
+            android:text="Tambahkan admin daerah"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/aktifitasKonsumenBtn" />
+
+        <Button
+            android:id="@+id/promoBtn"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:layout_marginStart="16sp"
+            android:layout_marginTop="16sp"
+            android:layout_marginEnd="16sp"
+            android:visibility="gone"
+            android:backgroundTint="@android:color/darker_gray"
+            android:text="Setup Promo (Coming Soon)"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/adminDaerah" />
+
+        <Button
+            android:id="@+id/beeFloPoint"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:layout_marginStart="16sp"
+            android:layout_marginTop="16sp"
+            android:layout_marginEnd="16sp"
+            android:layout_marginBottom="30dp"
+            android:visibility="gone"
+            android:backgroundTint="@android:color/darker_gray"
+            android:text="Setup BeeFlo Cash (Coming Soon)"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/promoBtn" />
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</ScrollView>

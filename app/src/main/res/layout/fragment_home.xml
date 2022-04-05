@@ -71,7 +71,7 @@
         android:layout_height="0dp"
         android:layout_marginBottom="72dp"
         android:layout_marginTop="10dp"
-        android:visibility="gone"
+        android:visibility="visible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -83,8 +83,8 @@
 
             <View
                 android:id="@+id/view2"
-                android:layout_width="75dp"
-                android:layout_height="75dp"
+                android:layout_width="65dp"
+                android:layout_height="65dp"
                 android:layout_marginStart="16dp"
                 android:background="@drawable/bg_rounded"
                 android:backgroundTint="@color/purple_500"
@@ -136,9 +136,10 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="5dp"
-                android:text="BeeGasWater"
+                android:text="BeeGas\nWater"
                 android:textColor="@color/black"
                 android:textSize="16sp"
+                android:textAlignment="center"
                 android:textStyle="bold"
                 app:layout_constraintEnd_toEndOf="@+id/view8"
                 app:layout_constraintStart_toStartOf="@+id/view8"
@@ -212,8 +213,8 @@
 
             <View
                 android:id="@+id/view3"
-                android:layout_width="75dp"
-                android:layout_height="75dp"
+                android:layout_width="65dp"
+                android:layout_height="65dp"
                 android:layout_marginEnd="16dp"
                 android:background="@drawable/bg_rounded"
                 android:backgroundTint="@color/purple_500"
@@ -222,8 +223,8 @@
 
             <View
                 android:id="@+id/view5"
-                android:layout_width="75dp"
-                android:layout_height="75dp"
+                android:layout_width="65dp"
+                android:layout_height="65dp"
                 android:background="@drawable/bg_rounded"
                 android:backgroundTint="@color/purple_500"
                 app:layout_constraintEnd_toStartOf="@+id/view3"
@@ -232,8 +233,8 @@
 
             <View
                 android:id="@+id/view4"
-                android:layout_width="75dp"
-                android:layout_height="75dp"
+                android:layout_width="65dp"
+                android:layout_height="65dp"
                 android:layout_marginTop="50dp"
                 android:background="@drawable/bg_rounded"
                 android:backgroundTint="@color/purple_500"
@@ -243,8 +244,8 @@
 
             <View
                 android:id="@+id/view6"
-                android:layout_width="75dp"
-                android:layout_height="75dp"
+                android:layout_width="65dp"
+                android:layout_height="65dp"
                 android:layout_marginTop="50dp"
                 android:background="@drawable/bg_rounded"
                 android:backgroundTint="@color/purple_500"
@@ -254,8 +255,8 @@
 
             <View
                 android:id="@+id/view8"
-                android:layout_width="75dp"
-                android:layout_height="75dp"
+                android:layout_width="65dp"
+                android:layout_height="65dp"
                 android:layout_marginTop="50dp"
                 android:background="@drawable/bg_rounded"
                 android:backgroundTint="@color/purple_500"
@@ -265,8 +266,8 @@
 
             <View
                 android:id="@+id/view9"
-                android:layout_width="75dp"
-                android:layout_height="75dp"
+                android:layout_width="65dp"
+                android:layout_height="65dp"
                 android:layout_marginTop="50dp"
                 android:background="@drawable/bg_rounded"
                 android:backgroundTint="@color/purple_500"
@@ -277,8 +278,8 @@
 
             <com.makeramen.roundedimageview.RoundedImageView
                 android:id="@+id/help"
-                android:layout_width="50dp"
-                android:layout_height="50dp"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
                 android:src="@drawable/ic_baseline_help_24"
                 app:layout_constraintBottom_toTopOf="@+id/textView21"
                 app:layout_constraintEnd_toEndOf="@+id/view9"
@@ -288,8 +289,8 @@
 
             <View
                 android:id="@+id/view10"
-                android:layout_width="75dp"
-                android:layout_height="75dp"
+                android:layout_width="65dp"
+                android:layout_height="65dp"
                 android:layout_marginTop="50dp"
                 android:background="@drawable/bg_rounded"
                 android:backgroundTint="@android:color/darker_gray"
@@ -300,8 +301,8 @@
 
             <View
                 android:id="@+id/view7"
-                android:layout_width="75dp"
-                android:layout_height="75dp"
+                android:layout_width="65dp"
+                android:layout_height="65dp"
                 android:layout_marginTop="50dp"
                 android:background="@drawable/bg_rounded"
                 android:backgroundTint="@android:color/darker_gray"
@@ -312,8 +313,8 @@
 
             <com.makeramen.roundedimageview.RoundedImageView
                 android:id="@+id/beeWash"
-                android:layout_width="50dp"
-                android:layout_height="50dp"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
                 app:layout_constraintBottom_toBottomOf="@+id/view2"
                 app:layout_constraintEnd_toEndOf="@+id/view2"
                 app:layout_constraintStart_toStartOf="@+id/view2"
@@ -322,8 +323,8 @@
 
             <com.makeramen.roundedimageview.RoundedImageView
                 android:id="@+id/beeTire"
-                android:layout_width="50dp"
-                android:layout_height="50dp"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
                 app:layout_constraintBottom_toBottomOf="@+id/view5"
                 app:layout_constraintEnd_toEndOf="@+id/view5"
                 app:layout_constraintStart_toStartOf="@+id/view5"
@@ -332,8 +333,8 @@
 
             <com.makeramen.roundedimageview.RoundedImageView
                 android:id="@+id/roundedImageView"
-                android:layout_width="50dp"
-                android:layout_height="50dp"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
                 app:layout_constraintBottom_toBottomOf="@+id/view3"
                 app:layout_constraintEnd_toEndOf="@+id/view3"
                 app:layout_constraintStart_toStartOf="@+id/view3"
@@ -342,8 +343,8 @@
 
             <com.makeramen.roundedimageview.RoundedImageView
                 android:id="@+id/roundedImageView2"
-                android:layout_width="50dp"
-                android:layout_height="50dp"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
                 app:layout_constraintBottom_toBottomOf="@+id/view8"
                 app:layout_constraintEnd_toEndOf="@+id/view8"
                 app:layout_constraintStart_toStartOf="@+id/view8"
@@ -352,8 +353,8 @@
 
             <com.makeramen.roundedimageview.RoundedImageView
                 android:id="@+id/roundedImageView3"
-                android:layout_width="50dp"
-                android:layout_height="50dp"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
                 app:layout_constraintBottom_toBottomOf="@+id/view6"
                 app:layout_constraintEnd_toEndOf="@+id/view6"
                 app:layout_constraintStart_toStartOf="@+id/view6"
@@ -362,8 +363,8 @@
 
             <com.makeramen.roundedimageview.RoundedImageView
                 android:id="@+id/roundedImageView4"
-                android:layout_width="50dp"
-                android:layout_height="50dp"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
                 app:layout_constraintBottom_toBottomOf="@+id/view7"
                 app:layout_constraintEnd_toEndOf="@+id/view7"
                 app:layout_constraintStart_toStartOf="@+id/view7"
@@ -372,8 +373,8 @@
 
             <com.makeramen.roundedimageview.RoundedImageView
                 android:id="@+id/roundedImageView5"
-                android:layout_width="50dp"
-                android:layout_height="50dp"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
                 app:layout_constraintBottom_toBottomOf="@+id/view10"
                 app:layout_constraintEnd_toEndOf="@+id/view10"
                 app:layout_constraintStart_toStartOf="@+id/view10"
@@ -382,8 +383,8 @@
 
             <com.makeramen.roundedimageview.RoundedImageView
                 android:id="@+id/roundedImageView6"
-                android:layout_width="50dp"
-                android:layout_height="50dp"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
                 app:layout_constraintBottom_toBottomOf="@+id/view4"
                 app:layout_constraintEnd_toEndOf="@+id/view10"
                 app:layout_constraintStart_toStartOf="@+id/view10"

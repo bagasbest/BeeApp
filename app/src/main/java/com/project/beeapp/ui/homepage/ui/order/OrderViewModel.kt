@@ -377,11 +377,7 @@ class OrderViewModel : ViewModel() {
     }
 
 
-
     fun getOrderList() : LiveData<ArrayList<OrderModel>> {
         return orderList
     }
-
-
-
 }

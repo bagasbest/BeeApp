@@ -85,8 +85,121 @@ class VerifyDriverViewModel : ViewModel() {
         }
     }
 
+    fun setListDriverByLocationTask(locationTask: ArrayList<String>?) {
+        listItems.clear()
+
+
+        try {
+            FirebaseFirestore.getInstance().collection("users")
+                .whereEqualTo("role", "driver")
+                .whereIn("locKecamatan", locationTask!!)
+                .get()
+                .addOnSuccessListener { documents ->
+                    for (document in documents) {
+                        val model = VerifyDriverModel()
+                        model.email = document.data["email"].toString()
+                        model.fullname = document.data["fullname"].toString()
+                        model.username = document.data["username"].toString()
+                        model.image = document.data["image"].toString()
+                        model.locKabupaten = document.data["locKabupaten"].toString()
+                        model.locProvinsi = document.data["locProvinsi"].toString()
+                        model.locKecamatan = document.data["locKecamatan"].toString()
+                        model.locKelurahan = document.data["locKelurahan"].toString()
+                        model.npwp = document.data["npwp"].toString()
+                        model.phone = document.data["phone"].toString()
+                        model.status = document.data["status"].toString()
+                        model.uid = document.data["uid"].toString()
+
+                        listItems.add(model)
+                    }
+                    driverList.postValue(listItems)
+                }
+                .addOnFailureListener { exception ->
+                    Log.w(TAG, "Error getting documents: ", exception)
+                }
+        } catch (error: Exception) {
+            error.printStackTrace()
+        }
+    }
+
+    fun setListDriverByStandby(isWork: Boolean) {
+        listItems.clear()
+
+
+        try {
+            FirebaseFirestore.getInstance().collection("users")
+                .whereEqualTo("role", "driver")
+                .whereEqualTo("isWork", isWork)
+                .get()
+                .addOnSuccessListener { documents ->
+                    for (document in documents) {
+                        val model = VerifyDriverModel()
+                        model.email = document.data["email"].toString()
+                        model.fullname = document.data["fullname"].toString()
+                        model.username = document.data["username"].toString()
+                        model.image = document.data["image"].toString()
+                        model.locKabupaten = document.data["locKabupaten"].toString()
+                        model.locProvinsi = document.data["locProvinsi"].toString()
+                        model.locKecamatan = document.data["locKecamatan"].toString()
+                        model.locKelurahan = document.data["locKelurahan"].toString()
+                        model.npwp = document.data["npwp"].toString()
+                        model.phone = document.data["phone"].toString()
+                        model.status = document.data["status"].toString()
+                        model.uid = document.data["uid"].toString()
+
+
+                        listItems.add(model)
+                    }
+                    driverList.postValue(listItems)
+                }
+                .addOnFailureListener { exception ->
+                    Log.w(TAG, "Error getting documents: ", exception)
+                }
+        } catch (error: Exception) {
+            error.printStackTrace()
+        }
+    }
+
+    fun setListDriverByLocationTaskAndWorkStatus(locationTask: ArrayList<String>?, isWork: Boolean) {
+        listItems.clear()
+
+
+        try {
+            FirebaseFirestore.getInstance().collection("users")
+                .whereEqualTo("role", "driver")
+                .whereIn("locKecamatan", locationTask!!)
+                .whereEqualTo("isWork", isWork)
+                .get()
+                .addOnSuccessListener { documents ->
+                    for (document in documents) {
+                        val model = VerifyDriverModel()
+                        model.email = document.data["email"].toString()
+                        model.fullname = document.data["fullname"].toString()
+                        model.username = document.data["username"].toString()
+                        model.image = document.data["image"].toString()
+                        model.locKabupaten = document.data["locKabupaten"].toString()
+                        model.locProvinsi = document.data["locProvinsi"].toString()
+                        model.locKecamatan = document.data["locKecamatan"].toString()
+                        model.locKelurahan = document.data["locKelurahan"].toString()
+                        model.npwp = document.data["npwp"].toString()
+                        model.phone = document.data["phone"].toString()
+                        model.status = document.data["status"].toString()
+                        model.uid = document.data["uid"].toString()
+
+
+                        listItems.add(model)
+                    }
+                    driverList.postValue(listItems)
+                }
+                .addOnFailureListener { exception ->
+                    Log.w(TAG, "Error getting documents: ", exception)
+                }
+        } catch (error: Exception) {
+            error.printStackTrace()
+        }
+    }
+
     fun getDriverList() : LiveData<ArrayList<VerifyDriverModel>> {
         return driverList
     }
-
 }

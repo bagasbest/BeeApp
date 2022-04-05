@@ -437,7 +437,7 @@ class OrderDetailActivity : AppCompatActivity() {
 
                         binding?.driverName?.text = model?.driverName
                     }
-                } else if (role == "admin") {
+                } else if (role == "admin" || role == "adminKecamatan") {
                     if (model?.status != "Cash" || model?.status != "Order Diterima" || model?.status != "Selesai") {
                         binding?.acc?.visibility = View.VISIBLE
                         binding?.decline?.visibility = View.VISIBLE
@@ -566,10 +566,13 @@ class OrderDetailActivity : AppCompatActivity() {
                 model?.userId
             }
             "admin" -> {
-                "CSpWB7SLOIQQ3eSjMVDpdC7Q8Yd2"
+                uid
+            }
+            "driver" -> {
+                model?.driverId
             }
             else -> {
-                model?.driverId
+                uid
             }
         }
 

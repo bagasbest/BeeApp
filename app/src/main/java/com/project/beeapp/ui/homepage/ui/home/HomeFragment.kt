@@ -70,7 +70,7 @@ class HomeFragment : Fragment() {
             .get()
             .addOnSuccessListener {
                 when {
-                    "" + it.data?.get("role") == "admin" -> {
+                    "" + it.data?.get("role") == "admin" || "" + it.data?.get("role") == "adminKecamatan" ->   {
                         binding.textView.text = "Beranda BeeFlo"
                         binding.verifyDriver.visibility = View.VISIBLE
                         binding.userOrAdminRole.visibility = View.VISIBLE

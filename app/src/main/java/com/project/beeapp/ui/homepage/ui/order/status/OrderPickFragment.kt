@@ -2,6 +2,7 @@ package com.project.beeapp.ui.homepage.ui.order.status
 
 import android.annotation.SuppressLint
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -11,7 +12,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.project.beeapp.databinding.FragmentOrderPickBinding
-import com.project.beeapp.databinding.FragmentOrderProcessBinding
 import com.project.beeapp.ui.homepage.ui.order.OrderAdapter
 import com.project.beeapp.ui.homepage.ui.order.OrderViewModel
 
@@ -21,6 +21,7 @@ class OrderPickFragment : Fragment() {
     private var adapter: OrderAdapter? = null
     private var role: String? = null
     private val myUID = FirebaseAuth.getInstance().currentUser!!.uid
+    private var locationTask = ArrayList<String>()
 
     private var driverLocKecamatan: String? = null
     private var driverLocKelurahan: String? = null
@@ -53,6 +54,10 @@ class OrderPickFragment : Fragment() {
                     binding?.rvOrderProcess?.visibility = View.GONE
                     binding?.noData?.text = "Anda Sedang Berkerja"
                 }
+
+                if(role == "adminKecamatan") {
+                    locationTask.addAll(it.data!!["locationTask"] as ArrayList<String>)
+                }
             }
     }
 
@@ -84,13 +89,21 @@ class OrderPickFragment : Fragment() {
             "driver" -> {
                 viewModel.setListOrderProcessByDriver(driverLocKecamatan)
             }
-            else -> {
+            "admin" -> {
+                viewModel.setListOrderProcessByAdmin()
+            }
+            "adminKecamatan" -> {
                 viewModel.setListOrderProcessByAdmin()
             }
         }
         viewModel.getOrderList().observe(this) { orderFinish ->
+
             if (orderFinish.size > 0) {
-                adapter!!.setData(orderFinish)
+                if(role != "adminKecamatan") {
+                    adapter!!.setData(orderFinish)
+                } else {
+                    Log.e("taf", orderFinish.toString())
+                }
                 binding?.noData?.visibility = View.GONE
             } else {
                 binding?.noData?.visibility = View.VISIBLE

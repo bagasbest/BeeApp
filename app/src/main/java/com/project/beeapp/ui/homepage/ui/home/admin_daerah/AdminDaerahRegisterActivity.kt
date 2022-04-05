@@ -1,18 +1,17 @@
-package com.project.beeapp
+package com.project.beeapp.ui.homepage.ui.home.admin_daerah
 
 import android.app.ProgressDialog
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
-import android.widget.RadioButton
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
-import androidx.appcompat.app.AppCompatActivity
 import com.bumptech.glide.Glide
 import com.github.dhaval2404.imagepicker.ImagePicker
 import com.google.firebase.auth.FirebaseAuth
@@ -20,12 +19,14 @@ import com.google.firebase.auth.FirebaseAuthUserCollisionException
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.messaging.FirebaseMessaging
 import com.google.firebase.storage.FirebaseStorage
+import com.project.beeapp.R
+import com.project.beeapp.RegisterActivity
 import com.project.beeapp.api.RetrofitClient
 import com.project.beeapp.api.model.ResponseKecamatan
 import com.project.beeapp.api.model.ResponseKelurahan
 import com.project.beeapp.api.model.ResponseKota
 import com.project.beeapp.api.model.ResponseProvinsi
-import com.project.beeapp.databinding.ActivityRegisterBinding
+import com.project.beeapp.databinding.ActivityAdminDaerahRegisterBinding
 import com.project.beeapp.notification.FirebaseService
 import com.project.beeapp.notification.NotificationData
 import com.project.beeapp.notification.PushNotification
@@ -40,10 +41,9 @@ import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
 
+class AdminDaerahRegisterActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener  {
 
-class RegisterActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
-
-    private var binding: ActivityRegisterBinding? = null
+    private var binding: ActivityAdminDaerahRegisterBinding? = null
     private val TAG = RegisterActivity::class.java.simpleName
     private var listIdProv = ArrayList<Int>()
     private var listNameProv = ArrayList<String>()
@@ -56,21 +56,24 @@ class RegisterActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener
 
     private var dp: String? = null
     private val REQUEST_FROM_GALLERY = 1001
-    private var role: String? = null
+    private var role ="adminKecamatan"
     private lateinit var status: String
     private var myToken: String? = null
+    private val taskList = ArrayList<String>()
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ActivityRegisterBinding.inflate(layoutInflater)
+        binding = ActivityAdminDaerahRegisterBinding.inflate(layoutInflater)
         setContentView(binding?.root)
+
 
         FirebaseService.sharedPref = getSharedPreferences("sharedPref", Context.MODE_PRIVATE)
         FirebaseMessaging.getInstance().token.addOnSuccessListener { result ->
             FirebaseService.token = result
             myToken = result
         }
-        FirebaseMessaging.getInstance().subscribeToTopic(TOPIC)
+        FirebaseMessaging.getInstance().subscribeToTopic(RegisterActivity.TOPIC)
 
         showProvinsi()
 
@@ -91,8 +94,20 @@ class RegisterActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener
             onBackPressed()
         }
 
-
+        binding?.tambahakanKecamatan?.setOnClickListener {
+            addKecamatan()
+        }
     }
+
+    private fun addKecamatan() {
+        val kecamatan = binding?.kecamatan?.selectedItem.toString()
+
+        taskList.add(kecamatan)
+        taskList.distinct()
+
+        binding?.locationTask?.text = taskList.joinToString(", ")
+    }
+
 
     private fun formValidation() {
         val username = binding?.username?.text.toString().trim()
@@ -131,18 +146,6 @@ class RegisterActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener
                 Toast.makeText(this, "Kata sandi minimal 6 karakter", Toast.LENGTH_SHORT).show()
                 return
             }
-            role == null -> {
-                Toast.makeText(
-                    this,
-                    "Anda ingin mendaftar sebagai kustomer atau sebagai mitra/driver ?, silahkan pilih",
-                    Toast.LENGTH_SHORT
-                ).show()
-                return
-            }
-            role == "driver" && dp == null -> {
-                Toast.makeText(this, "Silahkan unggah foto formal anda", Toast.LENGTH_SHORT).show()
-                return
-            }
         }
 
         binding?.progressBar?.visibility = View.VISIBLE
@@ -177,6 +180,7 @@ class RegisterActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener
                         "status" to status,
                         "isWork" to false,
                         "token" to myToken.toString(),
+                        "locationTask" to taskList,
                     )
 
                     FirebaseFirestore
@@ -186,21 +190,8 @@ class RegisterActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener
                         .set(data)
                         .addOnCompleteListener { task ->
                             if (task.isSuccessful) {
-
-                                if(role == "driver") {
-                                    if(myToken != null) {
-                                        sendNotificationToAdmin(fullname, userId)
-                                        getAdminToken(fullname)
-                                    } else {
-                                        binding?.progressBar?.visibility = View.GONE
-                                        showFailureDialog("Token kosong, mohon pastikan koneksi internet anda stabil dan coba lagi")
-                                    }
-                                } else {
-                                    binding?.progressBar?.visibility = View.GONE
-                                    showSuccessDialog()
-                                }
-
-
+                                sendNotificationToAdmin(fullname, userId)
+                                getAdminToken(fullname)
                             } else {
                                 binding?.progressBar?.visibility = View.GONE
                                 showFailureDialog("Silahkan mendaftar kembali dengan informasi yang benar, dan pastikan koneksi internet lancar")
@@ -226,8 +217,8 @@ class RegisterActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener
         val uid = System.currentTimeMillis().toString()
 
         val data = mapOf(
-            "title" to "Konfirmasi Pendaftaran Mitra",
-            "message" to "$fullname telah mendaftar sebagai mitra",
+            "title" to "Registrasi Admin Daerah",
+            "message" to "Admin bernama: $fullname, status: sukses",
             "date" to formattedDate,
             "type" to "admin",
             "userId" to userId,
@@ -252,33 +243,14 @@ class RegisterActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener
 
                 PushNotification(
                     NotificationData(
-                        "Konfirmasi Pendaftaran Mitra",
-                        "$fullname telah mendaftar sebagai mitra"
+                        "Registrasi Admin Daerah",
+                        "Admin bernama: $fullname, status: sukses"
                     ),
                     token
                 ).also { pushNotification ->
                     sendNotification(pushNotification)
                 }
             }
-    }
-
-    fun onRadioButtonClicked(view: View) {
-        if (view is RadioButton) {
-            val checked = view.isChecked
-
-            when (view.id) {
-                R.id.user ->
-                    if (checked) {
-                        role = "user"
-                        binding?.privateInformation?.visibility = View.GONE
-                    }
-                R.id.driver ->
-                    if (checked) {
-                        role = "driver"
-                        binding?.privateInformation?.visibility = View.VISIBLE
-                    }
-            }
-        }
     }
 
     private fun showProvinsi() {
@@ -295,9 +267,9 @@ class RegisterActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener
                     listNameProv.add(it.nama)
                 }
 
-                binding?.provinsi?.onItemSelectedListener = this@RegisterActivity
+                binding?.provinsi?.onItemSelectedListener = this@AdminDaerahRegisterActivity
                 val adapter = ArrayAdapter(
-                    this@RegisterActivity,
+                    this@AdminDaerahRegisterActivity,
                     android.R.layout.simple_spinner_dropdown_item,
                     listNameProv
                 )
@@ -306,7 +278,7 @@ class RegisterActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener
             }
 
             override fun onFailure(call: Call<ResponseProvinsi>, t: Throwable) {
-                Toast.makeText(this@RegisterActivity, "${t.message}", Toast.LENGTH_LONG).show()
+                Toast.makeText(this@AdminDaerahRegisterActivity, "${t.message}", Toast.LENGTH_LONG).show()
             }
 
         })
@@ -326,9 +298,9 @@ class RegisterActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener
                     listNameKota.add(it.nama)
                 }
 
-                binding?.kota?.onItemSelectedListener = this@RegisterActivity
+                binding?.kota?.onItemSelectedListener = this@AdminDaerahRegisterActivity
                 val adapter = ArrayAdapter(
-                    this@RegisterActivity,
+                    this@AdminDaerahRegisterActivity,
                     android.R.layout.simple_spinner_dropdown_item,
                     listNameKota
                 )
@@ -358,9 +330,9 @@ class RegisterActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener
                     listNameKec.add(it.nama)
                 }
 
-                binding?.kecamatan?.onItemSelectedListener = this@RegisterActivity
+                binding?.kecamatan?.onItemSelectedListener = this@AdminDaerahRegisterActivity
                 val adapter = ArrayAdapter(
-                    this@RegisterActivity,
+                    this@AdminDaerahRegisterActivity,
                     android.R.layout.simple_spinner_dropdown_item,
                     listNameKec,
                 )
@@ -392,9 +364,9 @@ class RegisterActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener
                         listNameKel.add(it.nama)
                     }
 
-                    binding?.kelurahan?.onItemSelectedListener = this@RegisterActivity
+                    binding?.kelurahan?.onItemSelectedListener = this@AdminDaerahRegisterActivity
                     val adapter = ArrayAdapter(
-                        this@RegisterActivity,
+                        this@AdminDaerahRegisterActivity,
                         android.R.layout.simple_spinner_dropdown_item,
                         listNameKel,
                     )
@@ -445,8 +417,8 @@ class RegisterActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener
     /// munculkan dialog ketika sukses registrasi
     private fun showSuccessDialog() {
         AlertDialog.Builder(this)
-            .setTitle("Berhasil melakukan registrasi")
-            .setMessage("Admin akan memverifikasi pendaftaran anda, silahkan menunggu beberapa hari kedepan")
+            .setTitle("Registrasi Admin Daerah")
+            .setMessage("status: sukses")
             .setIcon(R.drawable.ic_baseline_check_circle_outline_24)
             .setPositiveButton("OKE") { dialogInterface, _ ->
                 dialogInterface.dismiss()
@@ -535,10 +507,4 @@ class RegisterActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener
         super.onDestroy()
         binding = null
     }
-
-
-    companion object {
-        const val TOPIC = "/topics/register"
-    }
-
 }
