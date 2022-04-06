@@ -52,7 +52,7 @@
         android:layout_marginStart="16sp"
         android:layout_marginEnd="16sp"
         android:layout_marginTop="16sp"
-        android:text="* Mitra akan memperoleh pendapatan bersih sesuai dengan persentase yang anda inputkan. Contoh: Jika ada 1 order bernilai Rp.10.000, dan persentase pendapatan bersih mitra 80%, maka mitra akan memperoleh Rp.8.000, dan BeeFlo memperoleh Rp.2000"
+        android:text="* Mitra akan memperoleh pendapatan bersih sesuai dengan persentase yang anda inputkan. contoh biaya order 10.000, ppn nya 5%, sisa 9500, terus biaya admin: misal 3000, sisa 6500, baru 6500 ini di potong bagi hasil misal 80% untuk mitra, sehingga mitra menerima pendapatan bersih Rp.5200"
         android:textColor="@color/black"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -74,10 +74,54 @@
             android:id="@+id/percentage"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Persentase pendapatan mitra: 1 - 100%"
+            android:hint="Persentase pendapatan untuk mitra: 1 - 100%"
             android:inputType="number" />
 
     </com.google.android.material.textfield.TextInputLayout>
+
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/textInputLayout2"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16sp"
+        android:layout_marginEnd="16sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="16sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textInputLayout">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/ppn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Persentase PPN: 1 - 100%"
+            android:inputType="number" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/textInputLayout3"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16sp"
+        android:layout_marginEnd="16sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="16sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textInputLayout2">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/biayaAdmin"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Biaya Admin: Rp."
+            android:inputType="number" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
 
     <ProgressBar
         android:id="@+id/progressBar"
@@ -87,7 +131,7 @@
         android:visibility="gone"
         app:layout_constraintEnd_toEndOf="@+id/textInputLayout"
         app:layout_constraintStart_toStartOf="@+id/textInputLayout"
-        app:layout_constraintTop_toBottomOf="@+id/textInputLayout" />
+        app:layout_constraintTop_toBottomOf="@+id/textInputLayout3" />
 
     <Button
         android:id="@+id/save"

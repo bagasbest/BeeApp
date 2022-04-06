@@ -123,7 +123,7 @@ class HomeFragment : Fragment() {
                         model.image = image
                         model.uid = uid
 
-                        imageList.add(SlideModel(image, ScaleTypes.CENTER_CROP))
+                        imageList.add(SlideModel(image, ScaleTypes.FIT))
                         promotionList.add(model)
                     }
                     binding.sliderImage.setImageList(imageList)

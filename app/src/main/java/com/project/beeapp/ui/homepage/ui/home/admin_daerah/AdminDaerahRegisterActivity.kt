@@ -44,7 +44,6 @@ import kotlin.collections.ArrayList
 class AdminDaerahRegisterActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener  {
 
     private var binding: ActivityAdminDaerahRegisterBinding? = null
-    private val TAG = RegisterActivity::class.java.simpleName
     private var listIdProv = ArrayList<Int>()
     private var listNameProv = ArrayList<String>()
     private var listIdKota = ArrayList<Int>()

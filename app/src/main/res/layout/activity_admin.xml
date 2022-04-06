@@ -117,6 +117,21 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/aktifitasKonsumenBtn" />
 
+
+        <Button
+            android:id="@+id/daftarAdminDaerah"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:layout_marginStart="16sp"
+            android:layout_marginTop="16sp"
+            android:layout_marginEnd="16sp"
+            android:visibility="gone"
+            android:text="Daftar admin daerah"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/adminDaerah" />
+
+
         <Button
             android:id="@+id/promoBtn"
             android:layout_width="match_parent"
@@ -129,7 +144,7 @@
             android:text="Setup Promo (Coming Soon)"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/adminDaerah" />
+            app:layout_constraintTop_toBottomOf="@+id/daftarAdminDaerah" />
 
         <Button
             android:id="@+id/beeFloPoint"

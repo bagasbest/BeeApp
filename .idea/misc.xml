@@ -9,6 +9,8 @@
         <entry key="..\:/TUBES_GALERI/BeeApp/app/src/main/res/layout/activity_accumulate_partner_order.xml" value="0.23645833333333333" />
         <entry key="..\:/TUBES_GALERI/BeeApp/app/src/main/res/layout/activity_accumulate_partner_order_detail.xml" value="0.23645833333333333" />
         <entry key="..\:/TUBES_GALERI/BeeApp/app/src/main/res/layout/activity_admin.xml" value="0.23645833333333333" />
+        <entry key="..\:/TUBES_GALERI/BeeApp/app/src/main/res/layout/activity_admin_daerah.xml" value="0.23645833333333333" />
+        <entry key="..\:/TUBES_GALERI/BeeApp/app/src/main/res/layout/activity_admin_daerah_detail.xml" value="0.23645833333333333" />
         <entry key="..\:/TUBES_GALERI/BeeApp/app/src/main/res/layout/activity_admin_daerah_register.xml" value="0.264" />
         <entry key="..\:/TUBES_GALERI/BeeApp/app/src/main/res/layout/activity_bagi_hasil.xml" value="0.23645833333333333" />
         <entry key="..\:/TUBES_GALERI/BeeApp/app/src/main/res/layout/activity_bee_fuel.xml" value="0.264" />
@@ -37,6 +39,7 @@
         <entry key="..\:/TUBES_GALERI/BeeApp/app/src/main/res/layout/fragment_order_pick.xml" value="0.13134057971014493" />
         <entry key="..\:/TUBES_GALERI/BeeApp/app/src/main/res/layout/fragment_order_process.xml" value="0.23645833333333333" />
         <entry key="..\:/TUBES_GALERI/BeeApp/app/src/main/res/layout/fragment_profile.xml" value="0.23645833333333333" />
+        <entry key="..\:/TUBES_GALERI/BeeApp/app/src/main/res/layout/item_admin_list.xml" value="0.23645833333333333" />
         <entry key="..\:/TUBES_GALERI/BeeApp/app/src/main/res/layout/item_income.xml" value="0.23645833333333333" />
         <entry key="..\:/TUBES_GALERI/BeeApp/app/src/main/res/layout/item_income_partner.xml" value="0.23645833333333333" />
         <entry key="..\:/TUBES_GALERI/BeeApp/app/src/main/res/layout/item_notification.xml" value="0.48405253283302063" />

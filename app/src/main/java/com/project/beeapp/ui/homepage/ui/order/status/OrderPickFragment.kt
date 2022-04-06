@@ -96,10 +96,10 @@ class OrderPickFragment : Fragment() {
                 viewModel.setListOrderProcessByAdminKecamatan(locationTask)
             }
         }
-        viewModel.getOrderList().observe(this) { orderFinish ->
+        viewModel.getOrderList().observe(this) { orderPick ->
 
-            if (orderFinish.size > 0) {
-                adapter!!.setData(orderFinish)
+            if (orderPick.size > 0) {
+                adapter!!.setData(orderPick)
                 binding?.noData?.visibility = View.GONE
             } else {
                 binding?.noData?.visibility = View.VISIBLE

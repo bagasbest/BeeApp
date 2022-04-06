@@ -8,6 +8,7 @@ import android.view.View
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.project.beeapp.databinding.ActivityAdminBinding
+import com.project.beeapp.ui.homepage.ui.home.admin_daerah.AdminDaerahActivity
 import com.project.beeapp.ui.homepage.ui.home.admin_daerah.AdminDaerahRegisterActivity
 import com.project.beeapp.ui.homepage.ui.home.aktifitas_konsumen.UserActivity
 import com.project.beeapp.ui.homepage.ui.home.akumulasi_pendapatan_mitra.AccumulatePartnerOrderActivity
@@ -40,6 +41,7 @@ class AdminActivity : AppCompatActivity() {
                     binding?.rekening?.visibility = View.VISIBLE
                     binding?.aktifitasKonsumenBtn?.visibility = View.VISIBLE
                     binding?.adminDaerah?.visibility = View.VISIBLE
+                    binding?.daftarAdminDaerah?.visibility = View.VISIBLE
                     binding?.beeFloPoint?.visibility = View.VISIBLE
                     binding?.promoBtn?.visibility = View.VISIBLE
                 } else  {
@@ -98,6 +100,10 @@ class AdminActivity : AppCompatActivity() {
 
         binding?.adminDaerah?.setOnClickListener {
             startActivity(Intent(this, AdminDaerahRegisterActivity::class.java))
+        }
+
+        binding?.daftarAdminDaerah?.setOnClickListener {
+            startActivity(Intent(this, AdminDaerahActivity::class.java))
         }
 
 

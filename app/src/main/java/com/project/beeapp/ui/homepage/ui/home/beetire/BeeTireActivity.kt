@@ -442,13 +442,40 @@ class BeeTireActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener 
                     ).also { pushNotification ->
                         sendNotification(pushNotification)
                     }
+
+                    sendNotificationFromUserToMitra()
+
                 } else {
                     PushNotification(
                         NotificationData(
-                            "Konfirmasi Pembayaran Mitra",
+                            "Konfirmasi Pembayaran Kustoemr",
                             "$username telah melakukan transfer pembayaran"
                         ),
                         token
+                    ).also { pushNotification ->
+                        sendNotification(pushNotification)
+                    }
+                }
+            }
+    }
+
+
+    private fun sendNotificationFromUserToMitra() {
+        FirebaseFirestore
+            .getInstance()
+            .collection("users")
+            .whereEqualTo("role", "driver")
+            .whereEqualTo("locKecamatan", kecamatan)
+            .get()
+            .addOnSuccessListener { documents ->
+                for(document in documents) {
+                    val driverToken = "" + document.data["token"]
+                    PushNotification(
+                        NotificationData(
+                            "Ada order baru",
+                            "Order BeeTire menunggu anda"
+                        ),
+                        driverToken
                     ).also { pushNotification ->
                         sendNotification(pushNotification)
                     }

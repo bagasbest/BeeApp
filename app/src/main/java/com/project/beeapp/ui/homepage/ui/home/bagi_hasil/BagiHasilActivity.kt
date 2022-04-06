@@ -24,7 +24,6 @@ class BagiHasilActivity : AppCompatActivity() {
         binding?.backButton?.setOnClickListener {
             onBackPressed()
         }
-        
     }
 
     private fun getPercentage() {
@@ -35,18 +34,33 @@ class BagiHasilActivity : AppCompatActivity() {
             .get()
             .addOnSuccessListener {
                 val percentage = it.data?.get("percentage") as Double
+                val ppn = it.data?.get("ppn") as Double
+                val biayaAdmin = it.data?.get("biayaAdmin") as Long
                 binding?.percentage?.setText(String.format("%.0f", percentage*100))
+                binding?.ppn?.setText(String.format("%.0f", ppn*100))
+                binding?.biayaAdmin?.setText(biayaAdmin.toString())
             }
     }
 
     private fun formValidation() {
         val percentage = binding?.percentage?.text.toString()
-        if(percentage.toInt() in 1..100) {
+        val ppn = binding?.ppn?.text.toString()
+        val biayaAdmin = binding?.biayaAdmin?.text.toString()
 
+
+        if(percentage.toInt() < 1 || percentage.toInt() > 100) {
+            Toast.makeText(this, "Maaf, persentase hanya 1 - 100% saja", Toast.LENGTH_SHORT).show()
+        } else if(ppn.toInt() < 1 || ppn.toInt() > 100) {
+            Toast.makeText(this, "Maaf, persentase hanya 1 - 100% saja", Toast.LENGTH_SHORT).show()
+        } else if(biayaAdmin.isEmpty() || biayaAdmin.toInt() < 1) {
+            Toast.makeText(this, "Maaf, biaya admin tidak boleh kosong atau negatif", Toast.LENGTH_SHORT).show()
+        } else {
             binding?.progressBar?.visibility = View.VISIBLE
 
             val percent = mapOf(
-                "percentage" to percentage.toDouble() / 100.0
+                "percentage" to percentage.toDouble() / 100.0,
+                "ppn" to ppn.toDouble() / 100.0,
+                "biayaAdmin" to biayaAdmin.toLong()
             )
 
             FirebaseFirestore
@@ -59,9 +73,6 @@ class BagiHasilActivity : AppCompatActivity() {
                     Toast.makeText(this, "Berhasil memperbarui bagi hasil", Toast.LENGTH_SHORT).show()
                     onBackPressed()
                 }
-
-        } else {
-            Toast.makeText(this, "Maaf, persentase hanya 1 - 100% saja", Toast.LENGTH_SHORT).show()
         }
     }
 

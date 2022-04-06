@@ -32,6 +32,8 @@ class OrderDetailActivity : AppCompatActivity() {
     private var model: OrderModel? = null
     private var role: String? = null
     private var percentage: Double? = 0.0
+    private var ppn: Double? = 0.0
+    private var biayaAdmin: Long? = 0L
     private val uid = FirebaseAuth.getInstance().currentUser!!.uid
     private var notificationUid: String? = null
 
@@ -287,7 +289,9 @@ class OrderDetailActivity : AppCompatActivity() {
                             val df3 = SimpleDateFormat("yyyy")
                             val year: String = df3.format(Date())
 
-                            val income = model?.priceTotal?.minus((model?.priceTotal?.times(percentage!!)!!))
+                            val income = biayaAdmin?.let { it1 -> model?.priceTotal?.minus(it1) }
+                            val incomeMinusPPN = income?.minus(income.times(ppn!!))
+                            val incomeMinusPercentage = incomeMinusPPN?.times(percentage!!)
 
                             val data = mapOf(
                                 "orderId" to model?.orderId,
@@ -295,7 +299,7 @@ class OrderDetailActivity : AppCompatActivity() {
                                 "orderType" to model?.orderType,
                                 "date" to dateFinish,
                                 "dateTimeInMillis" to System.currentTimeMillis(),
-                                "income" to income?.toLong(),
+                                "income" to incomeMinusPercentage?.toLong(),
                                 "month" to month,
                                 "year" to year,
                             )
@@ -339,7 +343,8 @@ class OrderDetailActivity : AppCompatActivity() {
             .get()
             .addOnSuccessListener {
                 percentage = it.data?.get("percentage") as Double
-                Log.e("tag", percentage.toString())
+                ppn = it.data?.get("ppn") as Double
+                biayaAdmin= it.data?.get("biayaAdmin") as Long
             }
     }
 
@@ -439,8 +444,10 @@ class OrderDetailActivity : AppCompatActivity() {
                     }
                 } else if (role == "admin" || role == "adminKecamatan") {
                     if (model?.status != "Cash" || model?.status != "Order Diterima" || model?.status != "Selesai") {
-                        binding?.acc?.visibility = View.VISIBLE
-                        binding?.decline?.visibility = View.VISIBLE
+                        if( model?.status != "Sudah Bayar") {
+                            binding?.acc?.visibility = View.VISIBLE
+                            binding?.decline?.visibility = View.VISIBLE
+                        }
                     } else {
                         binding?.constraintLayout?.visibility = View.VISIBLE
 
@@ -617,6 +624,7 @@ class OrderDetailActivity : AppCompatActivity() {
                         ).also { pushNotification ->
                             sendNotification(pushNotification)
                         }
+                        sendNotificationFromUserToMitra()
                     }
                     "decline" -> {
                         PushNotification(
@@ -628,6 +636,29 @@ class OrderDetailActivity : AppCompatActivity() {
                         ).also { pushNotification ->
                             sendNotification(pushNotification)
                         }
+                    }
+                }
+            }
+    }
+
+    private fun sendNotificationFromUserToMitra() {
+        FirebaseFirestore
+            .getInstance()
+            .collection("users")
+            .whereEqualTo("role", "driver")
+            .whereEqualTo("locKecamatan", model?.kecamatan)
+            .get()
+            .addOnSuccessListener { documents ->
+                for(document in documents) {
+                    val driverToken = "" + document.data["token"]
+                    PushNotification(
+                        NotificationData(
+                            "Ada order baru",
+                            "Order ${model?.orderType} menunggu anda"
+                        ),
+                        driverToken
+                    ).also { pushNotification ->
+                        sendNotification(pushNotification)
                     }
                 }
             }
