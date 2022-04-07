@@ -197,7 +197,7 @@ class RegisterActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener
                                     }
                                 } else {
                                     binding?.progressBar?.visibility = View.GONE
-                                    showSuccessDialog()
+                                    showSuccessDialog("Selamat, Anda berhasil mendaftar sebagai Kustomer di BeeFlo, silahkan login dengan akun anda")
                                 }
 
 
@@ -443,10 +443,10 @@ class RegisterActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener
     }
 
     /// munculkan dialog ketika sukses registrasi
-    private fun showSuccessDialog() {
+    private fun showSuccessDialog(message: String) {
         AlertDialog.Builder(this)
             .setTitle("Berhasil melakukan registrasi")
-            .setMessage("Admin akan memverifikasi pendaftaran anda, silahkan menunggu beberapa hari kedepan")
+            .setMessage(message)
             .setIcon(R.drawable.ic_baseline_check_circle_outline_24)
             .setPositiveButton("OKE") { dialogInterface, _ ->
                 dialogInterface.dismiss()
@@ -514,7 +514,7 @@ class RegisterActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener
                 runOnUiThread {
                     if (response.isSuccessful) {
                         binding?.progressBar?.visibility = View.GONE
-                        showSuccessDialog()
+                        showSuccessDialog("Selamat, anda berhasil mendaftar sebagai Mitra BeeFlo, Admin akan memverifikasi pendaftaran anda, silahkan menunggu beberapa hari kedepan")
                     } else {
                         binding?.progressBar?.visibility = View.GONE
                         Log.e("Error else", response.body().toString())
