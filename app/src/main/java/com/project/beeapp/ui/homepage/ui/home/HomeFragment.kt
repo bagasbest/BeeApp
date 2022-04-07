@@ -76,7 +76,7 @@ class HomeFragment : Fragment() {
             .get()
             .addOnSuccessListener {
                 when {
-                    "" + it.data?.get("role") == "admin" || "" + it.data?.get("role") == "adminKecamatan" ->   {
+                    "" + it.data?.get("role") == "admin" ->   {
                         binding.textView.text = "Beranda BeeFlo"
                         binding.verifyDriver.visibility = View.VISIBLE
                         binding.userOrAdminRole.visibility = View.VISIBLE
@@ -90,6 +90,12 @@ class HomeFragment : Fragment() {
 
                         setImageSlider()
 
+                    }
+                    "" + it.data?.get("role") == "adminKecamatan" -> {
+                        binding.textView.text = "Beranda BeeFlo"
+                        binding.verifyDriver.visibility = View.VISIBLE
+                        binding.userOrAdminRole.visibility = View.VISIBLE
+                        binding.textView35.text = "Admin"
                     }
                     "" + it.data?.get("role") == "user" -> {
                         binding.textView.text = "Beranda BeeFlo"

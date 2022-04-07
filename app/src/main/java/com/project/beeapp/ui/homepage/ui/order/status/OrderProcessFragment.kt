@@ -20,6 +20,7 @@ class OrderProcessFragment : Fragment() {
     private var adapter: OrderAdapter? = null
     private var role: String? = null
     private val myUID = FirebaseAuth.getInstance().currentUser!!.uid
+    private var locationTask = ArrayList<String>()
 
     override fun onResume() {
         super.onResume()
@@ -38,6 +39,10 @@ class OrderProcessFragment : Fragment() {
                 role = it.data?.get("role").toString()
                 initRecyclerView()
                 initViewModel()
+
+                if(role == "adminKecamatan") {
+                    locationTask.addAll(it.data!!["locationTask"] as ArrayList<String>)
+                }
             }
     }
 
@@ -72,8 +77,7 @@ class OrderProcessFragment : Fragment() {
                 if(role == "admin") {
                     viewModel.setListOrderProcessBySuperAdmin()
                 } else {
-                    binding?.progressBar?.visibility = View.GONE
-                    binding?.noData?.visibility = View.VISIBLE
+                    viewModel.setListOrderDiterimaByAdminKecamatan(locationTask)
                 }
             }
         }

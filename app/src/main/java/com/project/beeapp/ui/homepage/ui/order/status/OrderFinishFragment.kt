@@ -19,6 +19,7 @@ class OrderFinishFragment : Fragment() {
     private var adapter: OrderAdapter? = null
     private var role: String? = null
     private val myUID = FirebaseAuth.getInstance().currentUser!!.uid
+    private var locationTask = ArrayList<String>()
 
     override fun onResume() {
         super.onResume()
@@ -37,6 +38,10 @@ class OrderFinishFragment : Fragment() {
                 role = it.data?.get("role").toString()
                 initRecyclerView()
                 initViewModel()
+
+                if(role == "adminKecamatan") {
+                    locationTask.addAll(it.data!!["locationTask"] as ArrayList<String>)
+                }
             }
     }
 
@@ -71,8 +76,7 @@ class OrderFinishFragment : Fragment() {
                 if(role == "admin") {
                     viewModel.setListOrderFinishBySuperAdmin()
                 } else {
-                    binding?.progressBar?.visibility = View.GONE
-                    binding?.noData?.visibility = View.VISIBLE
+                    viewModel.setListOrderFinishByAdminKecamatan(locationTask)
                 }
             }
         }
