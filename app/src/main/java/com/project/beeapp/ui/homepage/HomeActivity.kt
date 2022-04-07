@@ -7,6 +7,7 @@ import com.project.beeapp.databinding.ActivityHomeBinding
 import com.ismaeldivita.chipnavigation.ChipNavigationBar
 import android.annotation.SuppressLint
 import androidx.fragment.app.Fragment
+import com.project.beeapp.ui.homepage.ui.help.HelpFragment
 import com.project.beeapp.ui.homepage.ui.home.HomeFragment
 import com.project.beeapp.ui.homepage.ui.notification.NotificationFragment
 import com.project.beeapp.ui.homepage.ui.order.OrderFragment
@@ -43,6 +44,7 @@ class HomeActivity : AppCompatActivity() {
                 R.id.navigation_order -> fragment = OrderFragment()
                 R.id.navigation_notification -> fragment = NotificationFragment()
                 R.id.navigation_profile -> fragment = ProfileFragment()
+                R.id.navigation_help -> fragment = HelpFragment()
             }
             supportFragmentManager.beginTransaction()
                 .replace(

@@ -1,17 +1,21 @@
-package com.project.beeapp.ui.homepage.ui.home.help
+package com.project.beeapp.ui.homepage.ui.help
 
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
+import androidx.fragment.app.Fragment
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
+import com.bumptech.glide.Glide
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
-import com.project.beeapp.databinding.ActivityHelpBinding
+import com.project.beeapp.R
+import com.project.beeapp.databinding.FragmentHelpBinding
 
-class HelpActivity : AppCompatActivity() {
 
-    private var binding: ActivityHelpBinding? = null
+class HelpFragment : Fragment() {
+
+    private var binding : FragmentHelpBinding? = null
     private var description: String? = null
 
     override fun onResume() {
@@ -47,20 +51,25 @@ class HelpActivity : AppCompatActivity() {
             }
     }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        binding = ActivityHelpBinding.inflate(layoutInflater)
-        setContentView(binding?.root)
 
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        // Inflate the layout for this fragment
+        binding = FragmentHelpBinding.inflate(inflater, container,false)
+        return binding?.root
+    }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
         binding?.edit?.setOnClickListener {
-            val intent = Intent(this, HelpEditActivity::class.java)
+            val intent = Intent(activity, HelpEditActivity::class.java)
             intent.putExtra(HelpEditActivity.EXTRA_DESCRIPTION, description)
-            startActivity(intent)
-        }
 
-        binding?.backButton?.setOnClickListener {
-            onBackPressed()
+            Glide.with(this)
+
+            startActivity(intent)
         }
     }
 
@@ -68,4 +77,5 @@ class HelpActivity : AppCompatActivity() {
         super.onDestroy()
         binding = null
     }
+
 }

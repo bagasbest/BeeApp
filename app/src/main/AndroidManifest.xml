@@ -52,10 +52,10 @@
             android:name=".ui.homepage.ui.home.bagi_hasil.BagiHasilActivity"
             android:exported="false" />
         <activity
-            android:name=".ui.homepage.ui.home.help.HelpEditActivity"
+            android:name="com.project.beeapp.ui.homepage.ui.help.HelpEditActivity"
             android:exported="false" />
         <activity
-            android:name=".ui.homepage.ui.home.help.HelpActivity"
+            android:name="com.project.beeapp.ui.homepage.ui.help.HelpActivity"
             android:exported="false" />
         <activity
             android:name=".ui.homepage.ui.home.beefuel.BeeFuelEditActivity"

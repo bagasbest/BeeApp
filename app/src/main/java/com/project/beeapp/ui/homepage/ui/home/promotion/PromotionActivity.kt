@@ -3,8 +3,9 @@ package com.project.beeapp.ui.homepage.ui.home.promotion
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.project.beeapp.MainActivity
+import com.google.firebase.firestore.FirebaseFirestore
 import com.project.beeapp.databinding.ActivityPromotionBinding
 import com.project.beeapp.ui.homepage.HomeActivity
 
@@ -13,6 +14,7 @@ class PromotionActivity : AppCompatActivity() {
     private var binding :ActivityPromotionBinding? = null
     private var promotionList = ArrayList<PromotionModel>()
     private lateinit var adapter: PromotionAdapter
+    private var headerText: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -20,7 +22,7 @@ class PromotionActivity : AppCompatActivity() {
         setContentView(binding?.root)
 
         promotionList = intent.getParcelableArrayListExtra(EXTRA_PROMOTION)!!
-
+        headerText = intent.getStringExtra(HEADER)
 
         initRecyclerView()
 
@@ -31,6 +33,31 @@ class PromotionActivity : AppCompatActivity() {
             finish()
         }
 
+        binding?.save?.setOnClickListener {
+            formValidation()
+        }
+
+    }
+
+    private fun formValidation() {
+        val header = binding?.header?.text.toString().trim()
+
+        if(header.isEmpty()) {
+            Toast.makeText(this, "Header tidak boleh kosong", Toast.LENGTH_SHORT).show()
+        } else {
+            FirebaseFirestore
+                .getInstance()
+                .collection("image_slider")
+                .document(headerText!!)
+                .update("text", header)
+                .addOnCompleteListener {
+                    if(it.isSuccessful){
+                        Toast.makeText(this, "Berhasil memperbarui header", Toast.LENGTH_SHORT).show()
+                    } else{
+                        Toast.makeText(this, "Gagal memperbarui header", Toast.LENGTH_SHORT).show()
+                    }
+                }
+        }
     }
 
     private fun initRecyclerView() {
@@ -49,5 +76,6 @@ class PromotionActivity : AppCompatActivity() {
 
     companion object {
         const val EXTRA_PROMOTION = "promotion"
+        const val HEADER = "header"
     }
 }

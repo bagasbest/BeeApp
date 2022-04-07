@@ -12,7 +12,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         android:id="@+id/rvOrderProcess"
-        android:layout_marginBottom="72dp"
+        android:layout_marginBottom="60dp"
         tools:listitem="@layout/item_order"
         app:layout_constraintTop_toTopOf="parent" />
 

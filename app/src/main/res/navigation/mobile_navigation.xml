@@ -28,4 +28,10 @@
         android:name="com.project.beeapp.ui.homepage.ui.profile.ProfileFragment"
         android:label="@string/title_profile"
         tools:layout="@layout/fragment_profile" />
+
+    <fragment
+        android:id="@+id/navigation_help"
+        android:name="com.project.beeapp.ui.homepage.ui.help.HelpFragment"
+        android:label="Bantuan"
+        tools:layout="@layout/fragment_help" />
 </navigation>

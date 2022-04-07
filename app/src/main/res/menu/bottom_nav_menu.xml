@@ -16,8 +16,6 @@
         android:icon="@drawable/ic_baseline_receipt_24"
         android:title="@string/title_order" />
 
-
-
     <item
         android:id="@+id/navigation_notification"
         app:cnb_iconColor="@color/white"
@@ -31,6 +29,13 @@
         app:cnb_textColor="@color/white"
         android:icon="@drawable/ic_baseline_account_circle_24"
         android:title="@string/title_profile" />
+
+    <item
+        android:id="@+id/navigation_help"
+        app:cnb_iconColor="@color/white"
+        app:cnb_textColor="@color/white"
+        android:icon="@drawable/ic_baseline_help_24"
+        android:title="Bantuan" />
 
 
 </menu>

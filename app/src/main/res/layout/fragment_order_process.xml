@@ -14,7 +14,7 @@
         app:layout_constraintStart_toStartOf="parent"
         android:id="@+id/rvOrderProcess"
         tools:listitem="@layout/item_order"
-        android:layout_marginBottom="72dp"
+        android:layout_marginBottom="60dp"
         app:layout_constraintTop_toTopOf="parent" />
 
     <ProgressBar

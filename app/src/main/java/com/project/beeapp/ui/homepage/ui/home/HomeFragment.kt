@@ -28,16 +28,17 @@ import com.project.beeapp.databinding.FragmentHomeBinding
 import com.project.beeapp.ui.homepage.ui.home.beefuel.BeeFuelActivity
 import com.project.beeapp.ui.homepage.ui.home.beetire.BeeTireActivity
 import com.project.beeapp.ui.homepage.ui.home.beewash.BeeWashActivity
-import com.project.beeapp.ui.homepage.ui.home.help.HelpActivity
 import com.project.beeapp.ui.homepage.ui.home.income.IncomeAdapter
 import com.project.beeapp.ui.homepage.ui.home.income.IncomeModel
 import com.project.beeapp.ui.homepage.ui.home.income.IncomeViewModel
 import com.project.beeapp.ui.homepage.ui.home.promotion.PromotionActivity
+import com.project.beeapp.ui.homepage.ui.home.promotion.PromotionHomeAdapter
 import com.project.beeapp.ui.homepage.ui.home.promotion.PromotionModel
 import java.text.DecimalFormat
 import java.text.NumberFormat
 import java.text.SimpleDateFormat
 import java.util.*
+import kotlin.reflect.typeOf
 
 
 class HomeFragment : Fragment() {
@@ -45,11 +46,16 @@ class HomeFragment : Fragment() {
 
     private var _binding: FragmentHomeBinding? = null
     private lateinit var incomeAdapter: IncomeAdapter
+    private lateinit var promoHomeAdapter: PromotionHomeAdapter
     private val nominalCurrency: NumberFormat = DecimalFormat("#,###")
     private val user = FirebaseAuth.getInstance().currentUser
     private var dp: String? = null
     private val REQUEST_FROM_GALLERY = 1001
+    private val REQUEST_FROM_PROMO1 = 1002
+    private val REQUEST_FROM_PROMO2 = 1003
     private val promotionList = ArrayList<PromotionModel>()
+    private val promotionList1 = ArrayList<PromotionModel>()
+    private val promotionList2 = ArrayList<PromotionModel>()
 
     // This property is only valid between onCreateView and
     // onDestroyView.
@@ -74,26 +80,28 @@ class HomeFragment : Fragment() {
                         binding.textView.text = "Beranda BeeFlo"
                         binding.verifyDriver.visibility = View.VISIBLE
                         binding.userOrAdminRole.visibility = View.VISIBLE
-                        binding.textView35.text = "Status: Admin"
+                        binding.textView35.text = "Admin"
                         binding.addImageSlider.visibility = View.VISIBLE
+                        binding.addImageSlider1.visibility = View.VISIBLE
+                        binding.addImageSlider2.visibility = View.VISIBLE
                         binding.edit.visibility = View.VISIBLE
+                        binding.edit1.visibility = View.VISIBLE
+                        binding.edit2.visibility = View.VISIBLE
 
                         setImageSlider()
-
 
                     }
                     "" + it.data?.get("role") == "user" -> {
                         binding.textView.text = "Beranda BeeFlo"
                         binding.userOrAdminRole.visibility = View.VISIBLE
-                        binding.textView35.text = "Status: Kustomer"
+                        binding.textView35.text = "Kustomer"
 
                         setImageSlider()
-
                     }
                     "" + it.data?.get("role") == "driver" -> {
                         binding.textView.text = "Pendapatan Saya"
                         binding.driverRole.visibility = View.VISIBLE
-                        binding.textView35.text = "Status: Mitra"
+                        binding.textView35.text = "Mitra"
 
                         initRecyclerView()
                         initViewModel("")
@@ -105,9 +113,12 @@ class HomeFragment : Fragment() {
             }
     }
 
+
     private fun setImageSlider() {
         val imageList: ArrayList<SlideModel> = ArrayList() // Create image list
         promotionList.clear()
+        promotionList1.clear()
+        promotionList2.clear()
 
         FirebaseFirestore
             .getInstance()
@@ -117,18 +128,75 @@ class HomeFragment : Fragment() {
                 if(documents.size() > 0) {
                     for(document in documents) {
                         val model = PromotionModel()
-                        val image = "" + document.data["image"]
-                        val uid = "" + document.data["uid"]
 
-                        model.image = image
-                        model.uid = uid
+                        when (val uid = "" + document.data["uid"]) {
+                            "slider" -> {
+                                val text = "" + document.data["text"]
+                                binding.textView39.text = text
+                            }
+                            "promo1" -> {
+                                val text = "" + document.data["text"]
+                                binding.textView45.text = text
 
-                        imageList.add(SlideModel(image, ScaleTypes.FIT))
-                        promotionList.add(model)
+                            }
+                            "promo2" -> {
+                                val text = "" + document.data["text"]
+                                binding.textView46.text = text
+                            }
+                            else -> {
+                                val image = "" + document.data["image"]
+                                val type = "" + document.data["type"]
+
+                                model.image = image
+                                model.uid = uid
+                                model.type = type
+
+                                when (type) {
+                                    "slider" -> {
+                                        imageList.add(SlideModel(image, ScaleTypes.FIT))
+                                        promotionList.add(model)
+                                    }
+                                    "promo1" -> {
+                                        promotionList1.add(model)
+                                    }
+                                    "promo2" -> {
+                                        promotionList2.add(model)
+                                    }
+                                }
+                            }
+                        }
                     }
                     binding.sliderImage.setImageList(imageList)
+                    if(promotionList1.size > 0) {
+                        setRecyclerView()
+                    }
+                    if(promotionList2.size > 0) {
+                        setRecyclerView2()
+                    }
                 }
             }
+    }
+
+    private fun setRecyclerView2() {
+        binding.rvPromo2.layoutManager = LinearLayoutManager(
+            activity,
+            LinearLayoutManager.HORIZONTAL,
+            false
+        )
+        promoHomeAdapter = PromotionHomeAdapter()
+        promoHomeAdapter.setData(promotionList2)
+        binding.rvPromo2.adapter = promoHomeAdapter
+    }
+
+    private fun setRecyclerView() {
+        binding.rvPromo1.layoutManager = LinearLayoutManager(
+            activity,
+            LinearLayoutManager.HORIZONTAL,
+            false
+        )
+        promoHomeAdapter = PromotionHomeAdapter()
+        promoHomeAdapter.setData(promotionList1)
+        binding.rvPromo1.adapter = promoHomeAdapter
     }
 
     private fun initRecyclerView() {
@@ -248,7 +316,7 @@ class HomeFragment : Fragment() {
 
         Glide.with(requireActivity())
             .load(R.drawable.oil)
-            .into(binding.roundedImageView6)
+            .into(binding.roundedImageView2)
 
         Glide.with(requireActivity())
             .load(R.drawable.pickup)
@@ -256,7 +324,7 @@ class HomeFragment : Fragment() {
 
         Glide.with(requireActivity())
             .load(R.drawable.gas_water)
-            .into(binding.roundedImageView2)
+            .into(binding.roundedImageView6)
 
         Glide.with(requireActivity())
             .load(R.drawable.clean)
@@ -300,24 +368,45 @@ class HomeFragment : Fragment() {
             startActivity(Intent(activity, AdminActivity::class.java))
         }
 
-        binding.view9.setOnClickListener {
-            startActivity(Intent(activity, HelpActivity::class.java))
-        }
-
-        binding.helpMitra.setOnClickListener {
-            startActivity(Intent(activity, HelpActivity::class.java))
-        }
-
         binding.addImageSlider.setOnClickListener {
             ImagePicker.with(this)
                 .galleryOnly()
                 .compress(1024)
-                .start(REQUEST_FROM_GALLERY);
+                .start(REQUEST_FROM_GALLERY)
+        }
+
+        binding.addImageSlider1.setOnClickListener {
+            ImagePicker.with(this)
+                .galleryOnly()
+                .compress(1024)
+                .start(REQUEST_FROM_PROMO1)
+        }
+
+        binding.addImageSlider2.setOnClickListener {
+            ImagePicker.with(this)
+                .galleryOnly()
+                .compress(1024)
+                .start(REQUEST_FROM_PROMO2)
         }
 
         binding.edit.setOnClickListener {
             val intent = Intent(activity, PromotionActivity::class.java)
             intent.putExtra(PromotionActivity.EXTRA_PROMOTION, promotionList)
+            intent.putExtra(PromotionActivity.HEADER, "slider")
+            startActivity(intent)
+        }
+
+        binding.edit1.setOnClickListener {
+            val intent = Intent(activity, PromotionActivity::class.java)
+            intent.putExtra(PromotionActivity.EXTRA_PROMOTION, promotionList1)
+            intent.putExtra(PromotionActivity.HEADER, "promo1")
+            startActivity(intent)
+        }
+
+        binding.edit2.setOnClickListener {
+            val intent = Intent(activity, PromotionActivity::class.java)
+            intent.putExtra(PromotionActivity.EXTRA_PROMOTION, promotionList2)
+            intent.putExtra(PromotionActivity.HEADER, "promo2")
             startActivity(intent)
         }
 
@@ -344,15 +433,23 @@ class HomeFragment : Fragment() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (resultCode == AppCompatActivity.RESULT_OK) {
-            if (requestCode == REQUEST_FROM_GALLERY) {
-                uploadArticleDp(data?.data)
+            when (requestCode) {
+                REQUEST_FROM_GALLERY -> {
+                    uploadArticleDp(data?.data, "slider")
+                }
+                REQUEST_FROM_PROMO1 -> {
+                    uploadArticleDp(data?.data, "promo1")
+                }
+                else -> {
+                    uploadArticleDp(data?.data, "promo2")
+                }
             }
         }
     }
 
 
     /// fungsi untuk mengupload foto kedalam cloud storage
-    private fun uploadArticleDp(data: Uri?) {
+    private fun uploadArticleDp(data: Uri?, type: String) {
         val mStorageRef = FirebaseStorage.getInstance().reference
         val mProgressDialog = ProgressDialog(activity)
         mProgressDialog.setMessage("Mohon tunggu hingga proses selesai...")
@@ -364,7 +461,7 @@ class HomeFragment : Fragment() {
                 mStorageRef.child(imageFileName).downloadUrl
                     .addOnSuccessListener { uri: Uri ->
                         dp = uri.toString()
-                        saveImageSliderToDatabase(mProgressDialog)
+                        saveImageSliderToDatabase(mProgressDialog, type)
                     }
                     .addOnFailureListener { e: Exception ->
                         mProgressDialog.dismiss()
@@ -388,11 +485,12 @@ class HomeFragment : Fragment() {
             }
     }
 
-    private fun saveImageSliderToDatabase(mProgressDialog: ProgressDialog) {
+    private fun saveImageSliderToDatabase(mProgressDialog: ProgressDialog, type: String) {
         val uid = System.currentTimeMillis().toString()
         val data = mapOf(
             "image" to dp,
-            "uid" to uid
+            "uid" to uid,
+            "type" to type
         )
         FirebaseFirestore
             .getInstance()

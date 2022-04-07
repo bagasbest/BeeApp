@@ -7,4 +7,5 @@ import kotlinx.parcelize.Parcelize
 data class PromotionModel(
     var uid: String? = null,
     var image: String? = null,
+    var type: String? = null,
 ) : Parcelable

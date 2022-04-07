@@ -32,6 +32,7 @@
         <entry key="..\:/TUBES_GALERI/BeeApp/app/src/main/res/layout/activity_user_detail.xml" value="0.23645833333333333" />
         <entry key="..\:/TUBES_GALERI/BeeApp/app/src/main/res/layout/activity_verify_driver.xml" value="0.23645833333333333" />
         <entry key="..\:/TUBES_GALERI/BeeApp/app/src/main/res/layout/activity_verify_driver_detail.xml" value="0.22239583333333332" />
+        <entry key="..\:/TUBES_GALERI/BeeApp/app/src/main/res/layout/fragment_help.xml" value="0.264" />
         <entry key="..\:/TUBES_GALERI/BeeApp/app/src/main/res/layout/fragment_home.xml" value="0.264" />
         <entry key="..\:/TUBES_GALERI/BeeApp/app/src/main/res/layout/fragment_notification.xml" value="0.23645833333333333" />
         <entry key="..\:/TUBES_GALERI/BeeApp/app/src/main/res/layout/fragment_order.xml" value="0.23645833333333333" />
@@ -42,8 +43,9 @@
         <entry key="..\:/TUBES_GALERI/BeeApp/app/src/main/res/layout/item_admin_list.xml" value="0.23645833333333333" />
         <entry key="..\:/TUBES_GALERI/BeeApp/app/src/main/res/layout/item_income.xml" value="0.23645833333333333" />
         <entry key="..\:/TUBES_GALERI/BeeApp/app/src/main/res/layout/item_income_partner.xml" value="0.23645833333333333" />
-        <entry key="..\:/TUBES_GALERI/BeeApp/app/src/main/res/layout/item_notification.xml" value="0.48405253283302063" />
+        <entry key="..\:/TUBES_GALERI/BeeApp/app/src/main/res/layout/item_notification.xml" value="0.264" />
         <entry key="..\:/TUBES_GALERI/BeeApp/app/src/main/res/layout/item_order.xml" value="0.264" />
+        <entry key="..\:/TUBES_GALERI/BeeApp/app/src/main/res/layout/item_promo_home.xml" value="0.23645833333333333" />
         <entry key="..\:/TUBES_GALERI/BeeApp/app/src/main/res/layout/item_promotion.xml" value="0.23645833333333333" />
         <entry key="..\:/TUBES_GALERI/BeeApp/app/src/main/res/layout/item_rekening.xml" value="0.23645833333333333" />
         <entry key="..\:/TUBES_GALERI/BeeApp/app/src/main/res/layout/item_verify_driver.xml" value="0.23645833333333333" />

@@ -1,4 +1,4 @@
-package com.project.beeapp.ui.homepage.ui.home.help
+package com.project.beeapp.ui.homepage.ui.help
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
