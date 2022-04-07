@@ -186,7 +186,7 @@
                 android:id="@+id/qty"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Total kendaraan yang ingin dicuci"
+                android:hint="Total kendaraan yang ingin di tambal ban"
                 android:inputType="number" />
 
         </com.google.android.material.textfield.TextInputLayout>

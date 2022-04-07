@@ -96,6 +96,8 @@ class HomeFragment : Fragment() {
                         binding.verifyDriver.visibility = View.VISIBLE
                         binding.userOrAdminRole.visibility = View.VISIBLE
                         binding.textView35.text = "Admin"
+                        setImageSlider()
+
                     }
                     "" + it.data?.get("role") == "user" -> {
                         binding.textView.text = "Beranda BeeFlo"

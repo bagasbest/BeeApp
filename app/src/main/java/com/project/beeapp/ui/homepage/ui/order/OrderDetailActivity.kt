@@ -427,20 +427,50 @@ class OrderDetailActivity : AppCompatActivity() {
                             .into(binding!!.image)
 
                         binding?.driverName?.text = model?.username
-                    }
-                } else if (role == "user") {
-                    if (model?.status != "Order Diterima" || model?.status != "Selesai") {
-                        binding?.orderBtn?.visibility = View.VISIBLE
-                        binding?.orderBtn?.text = "Batalkan Orderan"
-
-                    } else {
+                    } else if(model?.status == "Selesai") {
                         binding?.constraintLayout?.visibility = View.VISIBLE
 
                         Glide.with(this)
-                            .load(model?.driverImage)
+                            .load(R.drawable.ic_baseline_account_circle_gray)
                             .into(binding!!.image)
 
-                        binding?.driverName?.text = model?.driverName
+                        binding?.driverName?.text = model?.username
+                        binding?.phoneCall?.visibility = View.GONE
+                    }
+                } else if (role == "user") {
+
+                    when(model?.status) {
+                        "Cash" -> {
+                            binding?.orderBtn?.visibility = View.VISIBLE
+                            binding?.orderBtn?.text = "Batalkan Orderan"
+                        }
+                        "Sudah Bayar" -> {
+                            binding?.orderBtn?.visibility = View.GONE
+                        }
+                        "Order Diterima" -> {
+                            binding?.constraintLayout?.visibility = View.VISIBLE
+
+                            Glide.with(this)
+                                .load(model?.driverImage)
+                                .into(binding!!.image)
+
+                            binding?.driverName?.text = model?.driverName
+                            binding?.orderBtn?.visibility = View.GONE
+                        }
+                        "Selesai" -> {
+                            binding?.constraintLayout?.visibility = View.VISIBLE
+
+                            Glide.with(this)
+                                .load(model?.driverImage)
+                                .into(binding!!.image)
+
+                            binding?.driverName?.text = model?.driverName
+                            binding?.orderBtn?.visibility = View.GONE
+                        }
+                        else ->{
+                            binding?.orderBtn?.visibility = View.VISIBLE
+                            binding?.orderBtn?.text = "Batalkan Orderan"
+                        }
                     }
                 } else if (role == "admin" || role == "adminKecamatan") {
                     when (model?.status) {
