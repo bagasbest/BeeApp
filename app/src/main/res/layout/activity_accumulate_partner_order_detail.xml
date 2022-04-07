@@ -273,7 +273,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16sp"
-                android:text="Pendapatan sudah dipotong biaya jasa aplikasi sebesar 20%, tiap order yang diselesaikan."
+                android:text="Mitra akan memperoleh pendapatan bersih sesuai dengan persentase bagi hasil, dan pemotongan dari biaya admin serta PPN (jika ada). Contoh: biaya order 10.000, ppn nya 5%, sisa 9500, terus biaya admin: misal 3000, sisa 6500, baru 6500 ini di potong bagi hasil misal 80% untuk mitra, sehingga mitra menerima pendapatan bersih Rp.5200"
                 android:textColor="@color/black" />
 
 

@@ -527,6 +527,10 @@ class BeeWashActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener 
     }
 
     private fun sendNotificationFromUserToMitra() {
+        val df = SimpleDateFormat("dd-MMM-yyyy, HH:mm:ss")
+        val formattedDate: String = df.format(Date())
+
+
         FirebaseFirestore
             .getInstance()
             .collection("users")
@@ -536,6 +540,7 @@ class BeeWashActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener 
             .addOnSuccessListener { documents ->
                 for(document in documents) {
                     val driverToken = "" + document.data["token"]
+                    val driverUID = "" + document.data["uid"]
                     PushNotification(
                         NotificationData(
                             "Ada order baru",
@@ -545,8 +550,28 @@ class BeeWashActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener 
                     ).also { pushNotification ->
                         sendNotification(pushNotification)
                     }
+                    saveNotificationFromUserToMitra(formattedDate, driverUID)
                 }
             }
+    }
+
+    private fun saveNotificationFromUserToMitra(formattedDate: String, driverUID: String) {
+        val uid = System.currentTimeMillis().toString()
+
+        val data = mapOf(
+            "title" to "Ada order baru",
+            "message" to "Order BeeWash menunggu anda",
+            "date" to formattedDate,
+            "type" to "driver",
+            "userId" to driverUID,
+            "uid" to uid
+        )
+
+        FirebaseFirestore
+            .getInstance()
+            .collection("notification")
+            .document(uid)
+            .set(data)
     }
 
     private fun sendNotification(notification: PushNotification) =

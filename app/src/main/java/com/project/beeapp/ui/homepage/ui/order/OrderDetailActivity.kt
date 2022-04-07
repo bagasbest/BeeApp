@@ -443,19 +443,43 @@ class OrderDetailActivity : AppCompatActivity() {
                         binding?.driverName?.text = model?.driverName
                     }
                 } else if (role == "admin" || role == "adminKecamatan") {
-                    if (model?.status != "Cash" || model?.status != "Order Diterima" || model?.status != "Selesai") {
-                        if( model?.status != "Sudah Bayar") {
+                    when (model?.status) {
+                        "Cash" -> {
+                            /// Pembayaran cash
+                            binding?.acc?.visibility = View.GONE
+                            binding?.decline?.visibility = View.GONE
+                        }
+                        "Sudah Bayar" -> {
+                            /// sudah bayar
+                            binding?.acc?.visibility = View.GONE
+                            binding?.decline?.visibility = View.GONE
+                        }
+                        "Order Diterima" -> {
+                            binding?.acc?.visibility = View.GONE
+                            binding?.decline?.visibility = View.GONE
+                            binding?.constraintLayout?.visibility = View.VISIBLE
+
+                            Glide.with(this)
+                                .load(model?.driverImage)
+                                .into(binding!!.image)
+
+                            binding?.driverName?.text = model?.driverName
+                        }
+                        "Selesai" -> {
+                            binding?.acc?.visibility = View.GONE
+                            binding?.decline?.visibility = View.GONE
+                            binding?.constraintLayout?.visibility = View.VISIBLE
+
+                            Glide.with(this)
+                                .load(model?.driverImage)
+                                .into(binding!!.image)
+
+                            binding?.driverName?.text = model?.driverName
+                        }
+                        else -> {
                             binding?.acc?.visibility = View.VISIBLE
                             binding?.decline?.visibility = View.VISIBLE
                         }
-                    } else {
-                        binding?.constraintLayout?.visibility = View.VISIBLE
-
-                        Glide.with(this)
-                            .load(model?.driverImage)
-                            .into(binding!!.image)
-
-                        binding?.driverName?.text = model?.driverName
                     }
                 }
             }
@@ -642,6 +666,9 @@ class OrderDetailActivity : AppCompatActivity() {
     }
 
     private fun sendNotificationFromUserToMitra() {
+        val df = SimpleDateFormat("dd-MMM-yyyy, HH:mm:ss")
+        val formattedDate: String = df.format(Date())
+
         FirebaseFirestore
             .getInstance()
             .collection("users")
@@ -651,6 +678,7 @@ class OrderDetailActivity : AppCompatActivity() {
             .addOnSuccessListener { documents ->
                 for(document in documents) {
                     val driverToken = "" + document.data["token"]
+                    val driverUID = "" + document.data["uid"]
                     PushNotification(
                         NotificationData(
                             "Ada order baru",
@@ -660,8 +688,28 @@ class OrderDetailActivity : AppCompatActivity() {
                     ).also { pushNotification ->
                         sendNotification(pushNotification)
                     }
+                    saveNotificationFromUserToMitra(formattedDate,driverUID)
                 }
             }
+    }
+
+    private fun saveNotificationFromUserToMitra(formattedDate: String, driverUID: String) {
+        val uid = System.currentTimeMillis().toString()
+
+        val data = mapOf(
+            "title" to "Ada order baru",
+            "message" to "Order ${model?.orderType} menunggu anda",
+            "date" to formattedDate,
+            "type" to "driver",
+            "userId" to driverUID,
+            "uid" to uid
+        )
+
+        FirebaseFirestore
+            .getInstance()
+            .collection("notification")
+            .document(uid)
+            .set(data)
     }
 
     private fun sendNotification(notification: PushNotification) =
